@@ -1,0 +1,113 @@
+body {
+  color: rgba(0, 0, 0, 0.870588);
+  background-color: #F2F2F2;
+}
+
+body, input, textarea {
+  font-family: 'Roboto', sans-serif;
+  font-size: 16px;
+  -webkit-font-smoothing: antialiased; /* OS X subpixel AA bleed bug */
+}
+
+input:-webkit-autofill {
+  -webkit-box-shadow: 0 0 0 1000px white inset;
+}
+
+div[masthead] {
+  position: relative;
+  height: 46px;
+  color: #FFFFFF;
+  background-color: #4285F4;
+}
+
+[masthead] [name] {
+  position: absolute;
+  top: 0;
+  left: 0;
+  bottom: 0;
+  right: 0;
+  font-size: 24px;
+}
+
+[masthead] [tab] {
+  position: relative;
+  height: 100%;
+  padding-left: 16px;
+  padding-right: 16px;
+  cursor: pointer;
+  color: white;
+  font-size: 16px;
+  text-decoration: none !important;
+  text-transform: uppercase;
+}
+
+[masthead] [tab] [underline] {
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  height: 4px;
+}
+
+[masthead] [tab]:hover {
+  background-color: rgb(114, 192, 44);
+}
+
+[masthead] [tab][active] [underline] {
+  background-color: rgb(114, 192, 44);
+}
+
+[masthead] #search {
+  height: 30px;
+  width: 250px;
+  padding-left: 16px;
+  padding-right: 16px;
+  border-radius: 3px;
+  margin-left: 8px;
+  margin-right: 8px;
+  border: none;
+  outline: none;
+  z-index: 10;
+  color: white;
+  background-color: rgba(255, 255, 255, 0.14902);
+}
+
+[masthead] #search::-webkit-input-placeholder {
+  color: white;
+}
+
+[masthead] #search:-moz-placeholder {
+  color: white;
+}
+
+[masthead] #search::-moz-placeholder {
+  color: white;
+}
+
+[masthead] #search:-ms-input-placeholder {
+  color: white;
+}
+
+[content] {
+  position: absolute;
+  top: 56px;
+  left: 0;
+  bottom: 0;
+  right: 0;
+}
+
+[button] {
+  line-height: 40px;
+  border-radius: 3px;
+  text-align: center;
+  vertical-align: middle;
+  text-transform: uppercase;
+  text-decoration: none !important;
+  cursor: pointer;
+  -webkit-touch-callout: none;
+  -webkit-user-select: none;
+  -khtml-user-select: none;
+  -moz-user-select: none;
+  -ms-user-select: none;
+  user-select: none;
+}

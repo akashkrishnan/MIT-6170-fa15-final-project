@@ -1,0 +1,54 @@
+<!DOCTYPE html>
+<html lang="en">
+
+  <head>
+    <meta charset="UTF-8">
+    <title><%= web.name %></title>
+    <link rel="stylesheet" type="text/css" href="https://fonts.googleapis.com/css?family=Roboto">
+    <link rel="stylesheet" type="text/css" href="/styles/global.css">
+    <link rel="stylesheet" type="text/css" href="/styles/layout.css">
+    <link rel="stylesheet" type="text/css" href="/styles/shadow.css">
+    <link rel="stylesheet" type="text/css" href="/styles/home.css">
+  </head>
+
+  <body fullbleed fit>
+
+    <div masthead layout-horizontal layout-center shadow elevation="1">
+
+      <div name layout-horizontal layout-center layout-center-justified><strong><%= web.name %></strong></div>
+
+      <a href="/" tab layout-horizontal layout-center active>
+        <div>Home</div>
+        <div underline></div>
+      </a>
+
+      <div flex></div>
+
+      <a href="/logout" tab layout-horizontal layout-center>
+        <div>Logout</div>
+        <div underline></div>
+      </a>
+
+    </div>
+
+    <div content>
+      <div layout-horizontal layout-center-justified>
+        <div layout-vertical>
+          <div shadow="1" style="width: 600px; padding: 15px; margin: 10px; text-align: justify">
+            Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et
+            dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip
+            ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu
+            fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt
+            mollit anim id est laborum.
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <script src="/moment/min/moment.min.js"></script>
+    <script src="/autoresize-textarea.js"></script>
+    <script src="/controllers/timeFormatController.js"></script>
+
+  </body>
+
+</html>

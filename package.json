@@ -1,0 +1,44 @@
+{
+  "name": "Flipper",
+  "description": "making the flipped classroom more efficient",
+  "version": "1.0.0",
+  "repository": {
+    "type": "git",
+    "url": "git@github.mit.edu:6170-fa15/hsuresh_tcwong_medranom_akashk16_final.git"
+  },
+  "bugs": {
+    "url": "https://github.mit.edu/6170-fa15/hsuresh_tcwong_medranom_akashk16_final/issues"
+  },
+  "homepage": "https://github.mit.edu/6170-fa15/hsuresh_tcwong_medranom_akashk16_final",
+  "author": "Akash Krishnan",
+  "license": "MIT",
+  "private": true,
+  "config": {
+    "verbose": true,
+    "branch": "master",
+    "host": "localhost",
+    "port": 80,
+    "mongo": "localhost"
+  },
+  "scripts": {
+    "bower-update": "./node_modules/.bin/bower update --save --allow-root",
+    "bower-install": "./node_modules/.bin/bower install --save --allow-root",
+    "install": "npm run bower-update && npm run bower-install",
+    "init": "node init.js",
+    "start": "node server.js",
+    "start-supervisor": "./node_modules/.bin/supervisor -e js,json -i public,source -q server.js",
+    "start-background": "(npm start 1> out.log 2> err.log &)"
+  },
+  "dependencies": {
+    "body-parser": "^1.14.1",
+    "bower": "^1.5.3",
+    "colors": "^1.1.2",
+    "compression": "^1.6.0",
+    "cookie-parser": "^1.4.0",
+    "ejs": "^2.3.4",
+    "escape-html": "^1.0.3",
+    "express": "^4.13.3",
+    "mongojs": "^1.3.0",
+    "supervisor": "^0.9.1"
+  }
+}
