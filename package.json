@@ -37,6 +37,7 @@
     "ejs": "^2.3.4",
     "escape-html": "^1.0.3",
     "eslint": "^1.9.0",
+    "eslint-config-google": "^0.3.0",
     "express": "^4.13.3",
     "mongojs": "^1.4.1"
   }
