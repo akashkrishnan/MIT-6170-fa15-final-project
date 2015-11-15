@@ -11,7 +11,7 @@ Flipper
 1. `npm run lint`
 
 
-### Linting (currently not available)
+### Testing (currently not available)
 1. `npm test`
 
 ### Running
