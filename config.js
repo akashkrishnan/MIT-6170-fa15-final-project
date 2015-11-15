@@ -6,12 +6,12 @@
  *
  * @param {string} k - name of config variable
  * @param {*} d - default value to return if config value not found
- * @returns {*} - config value
+ * @return {*} - config value
  */
 var v = function ( k, d ) {
   if ( k in process.env ) {
     return process.env[ k ];
-  } else if ( ('npm_package_config_' + k) in process.env ) {
+  } else if ( ( 'npm_package_config_' + k ) in process.env ) {
     var v = process.env[ 'npm_package_config_' + k ];
     try {
       return JSON.parse( v );
@@ -23,7 +23,7 @@ var v = function ( k, d ) {
   }
 };
 
-var Config = module.exports = {
+module.exports = {
   verbose: v( 'verbose', true ),
   web: {
     name: 'Flipper',
@@ -33,11 +33,7 @@ var Config = module.exports = {
     },
     protocol: 'http',
     hostname: v( 'host', 'localhost' ),
-    port: parseInt( v( 'port', 443 ) ),
-    _base: function () {
-      return Config.web.protocol + '://' + Config.web.hostname +
-             ( Config.web.port === 80 ? '' : ':' + Config.web.port );
-    }
+    port: parseInt( v( 'port', 80 ), 10 )
   },
   services: {
     db: {

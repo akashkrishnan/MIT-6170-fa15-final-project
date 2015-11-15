@@ -1,4 +1,4 @@
-(function () {
+( function () {
 
   var config;
 
@@ -27,7 +27,7 @@
    *
    * @param {function()} done - callback function
    */
-  var loadConfig = function ( done ) {
+  function loadConfig( done ) {
 
     var xhr = new XMLHttpRequest();
 
@@ -48,9 +48,9 @@
     xhr.responseType = 'json';
     xhr.send();
 
-  };
+  }
 
-  var validate = function () {
+  function validate() {
 
     // Retrieve config if it hasn't already been loaded
     if ( !config ) {
@@ -60,7 +60,7 @@
       var name = document.querySelector( '#name' ).value;
       var username = document.querySelector( '#username' ).value;
       var password = document.querySelector( '#password' ).value;
-      var password_verify = document.querySelector( '#password_verify' ).value;
+      var passwordVerify = document.querySelector( '#password_verify' ).value;
 
       var nameMinLength = config.registration.name.length.min;
       var nameMaxLength = config.registration.name.length.max;
@@ -85,7 +85,7 @@
         alert( 'Username must contain at most ' + usernameMaxLength + ' characters.' );
       } else if ( !validUsername ) {
         alert( 'Username contains invalid characters. Please use alphanumeric characters and underscores.' );
-      } else if ( password !== password_verify ) {
+      } else if ( password !== passwordVerify ) {
         alert( 'Passwords do not match.' );
       } else if ( username === password ) {
         alert( 'Username and password must be different.' );
@@ -105,16 +105,16 @@
 
     }
 
-  };
+  }
 
   /**
    * Sends XHR to register user; if successful, user is automatically logged in and redirected to the homepage.
    *
-   * @param {string} name
-   * @param {string} username
-   * @param {string} password
+   * @param {string} name -
+   * @param {string} username -
+   * @param {string} password -
    */
-  var register = function ( name, username, password ) {
+  function register( name, username, password ) {
 
     var data = {
       name: name,
@@ -152,6 +152,6 @@
     xhr.responseType = 'json';
     xhr.send( JSON.stringify( data ) );
 
-  };
+  }
 
-})();
+} )();

@@ -1,6 +1,6 @@
 'use strict';
 
-var colors = require( 'colors' );
+require( 'colors' );
 
 module.exports = {
   log: log,
@@ -10,21 +10,21 @@ module.exports = {
 };
 
 function log( msg ) {
-  console.log( (msg + '' ) );
+  console.log( String( msg ) );
 }
 
 function info( msg ) {
-  console.info( (msg + '' ).blue );
+  console.info( String( msg ).blue );
 }
 
 function warn( msg ) {
-  console.warn( (msg + '' ).yellow );
+  console.warn( String( msg ).yellow );
 }
 
 function error( msg ) {
   if ( msg instanceof Error ) {
-    console.error( (msg.stack + '' ).red );
+    console.error( String( msg.stack ).red );
   } else {
-    console.error( (msg + '' ).red );
+    console.error( String( msg ).red );
   }
 }

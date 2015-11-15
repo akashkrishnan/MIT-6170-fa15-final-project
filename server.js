@@ -5,12 +5,13 @@ console.log( '-------------\nInitializing.' );
 // Imports
 var Config = require( './config.js' );
 var Logger = require( './models/logger.js' );
-var Session = require( './middleware/session.js' );
+var session = require( './middleware/session.js' );
 var domain = require( 'domain' );
 var express = require( 'express' );
 var compression = require( 'compression' );
-var CookieParser = require( 'cookie-parser' );
-var BodyParser = require( 'body-parser' );
+var cookieParser = require( 'cookie-parser' );
+var bodyParser = require( 'body-parser' );
+var path = require( 'path' );
 
 // Use domain to catch runtime errors and prevent termination of application
 
@@ -29,13 +30,13 @@ d.run( function () {
   // Configure Express
   app.engine( '.ejs', require( 'ejs' ).renderFile );
   app.set( 'view engine', 'ejs' );
-  app.set( 'views', __dirname + '/source/templates' );
+  app.set( 'views', path.join( __dirname, '/source/templates' ) );
   app.use( compression( { level: 9, memLevel: 9 } ) );
-  app.use( CookieParser() );
-  app.use( BodyParser.json() );
-  app.use( express.static( __dirname + '/public' ) );
-  app.use( express.static( __dirname + '/source/bower_components' ) );
-  app.use( Session( Config.web.cookie.name ) );
+  app.use( cookieParser() );
+  app.use( bodyParser.json() );
+  app.use( express.static( path.join( __dirname, '/public' ) ) );
+  app.use( express.static( path.join( __dirname, '/source/bower_components' ) ) );
+  app.use( session( Config.web.cookie.name ) );
 
   console.log( 'READY: Express' );
 

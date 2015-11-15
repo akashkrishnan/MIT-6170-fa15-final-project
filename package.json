@@ -21,24 +21,23 @@
     "mongo": "localhost"
   },
   "scripts": {
-    "bower-update": "./node_modules/.bin/bower update --save --allow-root",
-    "bower-install": "./node_modules/.bin/bower install --save --allow-root",
-    "install": "npm run bower-update && npm run bower-install",
+    "lint": "eslint . || exit 0",
+    "install": "bower update --save --allow-root && bower install --save --allow-root",
     "init": "node init.js",
     "start": "node server.js",
-    "start-supervisor": "./node_modules/.bin/supervisor -e js,json -i public,source -q server.js",
+    "start-supervisor": "supervisor -e js,json -i public,source -q server.js",
     "start-background": "(npm start 1> out.log 2> err.log &)"
   },
   "dependencies": {
     "body-parser": "^1.14.1",
-    "bower": "^1.5.3",
+    "bower": "^1.6.5",
     "colors": "^1.1.2",
     "compression": "^1.6.0",
     "cookie-parser": "^1.4.0",
     "ejs": "^2.3.4",
     "escape-html": "^1.0.3",
+    "eslint": "^1.9.0",
     "express": "^4.13.3",
-    "mongojs": "^1.3.0",
-    "supervisor": "^0.9.1"
+    "mongojs": "^1.4.1"
   }
 }

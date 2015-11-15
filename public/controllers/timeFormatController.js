@@ -1,6 +1,6 @@
 'use strict';
 
-(function () {
+( function () {
 
   var update = function () {
 
@@ -18,4 +18,4 @@
 
   setInterval( update, 30000 );
 
-})();
+} )();

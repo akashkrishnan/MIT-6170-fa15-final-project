@@ -20,7 +20,7 @@ module.exports = function ( name ) {
           if ( err ) {
 
             // The session doesn't exist or something went wrong. Either way, tell client to remove cookie
-            res.clearCookie( name );
+            res.clearCookie( name, {} );
             next();
 
           } else {

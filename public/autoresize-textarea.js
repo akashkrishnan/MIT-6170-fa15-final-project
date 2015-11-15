@@ -8,7 +8,7 @@ var AutoresizeTextarea = function ( textarea ) {
 
   var resize = function () {
     textarea.style.height = 'auto';
-    textarea.style.height = (textarea.scrollHeight - 32) + 'px';
+    textarea.style.height = ( textarea.scrollHeight - 32 ) + 'px';
   };
 
   var asyncResize = function () {

@@ -7,14 +7,15 @@ module.exports = {
   unique: unique,
   noop: noop,
   safeFn: safeFn,
-  validateObject: validateObject
+  validateObject: validateObject,
+  regexEscape: regexEscape
 };
 
 /**
  * Returns a list of unique values that exist in the provided list.
  *
  * @param {Array} list - list of values
- * @returns {Array} - unique list of values
+ * @return {Array} - unique list of values
  */
 function unique( list ) {
 
@@ -40,8 +41,8 @@ function noop() {
  * Returns a function that can be executed if not originally defined. If the first argument is defined and of type
  * error, then its stack property will be printed and it will be replaced with its message property.
  *
- * @param {function|null|undefined} [fn]
- * @returns {function}
+ * @param {function|null|undefined} [fn] -
+ * @return {function} -
  */
 function safeFn( fn ) {
   return function () {
@@ -53,7 +54,7 @@ function safeFn( fn ) {
         require( './logger.js' ).error( new Error( arguments[ 0 ] ) );
       }
     }
-    (fn || noop).apply( null, arguments );
+    ( fn || noop ).apply( null, arguments );
   };
 }
 
@@ -62,9 +63,9 @@ function safeFn( fn ) {
  *
  * TODO: 1) add enum support; 2) add array support; 3) add custom validation; 4) validate default values
  *
- * @param {object} data
- * @param {object} structure
- * @returns {object} - post-validated data object
+ * @param {object} data -
+ * @param {object} structure -
+ * @return {object} - post-validated data object
  */
 function validateObject( data, structure ) {
 
@@ -119,12 +120,8 @@ function validateObject( data, structure ) {
 
           } else if ( prop.filter === 'MongoId' ) {
 
-            // Convert to MongoId if not an admin id
-            if ( 0 < data[ p ] && data[ p ] <= Config.services.auth.google.admins.length ) {
-              query[ q ] = data[ p ];
-            } else {
-              query[ q ] = new ObjectId( ( data[ p ] || '' ).toString() );
-            }
+            // Convert to MongoId
+            query[ q ] = new ObjectId( ( data[ p ] || '' ).toString() );
 
           } else if ( prop.filter === 'Date' ) {
 
@@ -156,19 +153,15 @@ function validateObject( data, structure ) {
 
           }
 
+        } else if ( typeof prop.type === 'object' ) {
+
+          // Treat all objects as a mongo query
+          query[ q ] = validateObject( data[ p ], prop.type );
+
         } else {
 
-          if ( typeof prop.type === 'object' ) {
-
-            // Treat all objects as a mongo query
-            query[ q ] = validateObject( data[ p ], prop.type );
-
-          } else {
-
-            // Pass the value through
-            query[ q ] = data[ p ];
-
-          }
+          // Pass the value through
+          query[ q ] = data[ p ];
 
         }
 
@@ -228,11 +221,13 @@ function validateObject( data, structure ) {
 
     return query;
 
-  } else {
-
-    // Let's complain about it
-    throw new Error( 'Invalid usage. Ensure arguments are objects.' );
-
   }
 
+  // We shouldn't get here; let's complain about it
+  throw new Error( 'Invalid usage. Ensure arguments are objects.' );
+
+}
+
+function regexEscape( str ) {
+  return str.replace( /[-[\]{}()*+?.,\\^$|#\s]/g, '\\$&' );
 }

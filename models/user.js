@@ -9,7 +9,7 @@ var db = mongojs( Config.services.db.mongodb.uri, [ 'users' ] );
 
 module.exports = {
 
-  //---------------EXTERNAL---------------//
+  /* ---------------EXTERNAL--------------- */
 
   list: list,
   exists: exists,
@@ -17,7 +17,7 @@ module.exports = {
   add: add,
 
 
-  //---------------INTERNAL---------------//
+  /* ---------------INTERNAL--------------- */
 
   validateCredentials: validateCredentials,
   sign: sign,
@@ -66,11 +66,11 @@ function list( data, done ) {
 
     sort.username = 1;
 
-    db[ 'users' ].count( function ( err, count ) {
+    db.users.count( function ( err, count ) {
       if ( err ) {
         done( err, [], 0 );
       } else {
-        db[ 'users' ]
+        db.users
           .find( criteria, projection )
           .sort( sort )
           .skip( data.offset || 0 )
@@ -101,10 +101,11 @@ function list( data, done ) {
 /**
  * Checks to see if a User object exists by _id or username.
  *
- * @param {object} data
+ * @param {object} data - data
  * @param {*} [data._id] - User._id
  * @param {string} [data.username] - User.username
  * @param {existsCallback} done - callback
+ * @return {undefined} -
  */
 function exists( data, done ) {
   try {
@@ -123,11 +124,11 @@ function exists( data, done ) {
       return done( new Error( 'Invalid parameters.' ), false );
     }
 
-    db[ 'users' ].findOne( criteria, function ( err, user ) {
+    db.users.findOne( criteria, function ( err, user ) {
       if ( err ) {
         done( err, false );
       } else {
-        done( null, !!user );
+        done( null, Boolean( user ) );
       }
     } );
 
@@ -145,7 +146,7 @@ function exists( data, done ) {
 /**
  * Gets a User object.
  *
- * @param {object} data
+ * @param {object} data - data
  * @param {*} [data._id] - User._id
  * @param {string} [data.username] - User.username
  * @param {string} [data.password] - User.password
@@ -163,11 +164,11 @@ function get( data, done ) {
     /**
      * Called after user is found in database and password has been validated if applicable.
      *
-     * @param {object} criteria
+     * @param {object} criteria -
      */
     var next = function ( criteria ) {
 
-      db[ 'users' ].findOne( criteria, function ( err, user ) {
+      db.users.findOne( criteria, function ( err, user ) {
         if ( err ) {
           done( err, null );
         } else if ( user ) {
@@ -206,7 +207,7 @@ function get( data, done ) {
       if ( criteria.password ) {
 
         // We're dealing with a password; we first need to retrieve the salt and password for the username
-        db[ 'users' ].findOne(
+        db.users.findOne(
           {
             username: criteria.username
           },
@@ -273,7 +274,7 @@ function get( data, done ) {
 /**
  * Adds a user.
  *
- * @param {object} data
+ * @param {object} data - data
  * @param {string} data.name - User.name
  * @param {string} data.username - User.username
  * @param {string} data.password - User.password
@@ -339,7 +340,7 @@ function add( data, done ) {
               var saltedPasswordHash = sha256.digest( 'hex' );
 
               // Insert new user data into database
-              db[ 'users' ].insert(
+              db.users.insert(
                 {
                   name: criteria.name,
                   username: criteria.username,
@@ -347,15 +348,21 @@ function add( data, done ) {
                   password: saltedPasswordHash,
                   timestamps: {
                     created: new Date(),
-                    last_signed: null,
+                    lastSigned: null,
                     signed: null,
                     active: null
                   }
                 },
                 function ( err, user ) {
 
-                  // Get the new user object the proper way
-                  get( { _id: user._id }, done );
+                  if ( err ) {
+                    done( err, null );
+                  } else {
+
+                    // Get the new user object the proper way
+                    get( { _id: user._id }, done );
+
+                  }
 
                 }
               );
@@ -444,7 +451,7 @@ function validateCredentials( name, username, password, done ) {
 /**
  * Signs a user by updating the timestamps.last_sign, timestamps.sign, timestamps.active properties accordingly.
  *
- * @param {object} data
+ * @param {object} data - data
  * @param {signCallback} done - callback
  */
 function sign( data, done ) {
@@ -461,7 +468,7 @@ function sign( data, done ) {
       } else {
 
         // Sign user
-        db[ 'users' ].update(
+        db.users.update(
           criteria,
           {
             $set: {
@@ -499,7 +506,7 @@ function sign( data, done ) {
 /**
  * Updates user's timestamps.active date.
  *
- * @param {object} data
+ * @param {object} data - data
  * @param {activeCallback} done - callback
  */
 function active( data, done ) {
@@ -516,7 +523,7 @@ function active( data, done ) {
       } else {
 
         // Update active date
-        db[ 'users' ].update(
+        db.users.update(
           criteria,
           {
             $currentDate: {

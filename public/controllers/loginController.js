@@ -1,4 +1,4 @@
-(function () {
+( function () {
 
   // Add keyup listener for enter/return inside of the form
   document.querySelector( '#password' ).addEventListener( 'keyup', function ( e ) {
@@ -20,7 +20,7 @@
 
   }, false );
 
-  var validate = function () {
+  function validate() {
 
     var username = document.querySelector( '#username' ).value;
     var password = document.querySelector( '#password' ).value;
@@ -30,9 +30,9 @@
       login( username, password );
     }
 
-  };
+  }
 
-  var login = function ( username, password ) {
+  function login( username, password ) {
 
     var data = {
       username: username,
@@ -69,6 +69,6 @@
     xhr.responseType = 'json';
     xhr.send( JSON.stringify( data ) );
 
-  };
+  }
 
-})();
+} )();

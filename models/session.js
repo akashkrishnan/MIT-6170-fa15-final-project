@@ -9,7 +9,7 @@ var db = mongojs( Config.services.db.mongodb.uri, [ 'sessions' ] );
 
 module.exports = {
 
-  //---------------EXTERNAL---------------//
+  /* ---------------EXTERNAL--------------- */
 
   get: get,
   add: add,
@@ -26,7 +26,7 @@ module.exports = {
 /**
  * Get a Session object.
  *
- * @param {object} data -
+ * @param {object} data - data
  * @param {string} data._id - Session._id
  * @param {getCallback} done - callback
  */
@@ -37,7 +37,7 @@ function get( data, done ) {
       _id: { type: 'string', required: true }
     } );
 
-    db[ 'sessions' ].findOne( criteria, function ( err, session ) {
+    db.sessions.findOne( criteria, function ( err, session ) {
       if ( err ) {
         done( err, null );
       } else if ( session ) {
@@ -76,7 +76,7 @@ function add( data, done ) {
     insertData._id = crypto.randomBytes( 256 / 8 ).toString( 'hex' );
 
     // Insert into database
-    db[ 'sessions' ].insert( insertData, function ( err, session ) {
+    db.sessions.insert( insertData, function ( err, session ) {
       if ( err ) {
         done( err, null );
       } else {
@@ -125,7 +125,7 @@ function remove( data, done ) {
       } else {
 
         // Remove from database
-        db[ 'sessions' ].remove( criteria, true, function ( err ) {
+        db.sessions.remove( criteria, true, function ( err ) {
           if ( err ) {
             done( err, null );
           } else {

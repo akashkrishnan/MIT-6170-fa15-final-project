@@ -22,6 +22,12 @@ module.exports = function ( app ) {
 
 };
 
+/**
+ * Called when the user wants to view the index.
+ *
+ * @param {object} req - req
+ * @param {object} res - res
+ */
 function index( req, res ) {
   if ( req.user ) {
     res.render( 'home', {
@@ -35,6 +41,12 @@ function index( req, res ) {
   }
 }
 
+/**
+ * Called when the user requests the config file.
+ *
+ * @param {object} req - req
+ * @param {object} res - res
+ */
 function config( req, res ) {
 
   // Only send registration config to client
@@ -44,19 +56,32 @@ function config( req, res ) {
 
 }
 
+/**
+ * Called when the user wants to view the registration page.
+ *
+ * @param {object} req - req
+ * @param {object} res - res
+ * @param {function} next - callback
+ */
 function register( req, res, next ) {
 
   // Ensure guest (i.e. no user)
-  if ( !req.user ) {
+  if ( req.user ) {
+    next();
+  } else {
     res.render( 'register', {
       web: Config.web
     } );
-  } else {
-    next();
   }
 
 }
 
+/**
+ * Called when the user wants to logout.
+ *
+ * @param {object} req - req
+ * @param {object} res - res
+ */
 function logout( req, res ) {
 
   // This route is restricted to authenticated users
@@ -69,7 +94,7 @@ function logout( req, res ) {
       } else {
 
         // Remove cookie
-        res.clearCookie( Config.web.cookie.name ).redirect( '/' );
+        res.clearCookie( Config.web.cookie.name, {} ).redirect( '/' );
 
       }
     } ) );
@@ -80,10 +105,18 @@ function logout( req, res ) {
 
 }
 
+/**
+ * Called to authenticate a user.
+ *
+ * @param {object} req - req
+ * @param {object} res - res
+ */
 function apiLogin( req, res ) {
 
   // Ensure guest (i.e. no user)
-  if ( !req.user ) {
+  if ( req.user ) {
+    res.status( 400 ).json( { err: 'Bad Request: User is already logged in.' } );
+  } else {
 
     // Check if user exists with username and password
     User.get( req.body, Utils.safeFn( function ( err, user ) {
@@ -106,16 +139,22 @@ function apiLogin( req, res ) {
       }
     } ) );
 
-  } else {
-    res.status( 400 ).json( { err: 'Bad Request: User is already logged in.' } );
   }
 
 }
 
+/**
+ * Called to register an account.
+ *
+ * @param {object} req - req
+ * @param {object} res - res
+ */
 function apiRegister( req, res ) {
 
   // Ensure guest (i.e. no user)
-  if ( !req.user ) {
+  if ( req.user ) {
+    res.status( 400 ).json( { err: 'Bad Request: User must be anonymous to process request.' } );
+  } else {
 
     // Register user by adding
     User.add( req.body, Utils.safeFn( function ( err ) {
@@ -126,12 +165,16 @@ function apiRegister( req, res ) {
       }
     } ) );
 
-  } else {
-    res.status( 400 ).json( { err: 'Bad Request: User must be anonymous to process request.' } );
   }
 
 }
 
+/**
+ * Called to logout any authenticated user.
+ *
+ * @param {object} req - req
+ * @param {object} res - res
+ */
 function apiLogout( req, res ) {
 
   // Ensure user
@@ -144,7 +187,7 @@ function apiLogout( req, res ) {
       } else {
 
         // Remove cookie
-        res.clearCookie( Config.web.cookie.name ).json( {} );
+        res.clearCookie( Config.web.cookie.name, {} ).json( {} );
 
       }
     } ) );
@@ -155,6 +198,12 @@ function apiLogout( req, res ) {
 
 }
 
+/**
+ * Called when no routes were matched.
+ *
+ * @param {object} req - req
+ * @param {object} res - res
+ */
 function otherwise( req, res ) {
   console.error( 'Received bad request: ' + req.originalUrl );
   res.redirect( '/' );
