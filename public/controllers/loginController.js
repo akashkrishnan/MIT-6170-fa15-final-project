@@ -1,3 +1,9 @@
+/**
+ * AUTHOR: Akash Krishnan <ak@aakay.net>
+ */
+
+'use strict';
+
 ( function () {
 
   // Add keyup listener for enter/return inside of the form
