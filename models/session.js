@@ -1,3 +1,7 @@
+/**
+ * AUTHOR: Akash Krishnan <ak@aakay.net>
+ */
+
 'use strict';
 
 var Config = require( '../config.js' );

@@ -1,3 +1,9 @@
+/**
+ * AUTHOR: Akash Krishnan <ak@aakay.net>
+ */
+
+'use strict';
+
 ( function () {
 
   var config;

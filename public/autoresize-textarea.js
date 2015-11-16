@@ -1,3 +1,7 @@
+/**
+ * AUTHOR: Akash Krishnan <ak@aakay.net>
+ */
+
 'use strict';
 
 var AutoresizeTextarea = function ( textarea ) {

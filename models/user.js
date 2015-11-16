@@ -1,3 +1,7 @@
+/**
+ * AUTHOR: Akash Krishnan <ak@aakay.net>
+ */
+
 'use strict';
 
 var Config = require( '../config.js' );
@@ -162,7 +166,7 @@ function get( data, done ) {
     } );
 
     /**
-     * Called after user is found in database and password has been validated if applicable.
+     * Called after criteria is validated and password has been validated if applicable.
      *
      * @param {object} criteria -
      */
@@ -354,7 +358,6 @@ function add( data, done ) {
                   }
                 },
                 function ( err, user ) {
-
                   if ( err ) {
                     done( err, null );
                   } else {
@@ -363,7 +366,6 @@ function add( data, done ) {
                     get( { _id: user._id }, done );
 
                   }
-
                 }
               );
 

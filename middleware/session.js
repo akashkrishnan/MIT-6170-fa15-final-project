@@ -1,3 +1,7 @@
+/**
+ * AUTHOR: Akash Krishnan <ak@aakay.net>
+ */
+
 'use strict';
 
 var Utils = require( '../models/utils.js' );
