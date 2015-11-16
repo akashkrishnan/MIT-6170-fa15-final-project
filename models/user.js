@@ -187,7 +187,7 @@ function get( data, done ) {
           done( null, user );
 
         } else {
-          done( new Error( 'User not found: ' + JSON.stringify( criteria ) ), null );
+          done( new Error( 'User not found.' ), null );
         }
       } );
 
