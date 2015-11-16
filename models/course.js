@@ -34,7 +34,6 @@ function list( data, done ) {
       }
     } ).projection;
 
-    // Do not leak the salt or password
   
     var sort = Utils.validateObject( data, {
       sort: {
@@ -153,7 +152,7 @@ function getCourseByName ( data, done ) {
 function add( data, done ) {
   try {
     var criteria = Utils.validateObject( data, {
-      name: {
+      courseName: {
         type: 'string',
         filter: function ( name ) {
           if ( name ) {
@@ -168,12 +167,12 @@ function add( data, done ) {
       }
     });
 
-    exists( { name: criteria.name }, function ( err, _exists ) {
+    exists( { name: criteria.courseName }, function ( err, _exists ) {
           if ( err ) {
             done( err, null );
           } else if ( _exists ) {
             done(
-              new Error( 'Class Name already exists: ' + JSON.stringify( { username: criteria.username } ) + '.' ),
+              new Error( 'Course Name already exists: ' + JSON.stringify( { name: criteria.courseName } ) + '.' ),
               null
             );
           } else {
@@ -181,7 +180,7 @@ function add( data, done ) {
               // Insert new user data into database
               db.courses.insert(
                 {
-                  name: criteria.name,
+                  name: criteria.courseName,
                   teachers: [criteria.teacher_id],
                   students: [],
                   minilessons: [],
