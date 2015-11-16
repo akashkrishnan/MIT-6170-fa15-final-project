@@ -8,6 +8,7 @@ var Config = require( '../config.js' );
 var Utils = require( './utils.js' );
 var User = require( './user.js' );
 var Class = require( './class.js' );
+var Minilesson = require( './minilesson.js' );
 var PageObj = require( './pageObject.js' );
 var mongojs = require( 'mongojs' );
 
@@ -249,8 +250,7 @@ function add( data, done ) {
       }
     } );
 
-  } catch
-    ( err ) {
+  } catch ( err ) {
     done( err, null );
   }
 }
