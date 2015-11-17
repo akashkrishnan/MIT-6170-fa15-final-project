@@ -9,7 +9,8 @@ var Utils = require( './utils.js' );
 var User = require( './user.js' );
 var Course = require( './course.js' );
 var Minilesson = require( './minilesson.js' );
-var PageObj = require( './pageObject.js' );
+var Page = require( './page.js' );
+var MCQ = require( './MCQ.js' );
 var mongojs = require( 'mongojs' );
 
 var db = mongojs( Config.services.db.mongodb.uri, [ 'submissions' ] );
@@ -35,22 +36,22 @@ module.exports = {
  * Gets a list of Submission objects.
  *
  * @param {object} data - data
- * @param {string} [data.courseId] - Course._id
- * @param {number} [data.sectionNum] - section number in course
- * @param {string} [data.minilessonId] - Minilesson._id
- * @param {string} [data.pageObjId] - PageObj._id
  * @param {string} [data.studentId] - User._id
+ * @param {string} [data.courseId] - Course._id
+ * @param {string} [data.minilessonId] - Minilesson._id
+ * @param {string} [data.pageId] - Page._id
+ * @param {string} [data.mcqId] - MCQ._id
  * @param {listCallback} done - callback
  */
 function list( data, done ) {
   try {
 
     var criteria = Utils.validateObject( data, {
+      studentId: { type: 'string' },
       courseId: { type: 'string' },
-      sectionNum: { type: 'number' },
       minilessonId: { type: 'string' },
-      pageObjId: { type: 'string' },
-      studentId: { type: 'string' }
+      pageId: { type: 'string' },
+      mcqId: { type: 'string' }
     } );
 
     // Ensure at least one parameter is available
