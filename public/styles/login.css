@@ -6,13 +6,3 @@
   margin: 10px;
   width: 300px;
 }
-
-[login] [button][register] {
-  color: #FFFFFF;
-  background-color: #72C02C;
-}
-
-[login] [button][login] {
-  color: #FFFFFF;
-  background-color: #4285F4;
-}

@@ -16,6 +16,7 @@ module.exports = function ( app ) {
   app.get( '/config.json', config );
   app.get( '/register', register );
   app.get( '/logout', logout );
+  app.get( '/courses/:name/minilessons/:minilessonId?', courseMinilessons );
 
   // API
   app.post( '/api/login', apiLogin );
@@ -34,7 +35,7 @@ module.exports = function ( app ) {
  */
 function index( req, res ) {
   if ( req.user ) {
-    res.render( 'home', {
+    res.render( 'courseList', {
       web: Config.web,
       self: req.user
     } );
@@ -107,6 +108,24 @@ function logout( req, res ) {
     res.redirect( '/' );
   }
 
+}
+
+/**
+ * Called when the user wants to view the list of minilessons or a specific minilesson.
+ *
+ * @param {object} req - req
+ * @param {object} res - res
+ * @param {function} next - callback
+ */
+function courseMinilessons( req, res, next ) {
+  if ( req.user ) {
+    res.render( 'courseList', {
+      web: Config.web,
+      self: req.user
+    } );
+  } else {
+    next();
+  }
 }
 
 /**

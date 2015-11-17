@@ -3,7 +3,7 @@
  */
 
 [form] [header] {
-  line-height: 40px;
+  line-height: 46px;
   padding-left: 16px;
   padding-right: 16px;
   font-size: 18px;
@@ -50,6 +50,10 @@
 
 [form] [buttons] [button] {
   margin: 16px 0 16px 16px;
+}
+
+[form] [buttons] [button][small] {
+  margin: 8px 0 8px 16px;
 }
 
 [form] [buttons] [button]:last-of-type {

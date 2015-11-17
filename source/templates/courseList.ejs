@@ -1,0 +1,262 @@
+<!--
+  AUTHOR: Akash Krishnan <ak@aakay.net>
+-->
+
+<!DOCTYPE html>
+<html lang="en">
+
+  <head>
+    <meta charset="UTF-8">
+    <title><%= web.name %></title>
+    <link rel="stylesheet" type="text/css" href="https://fonts.googleapis.com/css?family=Roboto">
+    <link rel="stylesheet" type="text/css" href="/styles/global.css">
+    <link rel="stylesheet" type="text/css" href="/styles/layout.css">
+    <link rel="stylesheet" type="text/css" href="/styles/shadow.css">
+    <link rel="stylesheet" type="text/css" href="/styles/dropdown.css">
+    <link rel="stylesheet" type="text/css" href="/styles/dialog.css">
+    <link rel="stylesheet" type="text/css" href="/styles/form.css">
+    <link rel="stylesheet" type="text/css" href="/styles/courseList.css">
+  </head>
+
+  <body fullbleed fit>
+
+    <div masthead layout-horizontal layout-center shadow elevation="1">
+
+      <div name layout-horizontal layout-center layout-center-justified><strong><%= web.name %></strong></div>
+
+      <a href="/" tab layout-horizontal layout-center active>
+        <div>Home</div>
+        <div underline></div>
+      </a>
+
+      <div flex></div>
+
+      <div tab no-select dropdown-toggle-trigger="account-dropdown" layout-vertical>
+
+        <div flex layout-horizontal layout-center>
+          <div><%= self.name %></div>
+        </div>
+
+        <div id="account-dropdown" dropdown align-right shadow elevation="2" layout-vertical>
+          <a href="/settings" item hoverable layout-horizontal layout-center>
+            <div text>Settings</div>
+          </a>
+          <a href="/logout" item hoverable layout-horizontal layout-center>
+            <div text>Logout</div>
+          </a>
+        </div>
+
+      </div>
+
+    </div>
+
+    <div content>
+      <div layout-horizontal layout-center-justified>
+        <div layout-vertical>
+
+          <div course-list shadow="1">
+
+            <div header layout-horizontal layout-center>
+              <div title>Courses I'm Teaching</div>
+              <div flex></div>
+              <div toolbar-button hoverable
+                   dialog-open-trigger="course-add-dialog"
+                   layout-horizontal layout-center>
+                Add Course
+              </div>
+            </div>
+
+            <div course-item layout-horizontal layout-center>
+
+              <div layout-vertical>
+                <div name>Architecture</div>
+                <div authors>
+                  <strong>Ted Mosby</strong>
+                </div>
+              </div>
+
+              <div flex></div>
+
+              <div buttons layout-vertical layout-end>
+                <a button blue href="/courses/testCourseId/minilessons">View Course</a>
+              </div>
+
+            </div>
+
+            <div course-item layout-horizontal layout-center>
+
+              <div layout-vertical>
+                <div name>Philosophy</div>
+                <div authors>
+                  <strong>Charles Xavier</strong>,
+                  <strong>Albus Dumbledore</strong>,
+                  <strong>Archimedes Q. Porter</strong>,
+                  <strong>River Song</strong>
+                </div>
+              </div>
+
+              <div flex></div>
+
+              <div buttons layout-vertical layout-end>
+                <a button blue href="/courses/testCourseId/minilessons">View Course</a>
+              </div>
+
+            </div>
+
+            <div course-item layout-horizontal layout-center>
+
+              <div layout-vertical>
+                <div name>Physics</div>
+                <div authors>
+                  <strong>Doctor Who</strong>,
+                  <strong>Martin Stein</strong>,
+                  <strong>Ray Palmer</strong>,
+                  <strong>Sheldon Cooper</strong>
+                </div>
+              </div>
+
+              <div flex></div>
+
+              <div buttons layout-vertical layout-end>
+                <a button blue href="/courses/testCourseId/minilessons">View Course</a>
+              </div>
+
+            </div>
+
+            <div course-item layout-horizontal layout-center>
+
+              <div layout-vertical>
+                <div name>Time, Space, and Reality for Lesser Beings</div>
+                <div authors>
+                  <strong>Q, Q, Q</strong>
+                </div>
+              </div>
+
+              <div flex></div>
+
+              <div buttons layout-vertical layout-end>
+                <a button blue href="/courses/testCourseId/minilessons">View Course</a>
+              </div>
+
+            </div>
+
+          </div>
+
+          <div course-list shadow="1">
+
+            <div header layout-horizontal layout-center>
+              <div title>Courses I'm Taking</div>
+              <div flex></div>
+            </div>
+
+            <div course-item layout-horizontal layout-center>
+
+              <div layout-vertical>
+                <div name>Architecture</div>
+                <div authors>
+                  <strong>Ted Mosby</strong>
+                </div>
+              </div>
+
+              <div flex></div>
+
+              <div buttons layout-vertical layout-end>
+                <a button blue href="/courses/testCourseId/minilessons">View Course</a>
+              </div>
+
+            </div>
+
+            <div course-item layout-horizontal layout-center>
+
+              <div layout-vertical>
+                <div name>Philosophy</div>
+                <div authors>
+                  <strong>Charles Xavier</strong>,
+                  <strong>Albus Dumbledore</strong>,
+                  <strong>Archimedes Q. Porter</strong>,
+                  <strong>River Song</strong>
+                </div>
+              </div>
+
+              <div flex></div>
+
+              <div buttons layout-vertical layout-end>
+                <a button blue href="/courses/testCourseId/minilessons">View Course</a>
+              </div>
+
+            </div>
+
+            <div course-item layout-horizontal layout-center>
+
+              <div layout-vertical>
+                <div name>Physics</div>
+                <div authors>
+                  <strong>Doctor Who</strong>,
+                  <strong>Martin Stein</strong>,
+                  <strong>Ray Palmer</strong>,
+                  <strong>Sheldon Cooper</strong>
+                </div>
+              </div>
+
+              <div flex></div>
+
+              <div buttons layout-vertical layout-end>
+                <a button blue href="/courses/testCourseId/minilessons">View Course</a>
+              </div>
+
+            </div>
+
+            <div course-item layout-horizontal layout-center>
+
+              <div layout-vertical>
+                <div name>Time, Space, and Reality for Lesser Beings</div>
+                <div authors>
+                  <strong>Q, Q, Q</strong>
+                </div>
+              </div>
+
+              <div flex></div>
+
+              <div buttons layout-vertical layout-end>
+                <a button blue href="/courses/testCourseId/minilessons">View Course</a>
+              </div>
+
+            </div>
+
+          </div>
+
+        </div>
+      </div>
+    </div>
+
+    <div id="course-add-dialog" dialog backdrop
+         dialog-close-trigger="course-add-dialog"
+         layout-horizontal layout-center-center>
+      <div form shadow elevation="5" layout-vertical>
+
+        <div header>Add Course</div>
+
+        <div inputs layout-vertical>
+
+          <div input layout-vertical>
+            <label>Course Name</label>
+            <input type="text" name-input/>
+          </div>
+
+        </div>
+
+        <div buttons layout-horizontal layout-end-justified>
+          <a button small dialog-close-trigger="course-add-dialog">Cancel</a>
+          <a button small blue create>Create</a>
+        </div>
+
+      </div>
+    </div>
+
+    <script src="/controllers/dropdownController.js"></script>
+    <script src="/controllers/dialogController.js"></script>
+    <script src="/controllers/courseListController.js"></script>
+
+  </body>
+
+</html>
