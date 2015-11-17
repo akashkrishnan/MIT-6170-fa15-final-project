@@ -5,7 +5,7 @@
 
 'use strict';
 
-(function () {
+( function () {
 
   var i;
   var n;
@@ -66,4 +66,4 @@
     closeTriggers[ i ].addEventListener( 'click', closeTriggerEventHandler( closeTriggers[ i ] ), false );
   }
 
-})();
+} )();

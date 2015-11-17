@@ -122,8 +122,8 @@ div[masthead] {
 
 [button] {
   line-height: 40px;
-  padding-left: 15px;
-  padding-right: 15px;
+  padding-left: 16px;
+  padding-right: 16px;
   white-space: nowrap;
   border-radius: 3px;
   text-align: center;
@@ -139,14 +139,26 @@ div[masthead] {
   user-select: none;
 }
 
-[button][blue] {
+[button][small] {
+  line-height: 32px;
+  padding-left: 16px;
+  padding-right: 16px;
+  font-size: 14px;
+}
+
+[button][red] {
   color: white;
-  background-color: #4285F4;
+  background-color: rgb(211, 72, 54);
 }
 
 [button][green] {
   color: white;
   background-color: rgb(114, 192, 44);
+}
+
+[button][blue] {
+  color: white;
+  background-color: #4285F4;
 }
 
 [hoverable]:hover {

@@ -14,7 +14,7 @@
     <link rel="stylesheet" type="text/css" href="/styles/shadow.css">
     <link rel="stylesheet" type="text/css" href="/styles/dialog.css">
     <link rel="stylesheet" type="text/css" href="/styles/form.css">
-    <link rel="stylesheet" type="text/css" href="/styles/home.css">
+    <link rel="stylesheet" type="text/css" href="/styles/courseList.css">
   </head>
 
   <body fullbleed fit>
@@ -46,7 +46,11 @@
             <div header layout-horizontal layout-center>
               <div title>Courses I'm Teaching</div>
               <div flex></div>
-              <div toolbar-button hoverable layout-horizontal layout-center>Add Course</div>
+              <div toolbar-button hoverable
+                   dialog-open-trigger="course-add-dialog"
+                   layout-horizontal layout-center>
+                Add Course
+              </div>
             </div>
 
             <div course-item layout-horizontal layout-center>
@@ -61,7 +65,7 @@
               <div flex></div>
 
               <div buttons layout-vertical layout-end>
-                <div button blue>View Course</div>
+                <a button blue href="/courses/testCourseId/minilessons">View Course</a>
               </div>
 
             </div>
@@ -81,7 +85,7 @@
               <div flex></div>
 
               <div buttons layout-vertical layout-end>
-                <div button blue>View Course</div>
+                <a button blue href="/courses/testCourseId/minilessons">View Course</a>
               </div>
 
             </div>
@@ -101,7 +105,7 @@
               <div flex></div>
 
               <div buttons layout-vertical layout-end>
-                <div button blue>View Course</div>
+                <a button blue href="/courses/testCourseId/minilessons">View Course</a>
               </div>
 
             </div>
@@ -118,7 +122,7 @@
               <div flex></div>
 
               <div buttons layout-vertical layout-end>
-                <div button blue>View Course</div>
+                <a button blue href="/courses/testCourseId/minilessons">View Course</a>
               </div>
 
             </div>
@@ -144,7 +148,7 @@
               <div flex></div>
 
               <div buttons layout-vertical layout-end>
-                <div button blue>View Course</div>
+                <a button blue href="/courses/testCourseId/minilessons">View Course</a>
               </div>
 
             </div>
@@ -164,7 +168,7 @@
               <div flex></div>
 
               <div buttons layout-vertical layout-end>
-                <div button blue>View Course</div>
+                <a button blue href="/courses/testCourseId/minilessons">View Course</a>
               </div>
 
             </div>
@@ -184,7 +188,7 @@
               <div flex></div>
 
               <div buttons layout-vertical layout-end>
-                <div button blue>View Course</div>
+                <a button blue href="/courses/testCourseId/minilessons">View Course</a>
               </div>
 
             </div>
@@ -201,7 +205,7 @@
               <div flex></div>
 
               <div buttons layout-vertical layout-end>
-                <div button blue>View Course</div>
+                <a button blue href="/courses/testCourseId/minilessons">View Course</a>
               </div>
 
             </div>
@@ -212,35 +216,32 @@
       </div>
     </div>
 
-    <div id="course-add-dialog" dialog backdrop>
-      <div layout-horizontal layout-center layout-center-justified style="height: 100%;">
-        <div form shadow elevation="1" layout-vertical>
+    <div id="course-add-dialog" dialog backdrop
+         dialog-close-trigger="course-add-dialog"
+         layout-horizontal layout-center-center>
+      <div form shadow elevation="5" layout-vertical>
 
-          <div header>Add Course</div>
+        <div header>Add Course</div>
 
-          <div text>Please fill out the following form to create a new course.</div>
+        <div inputs layout-vertical>
 
-          <div inputs layout-vertical>
-
-            <div input layout-vertical>
-              <label>Course Name</label>
-              <input type="text" id="name"/>
-            </div>
-
-          </div>
-
-          <div buttons layout-horizontal>
-            <a button register flex href="/register">Cancel</a>
-            <a button login flex>Create</a>
+          <div input layout-vertical>
+            <label>Course Name</label>
+            <input type="text" name-input/>
           </div>
 
         </div>
+
+        <div buttons layout-horizontal layout-end-justified>
+          <a button small dialog-close-trigger="course-add-dialog">Cancel</a>
+          <a button small blue create>Create</a>
+        </div>
+
       </div>
     </div>
 
-    <script src="/moment/min/moment.min.js"></script>
-    <script src="/autoresize-textarea.js"></script>
-    <script src="/controllers/timeFormatController.js"></script>
+    <script src="/controllers/dialogController.js"></script>
+    <script src="/controllers/courseListController.js"></script>
 
   </body>
 
