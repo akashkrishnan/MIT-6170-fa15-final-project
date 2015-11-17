@@ -13,7 +13,8 @@ module.exports = {
     remove: remove,
 
 };
-
+var videoTypeString = "video";
+var mcqTypeString = "mcq";
 
 /**
  * @callback getCallback
@@ -88,54 +89,124 @@ function add( data, done ) {
         var criteria = Utils.validateObject( data, {
             type: {
                 type: 'string',
+                filter: function ( type ) {
+                    if ( type ) {
+                        return type.trim();
+                    }
+                },
                 required: true
             },
             link: {
                 type: 'string',
+                filter: function ( name ) {
+                    if ( name ) {
+                        return name.trim();
+                    }
+                },
             },
             question: {
                 type: 'string',
+                filter: function ( name ) {
+                    if ( name ) {
+                        return name.trim();
+                    }
+                },
             },
             answerChoicesList: {
                 type: 'array',
             },
             correctChoiceIndex: {
                 type: 'number',
+                filter: function ( name ) {
+                    if ( name ) {
+                        return name.trim();
+                    }
+                },
             }
         } );
 
-        if(criteria.link) {
-
-            //PageObject is video, so no questions/answers
+        if( criteria.type == videoTypeString ) {
+            //PageObject type is video, so no questions/answers
             delete criteria.question;
             delete criteria.answerChoicesList;
             delete criteria.correctChoiceIndex;
 
-        }
+            if( !criteria.link ) {
+                done(new Error('Type is video but no Video Link'));
+            } else if ( criteria.link ){
+                db.pageObjects.insert(
+                    {
+                        type: criteria.name,
+                        link: criteria.state
+                    },
+                    function ( err, pageObject ) {
 
-        db.minilessons.insert(
-            {
-                type: criteria.name,
-                link: criteria.state,
-                question: criteria.pagesList,
-                answerChoicesList: criteria.answerChoicesList,
-                correctChoiceIndex: criteria.correctChoiceIndex
-            },
-            function ( err, minilesson ) {
+                        if ( err ) {
+                            done( err, null );
+                        } else {
+                            // Get the new user object the proper way
+                            get( { _id: pageObject._id }, done );
 
-                if ( err ) {
-                    done( err, null );
-                } else {
-                    // Get the new user object the proper way
-                    get( { _id: minilesson._id }, done );
+                        }
 
-                }
-
+                    }
+                );
             }
-        );
+        } else if ( criteria.type == mcqTypeString ) {
+            //PageObject type is video so no link
+            delete criteria.link;
+
+            validateMCQ(criteria.question, criteria.answerChoicesList, criteria.correctChoiceIndex, function( err ) {
+                if ( err ) {
+                    done( err, null);
+                } else {
+                    db.pageObjects.insert(
+                        {
+                            type: criteria.name,
+                            question: criteria.pagesList,
+                            answerChoicesList: criteria.answerChoicesList,
+                            correctChoiceIndex: criteria.correctChoiceIndex
+                        },
+                        function (err, pageObject) {
+
+                            if (err) {
+                                done(err, null);
+                            } else {
+                                // Get the new user object the proper way
+                                get({_id: pageObject._id}, done);
+
+                            }
+
+                        }
+                    );
+                }
+            });
+        } else {
+            done(new Error('Not a valid type'))
+        }
 
     } catch ( err ) {
         done( err, null );
+    }
+}
+//Make sure MCQ are semi-well defined.
+function validateMCQ(question, answerChoicesList, correctChoiceIndex, done){
+    try {
+        if (!question) {
+            done(new Error('Missing Question'));
+        } else if (!answerChoicesList) {
+            done(new Error('Missing answer choices list.'));
+        } else if (answerChoicesList.length == 0) {
+            done(new Error('Answer choices list is empty.'));
+        } else if (!correctChoiceIndex) {
+            done(new Error('Missing correct choice index'));
+        } else if (!(0 <= correctChoiceIndex || correctChoiceIndex < answerChoicesList.length)) {
+            done(new Error('Correct choice index out of range'));
+        } else {
+            done(null);
+        }
+    } catch(err) {
+        done(err);
     }
 }
 
@@ -159,7 +230,7 @@ function remove( data, done ) {
             _id: { type: 'string', required: true }
         } );
 
-        // Ensure valid minilesson
+        // Ensure valid pageObject
         get( criteria, function ( err, pageObject ) {
             if ( err ) {
                 done( err, null );
