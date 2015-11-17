@@ -1,0 +1,40 @@
+/**
+ * Created by akashkrishnan on 17-Nov-15.
+ * Last modified by akashkrishnan on 17-Nov-15 16:27.
+ */
+
+[dropdown] {
+  position: absolute;
+  border-top: 1px solid white;
+  z-index: 2;
+}
+
+[dropdown][align-left] {
+  left: 0;
+}
+
+[dropdown][align-right] {
+  right: 0;
+}
+
+[dropdown] [item] {
+  height: 40px;
+  border-bottom: 1px solid rgba(0, 0, 0, 0.065);
+  font-size: 14px;
+  text-decoration: none !important;
+  color: black;
+}
+
+[dropdown] [item]:last-of-type {
+  border-bottom: none;
+}
+
+[dropdown] [item] [text] {
+  padding-left: 16px;
+  padding-right: 16px;
+}
+
+[dropdown] [item][hoverable]:hover {
+  color: white;
+  background-color: rgb(114, 192, 44);
+}
