@@ -1,0 +1,17 @@
+/**
+ * Created by akashkrishnan on 17-Nov-15.
+ * Last modified by akashkrishnan on 17-Nov-15 09:31.
+ */
+
+[dialog] {
+  /*display: none;*/
+  position: absolute;
+  top: 0;
+  right: 0;
+  bottom: 0;
+  left: 0;
+}
+
+[dialog][backdrop] {
+  background-color: rgba(0, 0, 0, 0.6);
+}

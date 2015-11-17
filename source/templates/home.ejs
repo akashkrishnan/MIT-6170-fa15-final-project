@@ -12,6 +12,8 @@
     <link rel="stylesheet" type="text/css" href="/styles/global.css">
     <link rel="stylesheet" type="text/css" href="/styles/layout.css">
     <link rel="stylesheet" type="text/css" href="/styles/shadow.css">
+    <link rel="stylesheet" type="text/css" href="/styles/dialog.css">
+    <link rel="stylesheet" type="text/css" href="/styles/form.css">
     <link rel="stylesheet" type="text/css" href="/styles/home.css">
   </head>
 
@@ -204,6 +206,32 @@
 
             </div>
 
+          </div>
+
+        </div>
+      </div>
+    </div>
+
+    <div id="course-add-dialog" dialog backdrop>
+      <div layout-horizontal layout-center layout-center-justified style="height: 100%;">
+        <div form shadow elevation="1" layout-vertical>
+
+          <div header>Add Course</div>
+
+          <div text>Please fill out the following form to create a new course.</div>
+
+          <div inputs layout-vertical>
+
+            <div input layout-vertical>
+              <label>Course Name</label>
+              <input type="text" id="name"/>
+            </div>
+
+          </div>
+
+          <div buttons layout-horizontal>
+            <a button register flex href="/register">Cancel</a>
+            <a button login flex>Create</a>
           </div>
 
         </div>
