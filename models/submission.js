@@ -7,7 +7,7 @@
 var Config = require( '../config.js' );
 var Utils = require( './utils.js' );
 var User = require( './user.js' );
-var Class = require( './class.js' );
+var Course = require( './course.js' );
 var Minilesson = require( './minilesson.js' );
 var PageObj = require( './pageObject.js' );
 var mongojs = require( 'mongojs' );
@@ -35,8 +35,8 @@ module.exports = {
  * Gets a list of Submission objects.
  *
  * @param {object} data - data
- * @param {string} [data.classId] - Class._id
- * @param {number} [data.sectionNum] - section number in class
+ * @param {string} [data.courseId] - Course._id
+ * @param {number} [data.sectionNum] - section number in course
  * @param {string} [data.minilessonId] - Minilesson._id
  * @param {string} [data.pageObjId] - PageObj._id
  * @param {string} [data.studentId] - User._id
@@ -46,7 +46,7 @@ function list( data, done ) {
   try {
 
     var criteria = Utils.validateObject( data, {
-      classId: { type: 'string' },
+      courseId: { type: 'string' },
       sectionNum: { type: 'number' },
       minilessonId: { type: 'string' },
       pageObjId: { type: 'string' },
@@ -54,7 +54,7 @@ function list( data, done ) {
     } );
 
     // Ensure at least one parameter is available
-    if ( 'classId' in criteria ||
+    if ( 'courseId' in criteria ||
          'sectionNum' in criteria ||
          'minilessonId' in criteria ||
          'pageObjId' in criteria ||
@@ -89,8 +89,8 @@ function list( data, done ) {
  *
  * @param {object} data - data
  * @param {*} [data._id] - Submission._id
- * @param {string} [data.classId] - Class._id
- * @param {number} [data.sectionNum] - section number in class
+ * @param {string} [data.courseId] - Course._id
+ * @param {number} [data.sectionNum] - section number in course
  * @param {string} [data.minilessonId] - Minilesson._id
  * @param {string} [data.pageObjId] - PageObj._id
  * @param {string} [data.studentId] - User._id
@@ -101,7 +101,7 @@ function get( data, done ) {
 
     var criteria = Utils.validateObject( data, {
       _id: { filter: 'MongoId' },
-      classId: { type: 'string' },
+      courseId: { type: 'string' },
       sectionNum: { type: 'number' },
       minilessonId: { type: 'string' },
       pageObjId: { type: 'string' },
@@ -110,7 +110,7 @@ function get( data, done ) {
 
     // Ensure at least one parameter is available
     if ( criteria._id ||
-         'classId' in criteria ||
+         'courseId' in criteria ||
          'sectionNum' in criteria ||
          'minilessonId' in criteria ||
          'pageObjId' in criteria ||
@@ -146,8 +146,8 @@ function get( data, done ) {
  * Adds a Submission.
  *
  * @param {object} data - data
- * @param {string} data.classId - Class._id
- * @param {number} data.sectionNum - section number in class
+ * @param {string} data.courseId - Course._id
+ * @param {number} data.sectionNum - section number in course
  * @param {string} data.minilessonId - Minilesson._id
  * @param {string} data.pageObjId - PageObj._id
  * @param {string} data.studentId - User._id
@@ -158,7 +158,7 @@ function add( data, done ) {
   try {
 
     var criteria = Utils.validateObject( data, {
-      classId: { type: 'string', required: true },
+      courseId: { type: 'string', required: true },
       sectionNum: { type: 'number', required: true },
       minilessonId: { type: 'string', required: true },
       pageObjId: { type: 'string', required: true },
@@ -188,10 +188,10 @@ function add( data, done ) {
                     done( err, null );
                   } else {
 
-                    // Ensure user is a student in the class section
-                    Class.get(
+                    // Ensure user is a student in the course section
+                    Course.get(
                       {
-                        _id: criteria.classId,
+                        _id: criteria.courseId,
                         student: {
                           userId: criteria.studentId,
                           sectionNum: criteria.sectionNum
@@ -202,8 +202,8 @@ function add( data, done ) {
                           done( err, null );
                         } else {
 
-                          // NOTE: WE DO NOT CHECK IF THE MINILESSON IS ASSOCIATED WITH THE CLASS
-                          // NOTE: WE DO NOT CHECK IF THE PAGEOBJ IS ASSOCIATED WITH THE CLASS
+                          // NOTE: WE DO NOT CHECK IF THE MINILESSON IS ASSOCIATED WITH THE COURSE
+                          // NOTE: WE DO NOT CHECK IF THE PAGEOBJ IS ASSOCIATED WITH THE COURSE
 
                           // Compute score based on correctness (and possibly weight in the future)
                           var score = criteria.answerIdx === pageObj.answerIdx;
@@ -211,7 +211,7 @@ function add( data, done ) {
                           // Insert submission into database
                           db.submissions.insert(
                             {
-                              'classId': criteria.classId,
+                              'courseId': criteria.courseId,
                               'sectionNum': criteria.sectionNum,
                               'minilessonId': criteria.minilessonId,
                               'pageObjId': criteria.pageObjId,
