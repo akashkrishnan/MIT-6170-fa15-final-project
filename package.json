@@ -21,9 +21,10 @@
     "mongo": "localhost"
   },
   "scripts": {
-    "lint": "eslint . || exit 0",
     "install": "bower update --save --allow-root && bower install --save --allow-root",
     "init": "node init.js",
+    "lint": "eslint . || exit 0",
+    "test": "mocha || exit 0",
     "start": "node server.js",
     "start-supervisor": "supervisor -e js,json -i public,source -q server.js",
     "start-background": "(npm start 1> out.log 2> err.log &)"
@@ -39,6 +40,7 @@
     "eslint": "^1.9.0",
     "eslint-config-google": "^0.3.0",
     "express": "^4.13.3",
+    "mocha": "^2.3.4",
     "mongojs": "^1.4.1"
   }
 }

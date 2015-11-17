@@ -11,7 +11,7 @@ Flipper
 1. `npm run lint`
 
 
-### Testing (currently not available)
+### Testing (Mocha)
 1. `npm test`
 
 ### Running
