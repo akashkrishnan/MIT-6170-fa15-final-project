@@ -5,56 +5,65 @@
 
 'use strict';
 
-( function () {
+(function () {
 
   var i;
   var n;
 
-  // Register all dialogs and make sure they're hidden when they're supposed to be hidden
-
+  // Register all dialogs and make sure they're hidden
   var dialogs = document.querySelectorAll( '[dialog]' );
-
-  var dialogClickHandler = function ( dialog ) {
-    return function ( e ) {
-      if ( e.target === dialog ) {
-        dialog.style.display = 'none';
-      }
-    };
-  };
-
   for ( i = 0, n = dialogs.length; i < n; i++ ) {
-
-    // Make sure dialogs are hidden by default
     dialogs[ i ].style.display = 'none';
-
-    // Make sure dialogs are hidden when focus is lost
-    dialogs[ i ].addEventListener( 'click', dialogClickHandler( dialogs[ i ] ), false );
-
   }
 
-  // Register all triggers that show the specified dialog with the specified event occurs on the trigger element
+  // Register all triggers that show the specified dialog when clicked
 
-  var triggers = document.querySelectorAll( '[dialog-trigger]' );
+  var openTriggers = document.querySelectorAll( '[dialog-open-trigger]' );
 
-  var triggerEventHandler = function ( trigger ) {
+  var openTriggerEventHandler = function ( trigger ) {
     return function () {
-      var id = trigger.getAttribute( 'ref' );
+      var id = trigger.getAttribute( 'dialog-open-trigger' );
       var dialog = document.querySelector( '#' + id );
       if ( dialog ) {
         if ( dialog.hasAttribute( 'dialog' ) ) {
           dialog.style.display = null;
         } else {
-          console.error( 'Dialog referenced by dialog-trigger is missing the dialog attribute.' );
+          console.error( 'Dialog referenced by dialog-open-trigger is missing the dialog attribute.' );
         }
       } else {
-        console.error( 'Dialog referenced by dialog-trigger not found.' );
+        console.error( 'Dialog referenced by dialog-open-trigger not found.' );
       }
     };
   };
 
-  for ( i = 0, n = triggers.length; i < n; i++ ) {
-    var eventName = triggers[ i ].getAttribute( 'dialog-trigger' ) || 'click';
-    triggers[ i ].addEventListener( eventName, triggerEventHandler( triggers[ i ] ), false );
+  for ( i = 0, n = openTriggers.length; i < n; i++ ) {
+    openTriggers[ i ].addEventListener( 'click', openTriggerEventHandler( openTriggers[ i ] ), false );
   }
 
-} )();
+  // Register all triggers that hide the specified dialog when clicked
+
+  var closeTriggers = document.querySelectorAll( '[dialog-close-trigger]' );
+
+  var closeTriggerEventHandler = function ( trigger ) {
+    return function ( e ) {
+      if ( e.target === trigger ) {
+        var id = trigger.getAttribute( 'dialog-close-trigger' );
+        var dialog = document.querySelector( '#' + id );
+        if ( dialog ) {
+          if ( dialog.hasAttribute( 'dialog' ) ) {
+            dialog.style.display = 'none';
+          } else {
+            console.error( 'Dialog referenced by dialog-close-trigger is missing the dialog attribute.' );
+          }
+        } else {
+          console.error( 'Dialog referenced by dialog-close-trigger not found.' );
+        }
+      }
+    };
+  };
+
+  for ( i = 0, n = closeTriggers.length; i < n; i++ ) {
+    closeTriggers[ i ].addEventListener( 'click', closeTriggerEventHandler( closeTriggers[ i ] ), false );
+  }
+
+})();
