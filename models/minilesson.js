@@ -8,9 +8,9 @@ var db = mongojs( Config.services.db.mongodb.uri, [ 'minilessons' ] );
 
 module.exports = {
 
-    get: get,
-    add: add,
-    remove: remove,
+  get: get,
+  add: add,
+  remove: remove,
 
 };
 
@@ -29,40 +29,40 @@ module.exports = {
  * @param {getCallback} done - callback
  */
 function get( data, done ) {
-    try {
+  try {
 
-        var criteria = Utils.validateObject( data, {
-            _id: { filter: 'MongoId' },
-        } );
+    var criteria = Utils.validateObject( data, {
+      _id: { filter: 'MongoId' },
+    } );
 
-        /**
-         * Called after minilesson is found in database.
-         *
-         * @param {object} criteria -
-         */
-        var next = function ( criteria ) {
+    /**
+     * Called after minilesson is found in database.
+     *
+     * @param {object} criteria -
+     */
+    var next = function ( criteria ) {
 
-            db.minilessons.findOne( criteria, function ( err, minilesson ) {
-                if ( err ) {
-                    done( err, null );
-                } else if ( minilesson ) {
+      db.minilessons.findOne( criteria, function ( err, minilesson ) {
+        if ( err ) {
+          done( err, null );
+        } else if ( minilesson ) {
 
-                    // Stringify the MongoId
-                    minilesson._id = minilesson._id.toString();
+          // Stringify the MongoId
+          minilesson._id = minilesson._id.toString();
 
-                    done( null, minilesson );
+          done( null, minilesson );
 
-                } else {
-                    done( new Error( 'Minilesson not found: ' + JSON.stringify( criteria ) ), null );
-                }
-            } );
+        } else {
+          done( new Error( 'Minilesson not found: ' + JSON.stringify( criteria ) ), null );
+        }
+      } );
 
-        };
-        next(criteria);
+    };
+    next( criteria );
 
-    } catch ( err ) {
-        done( err, null );
-    }
+  } catch ( err ) {
+    done( err, null );
+  }
 }
 
 /**
@@ -81,58 +81,58 @@ function get( data, done ) {
  * @param {addCallback} done - callback
  */
 function add( data, done ) {
-    try {
+  try {
 
-        var criteria = Utils.validateObject( data, {
-            name: {
-                type: 'string',
-                filter: function ( name ) {
-                    if ( name ) {
-                        return name.trim();
-                    }
-                },
-                required: true
-            },
-            state: {
-                type: 'string',
-                filter: function ( state ) {
-                    if ( state ) {
-                        return state.trim();
-                    }
-                },
-                required: true
-            },
-            pagesList: {
-                type: 'array',
-                required: true
-            }
-        } );
+    var criteria = Utils.validateObject( data, {
+      name: {
+        type: 'string',
+        filter: function ( name ) {
+          if ( name ) {
+            return name.trim();
+          }
+        },
+        required: true
+      },
+      state: {
+        type: 'string',
+        filter: function ( state ) {
+          if ( state ) {
+            return state.trim();
+          }
+        },
+        required: true
+      },
+      pagesList: {
+        type: 'array',
+        required: true
+      }
+    } );
 
-        db.minilessons.insert(
-            {
-                name: criteria.name,
-                state: criteria.state,
-                pagesList: criteria.pagesList,
-                timestamps: {
-                    created: new Date(),
-                }
-            },
-            function ( err, minilesson ) {
+    db.minilessons.insert(
+      {
+        name: criteria.name,
+        state: criteria.state,
+        pagesList: criteria.pagesList,
+        timestamps: {
+          created: new Date(),
+        }
+      },
+      function ( err, minilesson ) {
 
-                if ( err ) {
-                    done( err, null );
-                } else {
-                    // Get the new user object the proper way
-                    get( { _id: minilesson._id }, done );
+        if ( err ) {
+          done( err, null );
+        } else {
+          // Get the new user object the proper way
+          get( { _id: minilesson._id }, done );
 
-                }
+        }
 
-            }
-        );
+      }
+    );
 
-    } catch ( err ) {
-        done( err, null );
-    }
+  } catch ( err ) {
+    done( err, null );
+  }
 }
 
 /**
@@ -149,31 +149,31 @@ function add( data, done ) {
  * @param {removeCallback} done - callback
  */
 function remove( data, done ) {
-    try {
+  try {
 
-        var criteria = Utils.validateObject( data, {
-            _id: { type: 'string', required: true }
-        } );
+    var criteria = Utils.validateObject( data, {
+      _id: { type: 'string', required: true }
+    } );
 
-        // Ensure valid minilesson
-        get( criteria, function ( err, minilesson ) {
-            if ( err ) {
-                done( err, null );
-            } else {
-
-                // Remove from database
-                db.minilessons.remove( criteria, true, function ( err ) {
-                    if ( err ) {
-                        done( err, null );
-                    } else {
-                        done( null, minilesson );
-                    }
-                } );
-
-            }
-        } );
-
-    } catch ( err ) {
+    // Ensure valid minilesson
+    get( criteria, function ( err, minilesson ) {
+      if ( err ) {
         done( err, null );
-    }
+      } else {
+
+        // Remove from database
+        db.minilessons.remove( criteria, true, function ( err ) {
+          if ( err ) {
+            done( err, null );
+          } else {
+            done( null, minilesson );
+          }
+        } );
+
+      }
+    } );
+
+  } catch ( err ) {
+    done( err, null );
+  }
 }

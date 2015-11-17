@@ -35,7 +35,7 @@ function list( data, done ) {
       }
     } ).projection;
 
-  
+
     var sort = Utils.validateObject( data, {
       sort: {
         type: {},
@@ -101,35 +101,35 @@ function courseNameExists( data, done ) {
   }
 }
 
-function getCoursesForStudent ( data, done ) {  
+function getCoursesForStudent( data, done ) {
   try {
-    db.courses.find({'students.student_id' : { $eq: data['user_id']}}, function( err, courses ) {
+    db.courses.find( { 'students.student_id': { $eq: data[ 'user_id' ] } }, function ( err, courses ) {
       if ( err ) {
         done( err, null );
       } else {
-        done ( null, courses );
+        done( null, courses );
       }
-    });
-  } catch (err) {
-    done (err, false);
+    } );
+  } catch ( err ) {
+    done( err, false );
   }
 }
 
-function getCoursesForTeacher ( data, done ) {
+function getCoursesForTeacher( data, done ) {
   try {
-    db.courses.find({'teachers' : { $eq: data['user_id']}}, function( err, courses ) {
+    db.courses.find( { 'teachers': { $eq: data[ 'user_id' ] } }, function ( err, courses ) {
       if ( err ) {
         done( err, null );
       } else {
-        done ( null, courses );
+        done( null, courses );
       }
-    });
-  } catch (err) {
-    done ( err, false );
+    } );
+  } catch ( err ) {
+    done( err, false );
   }
 }
 
-function getCourseByName ( data, done ) {
+function getCourseByName( data, done ) {
   try {
 
     var criteria = Utils.validateObject( data, {
@@ -162,53 +162,53 @@ function add( data, done ) {
         },
         required: true
       },
-      teacher_id {
+      teacher_id: {
         type: 'string',
         required: true
       }
-    });
+    } );
 
     courseNameExists( { courseName: criteria.courseName }, function ( err, _exists, course_id ) {
-          if ( err ) {
-            done( err, null );
-          } else if ( _exists ) {
-            done(
-              new Error( 'Course Name already exists: ' + JSON.stringify( { name: criteria.courseName } ) + '.' ),
-              null
-            );
-          } else {
-            try {
-              ///////////////////////////////
-              db.courses.insert(
-                {
-                  name: criteria.courseName,
-                  teachers: [criteria.teacher_id],
-                  students: [],
-                  minilessons: [],
-                  timestamps: {
-                    created: new Date(),
-                  },
-                  states: {
-                    active: true,
-                  }
-                },
-                function ( err, course ) {
+      if ( err ) {
+        done( err, null );
+      } else if ( _exists ) {
+        done(
+          new Error( 'Course Name already exists: ' + JSON.stringify( { name: criteria.courseName } ) + '.' ),
+          null
+        );
+      } else {
+        try {
+          ///////////////////////////////
+          db.courses.insert(
+            {
+              name: criteria.courseName,
+              teachers: [ criteria.teacher_id ],
+              students: [],
+              minilessons: [],
+              timestamps: {
+                created: new Date(),
+              },
+              states: {
+                active: true,
+              }
+            },
+            function ( err, course ) {
 
-                  if ( err ) {
-                    done( err, null );
-                  } else {
-                    // Get the new user object the proper way
-                    get( { _id: course._id }, done );
-                  }
-                }
-              );
-            } catch ( err ) {
-              done( new Error( 'Unable to add class. Please try again.' ), null );
+              if ( err ) {
+                done( err, null );
+              } else {
+                // Get the new user object the proper way
+                get( { _id: course._id }, done );
+              }
             }
+          );
+        } catch ( err ) {
+          done( new Error( 'Unable to add class. Please try again.' ), null );
+        }
 
-            /////////////////////////////////////
-          }
-        } );
+        /////////////////////////////////////
+      }
+    } );
 
   } catch ( err ) {
     done( err, null );
@@ -216,8 +216,7 @@ function add( data, done ) {
 }
 
 
-
-function addStudentToCourse ( data, done ) {
+function addStudentToCourse( data, done ) {
   try {
     var criteria = Utils.validateObject( data, {
       courseName: {
@@ -230,31 +229,32 @@ function addStudentToCourse ( data, done ) {
         required: true
       },
       student: {}
-    });
+    } );
 
     courseNameExists( { courseName: criteria.courseName }, function ( err, _exists, course_id ) {
-          if ( err ) {
-            done( err, null );
-          } else if ( _exists ) {
-            try {
-              // Insert new student into class
-              db.courses.update({ '_id' : course_id }, { $push : { 'students' : criteria.student } }, function ( err, result) {
-                if ( err ) {
-                  done ( err, null );
-                } else {
-                  get( { _id: course._id }, done );
-                }
-              });
-            } catch ( err ) {
-              done( new Error( 'Unable to add user to course. Please try again.' ), null );
-            }
-          } else {
-            done(
-              new Error( 'Course does not exist: ' + JSON.stringify( { name: criteria.courseName } ) + '.' ),
-              null
-            );
-          } 
-        } );
+      if ( err ) {
+        done( err, null );
+      } else if ( _exists ) {
+        try {
+          // Insert new student into class
+          db.courses.update( { '_id': course_id }, { $push: { 'students': criteria.student } },
+            function ( err, result ) {
+              if ( err ) {
+                done( err, null );
+              } else {
+                get( { _id: course._id }, done );
+              }
+            } );
+        } catch ( err ) {
+          done( new Error( 'Unable to add user to course. Please try again.' ), null );
+        }
+      } else {
+        done(
+          new Error( 'Course does not exist: ' + JSON.stringify( { name: criteria.courseName } ) + '.' ),
+          null
+        );
+      }
+    } );
   } catch ( err ) {
     done( err, null );
   }

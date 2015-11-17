@@ -2,6 +2,24 @@
  * AUTHOR: Akash Krishnan <ak@aakay.net>
  */
 
+/* ---------- CUSTOM SCROLLBARS ---------- */
+
+::-webkit-scrollbar {
+  width: 8px;
+  background-color: rgba(0, 0, 0, 0);
+  border-left: 1px solid rgba(0, 0, 0, 0.065);
+}
+
+::-webkit-scrollbar-thumb:vertical {
+  background: rgba(0, 0, 0, 0.5);
+}
+
+::-webkit-scrollbar-thumb:vertical:active {
+  background: rgb(79, 125, 201);
+}
+
+/* ---------------- OTHER ---------------- */
+
 body {
   color: rgba(0, 0, 0, 0.870588);
   background-color: #F2F2F2;
@@ -61,47 +79,30 @@ div[masthead] {
   background-color: rgb(114, 192, 44);
 }
 
-[masthead] #search {
-  height: 30px;
-  width: 250px;
-  padding-left: 16px;
-  padding-right: 16px;
-  border-radius: 3px;
-  margin-left: 8px;
-  margin-right: 8px;
-  border: none;
-  outline: none;
-  z-index: 10;
-  color: white;
-  background-color: rgba(255, 255, 255, 0.14902);
-}
-
-[masthead] #search::-webkit-input-placeholder {
-  color: white;
-}
-
-[masthead] #search:-moz-placeholder {
-  color: white;
-}
-
-[masthead] #search::-moz-placeholder {
-  color: white;
-}
-
-[masthead] #search:-ms-input-placeholder {
-  color: white;
+[no-select] {
+  -webkit-touch-callout: none;
+  -webkit-user-select: none;
+  -khtml-user-select: none;
+  -moz-user-select: none;
+  -ms-user-select: none;
+  user-select: none;
 }
 
 [content] {
   position: absolute;
-  top: 56px;
+  top: 46px;
   left: 0;
   bottom: 0;
   right: 0;
+  padding: 10px;
+  overflow-y: auto;
 }
 
 [button] {
   line-height: 40px;
+  padding-left: 16px;
+  padding-right: 16px;
+  white-space: nowrap;
   border-radius: 3px;
   text-align: center;
   vertical-align: middle;
@@ -114,4 +115,30 @@ div[masthead] {
   -moz-user-select: none;
   -ms-user-select: none;
   user-select: none;
+}
+
+[button][small] {
+  line-height: 32px;
+  padding-left: 16px;
+  padding-right: 16px;
+  font-size: 14px;
+}
+
+[button][red] {
+  color: white;
+  background-color: rgb(211, 72, 54);
+}
+
+[button][green] {
+  color: white;
+  background-color: rgb(114, 192, 44);
+}
+
+[button][blue] {
+  color: white;
+  background-color: #4285F4;
+}
+
+[hoverable]:hover {
+  background-color: rgb(211, 72, 54);
 }

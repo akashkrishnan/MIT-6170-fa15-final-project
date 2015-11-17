@@ -1,0 +1,64 @@
+/**
+ * AUTHOR: Akash Krishnan <ak@aakay.net>
+ */
+
+[course-list] {
+  margin: 10px;
+  width: 600px;
+}
+
+[course-list] [header] {
+  height: 46px;
+  color: white;
+  background-color: #4285F4;
+}
+
+[course-list] [header] [title] {
+  padding-left: 16px;
+  padding-right: 16px;
+  font-size: 18px;
+  text-transform: uppercase;
+}
+
+[course-list] [header] [toolbar-button] {
+  height: 100%;
+  padding-left: 16px;
+  padding-right: 16px;
+  font-size: 14px;
+  text-transform: uppercase;
+  text-decoration: none !important;
+  cursor: pointer;
+  -webkit-touch-callout: none;
+  -webkit-user-select: none;
+  -khtml-user-select: none;
+  -moz-user-select: none;
+  -ms-user-select: none;
+  user-select: none;
+}
+
+[course-list] [course-item] {
+  padding: 16px;
+  border-bottom: 1px solid rgba(0, 0, 0, 0.1);
+}
+
+[course-list] [course-item]:last-of-type {
+  border-bottom: none;
+}
+
+[course-item] [name] {
+  font-size: 26px;
+  margin-bottom: 10px;
+}
+
+[course-item] strong {
+  white-space: nowrap;
+}
+
+[course-item] [buttons] {
+  height: 100%;
+  margin-left: 16px;
+}
+
+#course-add-dialog [form] {
+  width: 300px;
+}
