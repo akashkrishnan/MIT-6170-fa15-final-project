@@ -9,7 +9,7 @@ var Utils = require( './utils.js' );
 var User = require( './user.js' );
 var Class = require( './class.js' );
 var Minilesson = require( './minilesson.js' );
-var PageObj = require( './pageObject.js' );
+var PageObj = require( './mcq.js' );
 var mongojs = require( 'mongojs' );
 
 var db = mongojs( Config.services.db.mongodb.uri, [ 'submissions' ] );
