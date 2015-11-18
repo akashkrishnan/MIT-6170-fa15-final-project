@@ -43,9 +43,7 @@ function index( req, res ) {
       if ( err ) {
         res.json( { err: err } );
       } else {
-
         console.log( teacherCourses );
-
 
         // Get courses the user takes
         Course.getCoursesForStudent( { user_id: req.user._id }, function ( err, studentCourses ) {
@@ -180,7 +178,7 @@ function logout( req, res ) {
  */
 function courseMinilessons( req, res, next ) {
   if ( req.user ) {
-    res.render( 'courseList', {
+    res.render( 'courseMinilessons', {
       web: Config.web,
       self: req.user
     } );

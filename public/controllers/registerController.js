@@ -4,7 +4,7 @@
 
 'use strict';
 
-( function () {
+(function () {
 
   var config;
 
@@ -106,58 +106,21 @@
       } else if ( !hasLower ) {
         alert( 'Password must contain at least one (1) lowercase English alphabet character (a-z).' );
       } else {
-        register( name, username, password );
+        flipper.user.register( { name: name, username: username, password: password }, function ( err ) {
+          if ( err ) {
+            console.error( err );
+            toastr.error( err );
+          } else {
+
+            // Account has been registered; go back to the login page
+            window.location.replace( '/' );
+
+          }
+        } );
       }
 
     }
 
   }
 
-  /**
-   * Sends XHR to register user; if successful, user is automatically logged in and redirected to the homepage.
-   *
-   * @param {string} name -
-   * @param {string} username -
-   * @param {string} password -
-   */
-  function register( name, username, password ) {
-
-    var data = {
-      name: name,
-      username: username,
-      password: password
-    };
-
-    var xhr = new XMLHttpRequest();
-
-    xhr.onload = function () {
-
-      var data = xhr.response;
-
-      if ( data ) {
-
-        if ( data.err ) {
-          console.error( data.err );
-          alert( data.err );
-        } else {
-
-          // Account has been registered; refresh the page to show new content
-          window.location.replace( '/' );
-
-        }
-
-      } else {
-        console.error( 'Unable to register account. Invalid server response.' );
-        alert( 'Unable to register account. Invalid server response.' );
-      }
-
-    };
-
-    xhr.open( 'POST', '/api/register', true );
-    xhr.setRequestHeader( 'Content-Type', 'application/json;charset=UTF-8' );
-    xhr.responseType = 'json';
-    xhr.send( JSON.stringify( data ) );
-
-  }
-
-} )();
+})();

@@ -1,7 +1,3 @@
-<!--
-  AUTHOR: Akash Krishnan <ak@aakay.net>
--->
-
 <!DOCTYPE html>
 <html lang="en">
 
@@ -9,6 +5,7 @@
     <meta charset="UTF-8">
     <title><%= web.name %></title>
     <link rel="stylesheet" type="text/css" href="https://fonts.googleapis.com/css?family=Roboto">
+    <link rel="stylesheet" type="text/css" href="/toastr/toastr.min.css">
     <link rel="stylesheet" type="text/css" href="/styles/global.css">
     <link rel="stylesheet" type="text/css" href="/styles/layout.css">
     <link rel="stylesheet" type="text/css" href="/styles/shadow.css">
@@ -83,6 +80,7 @@
                 %>
 
                 <strong><%= teacherNamesArray %></strong>
+
                 </div>
               </div>
 
@@ -96,82 +94,6 @@
             <%
             } );
             %>
-
-            <div course-item layout-horizontal layout-center>
-
-              <div layout-vertical>
-                <div name>
-                  Art, Architecture, and Urbanism in Dialogue: Designs for a Nomadic World — Cultural Mobility Workshop
-                </div>
-                <div authors>
-                  <strong>Ted Mosby</strong>
-                </div>
-              </div>
-
-              <div flex></div>
-
-              <div buttons layout-vertical layout-end>
-                <a button blue href="/courses/testCourseId/minilessons">View Course</a>
-              </div>
-
-            </div>
-
-            <div course-item layout-horizontal layout-center>
-
-              <div layout-vertical>
-                <div name>Philosophy</div>
-                <div authors>
-                  <strong>Charles Xavier</strong>,
-                  <strong>Albus Dumbledore</strong>,
-                  <strong>Archimedes Q. Porter</strong>,
-                  <strong>River Song</strong>
-                </div>
-              </div>
-
-              <div flex></div>
-
-              <div buttons layout-vertical layout-end>
-                <a button blue href="/courses/testCourseId/minilessons">View Course</a>
-              </div>
-
-            </div>
-
-            <div course-item layout-horizontal layout-center>
-
-              <div layout-vertical>
-                <div name>Physics</div>
-                <div authors>
-                  <strong>Doctor Who</strong>,
-                  <strong>Martin Stein</strong>,
-                  <strong>Ray Palmer</strong>,
-                  <strong>Sheldon Cooper</strong>
-                </div>
-              </div>
-
-              <div flex></div>
-
-              <div buttons layout-vertical layout-end>
-                <a button blue href="/courses/testCourseId/minilessons">View Course</a>
-              </div>
-
-            </div>
-
-            <div course-item layout-horizontal layout-center>
-
-              <div layout-vertical>
-                <div name>Time, Space, and Reality for Lesser Beings</div>
-                <div authors>
-                  <strong>Q, Q, Q</strong>
-                </div>
-              </div>
-
-              <div flex></div>
-
-              <div buttons layout-vertical layout-end>
-                <a button blue href="/courses/testCourseId/minilessons">View Course</a>
-              </div>
-
-            </div>
 
           </div>
 
@@ -190,7 +112,7 @@
               <div layout-vertical>
                 <div name><%= course.courseName %></div>
                 <div authors>
-                  <strong>Course model needs to provide teacher objects so that we can list the names here.</strong>
+                  <strong>Course model needs to provide teacher objects.</strong>
                 </div>
               </div>
 
@@ -204,82 +126,6 @@
             <%
             } );
             %>
-
-            <div course-item layout-horizontal layout-center>
-
-              <div layout-vertical>
-                <div name>
-                  Art, Architecture, and Urbanism in Dialogue: Designs for a Nomadic World — Cultural Mobility Workshop
-                </div>
-                <div authors>
-                  <strong>Ted Mosby</strong>
-                </div>
-              </div>
-
-              <div flex></div>
-
-              <div buttons layout-vertical layout-end>
-                <a button blue href="/courses/testCourseId/minilessons">View Course</a>
-              </div>
-
-            </div>
-
-            <div course-item layout-horizontal layout-center>
-
-              <div layout-vertical>
-                <div name>Philosophy</div>
-                <div authors>
-                  <strong>Charles Xavier</strong>,
-                  <strong>Albus Dumbledore</strong>,
-                  <strong>Archimedes Q. Porter</strong>,
-                  <strong>River Song</strong>
-                </div>
-              </div>
-
-              <div flex></div>
-
-              <div buttons layout-vertical layout-end>
-                <a button blue href="/courses/testCourseId/minilessons">View Course</a>
-              </div>
-
-            </div>
-
-            <div course-item layout-horizontal layout-center>
-
-              <div layout-vertical>
-                <div name>Physics</div>
-                <div authors>
-                  <strong>Doctor Who</strong>,
-                  <strong>Martin Stein</strong>,
-                  <strong>Ray Palmer</strong>,
-                  <strong>Sheldon Cooper</strong>
-                </div>
-              </div>
-
-              <div flex></div>
-
-              <div buttons layout-vertical layout-end>
-                <a button blue href="/courses/testCourseId/minilessons">View Course</a>
-              </div>
-
-            </div>
-
-            <div course-item layout-horizontal layout-center>
-
-              <div layout-vertical>
-                <div name>Time, Space, and Reality for Lesser Beings</div>
-                <div authors>
-                  <strong>Q, Q, Q</strong>
-                </div>
-              </div>
-
-              <div flex></div>
-
-              <div buttons layout-vertical layout-end>
-                <a button blue href="/courses/testCourseId/minilessons">View Course</a>
-              </div>
-
-            </div>
 
           </div>
 
@@ -311,7 +157,10 @@
       </div>
     </div>
 
+    <script src="/jquery/dist/jquery.min.js"></script>
+    <script src="/toastr/toastr.min.js"></script>
     <script src="/flipper.js"></script>
+    <script src="/global.js"></script>
     <script src="/controllers/dropdownController.js"></script>
     <script src="/controllers/dialogController.js"></script>
     <script src="/controllers/courseListController.js"></script>
