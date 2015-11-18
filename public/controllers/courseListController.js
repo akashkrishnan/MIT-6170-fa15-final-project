@@ -5,7 +5,9 @@
 
 'use strict';
 
-( function () {
+(function () {
+
+  var flipper = Flipper();
 
   var courseAddDialog = document.querySelector( '#course-add-dialog' );
   if ( courseAddDialog ) {
@@ -19,13 +21,21 @@
         var nameInput = document.querySelector( '#course-add-dialog [name-input]' );
         if ( nameInput ) {
 
-          var name = nameInput.value;
-          console.log( name );
+          var data = { courseName: nameInput.value };
 
-          console.error( 'Not implemented.' );
+          flipper.course.add( data, function ( err, course ) {
+            if ( err ) {
+              console.error( err );
+              alert( err );
+            } else {
 
-          // Close the dialog --- this works because the dialog is a dialog-close-trigger
-          courseAddDialog.click();
+              // TODO: DO SOMETHING WITH THE COURSE OBJECT
+
+              // Close the dialog --- this works because the dialog is a dialog-close-trigger
+              courseAddDialog.click();
+
+            }
+          } );
 
         } else {
           console.error( 'Missing #course-add-dialog [name-input].' );
@@ -40,4 +50,4 @@
     console.error( 'Missing #course-add-dialog.' );
   }
 
-} )();
+})();

@@ -17,7 +17,9 @@ module.exports = function ( app ) {
   app.get( '/config.json', config );
   app.get( '/register', register );
   app.get( '/logout', logout );
+  app.get( '/courses/:name/gradebook', courseMinilessons );
   app.get( '/courses/:name/minilessons/:minilessonId?', courseMinilessons );
+  app.get( '/courses/:name/minilessons/:minilessonId/:pageId?', courseMinilessons );
 
   // API
   app.post( '/api/login', apiLogin );
