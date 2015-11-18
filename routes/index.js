@@ -44,15 +44,11 @@ function index( req, res ) {
         res.json( { err: err } );
       } else {
 
-        console.log( teacherCourses );
-
         // Get courses the user takes
         Course.getCoursesForStudent( { user_id: req.user._id }, function ( err, studentCourses ) {
           if ( err ) {
             res.json( { err: err } );
           } else {
-
-            console.log( studentCourses );
 
             // Render the course list page
             res.render( 'courseList', {

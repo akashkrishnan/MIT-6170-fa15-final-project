@@ -28,7 +28,7 @@ var Flipper = function () {
       if ( data && data.courseName ) {
         if ( data.courseName.length > 100 ) {
           // TODO: USE CONFIG
-          done( new Error( 'Name too long. Please shorten your name to at most 100 characters.' ) );
+          done( new Error( 'Name too long. Please shorten the name to at most 100 characters.' ) );
         } else {
           ajax( 'POST', '/api/course', data, function ( data ) {
             if ( data ) {
