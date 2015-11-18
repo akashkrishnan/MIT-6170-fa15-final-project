@@ -17,9 +17,7 @@ module.exports = function ( app ) {
   app.get( '/config.json', config );
   app.get( '/register', register );
   app.get( '/logout', logout );
-  app.get( '/courses/:name/gradebook', courseMinilessons );
   app.get( '/courses/:name/minilessons/:minilessonId?', courseMinilessons );
-  app.get( '/courses/:name/minilessons/:minilessonId/:pageId?', courseMinilessons );
 
   // API
   app.post( '/api/login', apiLogin );
@@ -39,10 +37,37 @@ module.exports = function ( app ) {
  */
 function index( req, res ) {
   if ( req.user ) {
-    res.render( 'courseList', {
-      web: Config.web,
-      self: req.user
+
+    // Get courses the user teaches
+    Course.getCoursesForTeacher( { user_id: req.user._id }, function ( err, teacherCourses ) {
+      if ( err ) {
+        res.json( { err: err } );
+      } else {
+
+        console.log( teacherCourses );
+
+        // Get courses the user takes
+        Course.getCoursesForStudent( { user_id: req.user._id }, function ( err, studentCourses ) {
+          if ( err ) {
+            res.json( { err: err } );
+          } else {
+
+            console.log( studentCourses );
+
+            // Render the course list page
+            res.render( 'courseList', {
+              web: Config.web,
+              self: req.user,
+              teacherCourses: teacherCourses,
+              studentCourses: studentCourses
+            } );
+
+          }
+        } );
+
+      }
     } );
+
   } else {
     res.render( 'login', {
       web: Config.web

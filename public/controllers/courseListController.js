@@ -30,6 +30,7 @@
             } else {
 
               // TODO: DO SOMETHING WITH THE COURSE OBJECT
+              console.log( course );
 
               // Close the dialog --- this works because the dialog is a dialog-close-trigger
               courseAddDialog.click();

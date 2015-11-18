@@ -66,6 +66,29 @@
               </div>
             </div>
 
+            <%
+            teacherCourses.forEach( function( course ) {
+            %>
+            <div course-item layout-horizontal layout-center>
+
+              <div layout-vertical>
+                <div name><%= course.courseName %></div>
+                <div authors>
+                  <strong>Course model needs to provide teacher objects so that we can list the names here.</strong>
+                </div>
+              </div>
+
+              <div flex></div>
+
+              <div buttons layout-vertical layout-end>
+                <a button blue href="/courses/<%= course._id %>/minilessons">View Course</a>
+              </div>
+
+            </div>
+            <%
+            } );
+            %>
+
             <div course-item layout-horizontal layout-center>
 
               <div layout-vertical>
@@ -150,6 +173,29 @@
               <div title>Courses I'm Taking</div>
               <div flex></div>
             </div>
+
+            <%
+            studentCourses.forEach( function( course ) {
+            %>
+            <div course-item layout-horizontal layout-center>
+
+              <div layout-vertical>
+                <div name><%= course.courseName %></div>
+                <div authors>
+                  <strong>Course model needs to provide teacher objects so that we can list the names here.</strong>
+                </div>
+              </div>
+
+              <div flex></div>
+
+              <div buttons layout-vertical layout-end>
+                <a button blue href="/courses/<%= course._id %>/minilessons">View Course</a>
+              </div>
+
+            </div>
+            <%
+            } );
+            %>
 
             <div course-item layout-horizontal layout-center>
 
