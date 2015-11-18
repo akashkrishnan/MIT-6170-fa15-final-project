@@ -8,6 +8,7 @@ var Config = require( '../config.js' );
 var Utils = require( '../models/utils.js' );
 var Session = require( '../models/session.js' );
 var User = require( '../models/user.js' );
+var Course = require( '../models/course.js' );
 
 module.exports = function ( app ) {
 
@@ -22,6 +23,7 @@ module.exports = function ( app ) {
   app.post( '/api/login', apiLogin );
   app.post( '/api/register', apiRegister );
   app.post( '/api/logout', apiLogout );
+  app.post( '/api/course', apiCourseAdd );
 
   app.get( '*', otherwise );
 
@@ -35,10 +37,33 @@ module.exports = function ( app ) {
  */
 function index( req, res ) {
   if ( req.user ) {
-    res.render( 'courseList', {
-      web: Config.web,
-      self: req.user
+
+    // Get courses the user teaches
+    Course.getCoursesForTeacher( { user_id: req.user._id }, function ( err, teacherCourses ) {
+      if ( err ) {
+        res.json( { err: err } );
+      } else {
+
+        // Get courses the user takes
+        Course.getCoursesForStudent( { user_id: req.user._id }, function ( err, studentCourses ) {
+          if ( err ) {
+            res.json( { err: err } );
+          } else {
+
+            // Render the course list page
+            res.render( 'courseList', {
+              web: Config.web,
+              self: req.user,
+              teacherCourses: teacherCourses,
+              studentCourses: studentCourses
+            } );
+
+          }
+        } );
+
+      }
     } );
+
   } else {
     res.render( 'login', {
       web: Config.web
@@ -119,7 +144,7 @@ function logout( req, res ) {
  */
 function courseMinilessons( req, res, next ) {
   if ( req.user ) {
-    res.render( 'courseList', {
+    res.render( 'courseMinilessons', {
       web: Config.web,
       self: req.user
     } );
@@ -212,6 +237,35 @@ function apiLogout( req, res ) {
         // Remove cookie
         res.clearCookie( Config.web.cookie.name, {} ).json( {} );
 
+      }
+    } ) );
+
+  } else {
+    res.status( 400 ).json( { err: 'Bad Request: User must be authenticated to process request.' } );
+  }
+
+}
+
+/**
+ * Called to when a user wants to add a new course.
+ *
+ * @param {object} req - req
+ * @param {object} res - res
+ */
+function apiCourseAdd( req, res ) {
+
+  // Ensure user
+  if ( req.user ) {
+
+    // Enforce certain values
+    req.body.teacher_id = req.user._id;
+
+    // Add course
+    Course.add( req.body, Utils.safeFn( function ( err, course ) {
+      if ( err ) {
+        res.json( { err: err } );
+      } else {
+        res.json( course );
       }
     } ) );
 
