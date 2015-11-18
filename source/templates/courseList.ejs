@@ -74,7 +74,15 @@
               <div layout-vertical>
                 <div name><%= course.courseName %></div>
                 <div authors>
-                  <strong>Course model needs to provide teacher objects so that we can list the names here.</strong>
+                <%
+                var teacherNamesArray = [];
+                courseTeachers[course].forEach( function( teacher ) {
+                  teacherNamesArray.push(teacher.name);
+                });
+                teacherNames = teacherNamesArray.join(", ");
+                %>
+
+                <strong><%= teacherNamesArray %></strong>
                 </div>
               </div>
 

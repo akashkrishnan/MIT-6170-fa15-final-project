@@ -46,6 +46,7 @@ function index( req, res ) {
 
         console.log( teacherCourses );
 
+
         // Get courses the user takes
         Course.getCoursesForStudent( { user_id: req.user._id }, function ( err, studentCourses ) {
           if ( err ) {
@@ -54,20 +55,51 @@ function index( req, res ) {
 
             console.log( studentCourses );
 
-            // Render the course list page
-            res.render( 'courseList', {
-              web: Config.web,
-              self: req.user,
-              teacherCourses: teacherCourses,
-              studentCourses: studentCourses
-            } );
+            var allCourses = teacherCourses.concat(studentCourses);
+            var courseTeachers = {};
 
+            (function next_course ( j, n_courses ) {
+              var course = allCourses[j];
+
+              if (j < n_courses) {
+
+                var next_teacher = function ( i, course, n_teachers ) {
+                  if(i < n_teachers ) {
+                    var teacherId = course.teachers[i];
+                    User.get({_id:teacherId}, function ( err, teacherObj ) {
+                      if(err) done(err);
+                      else {
+                        console.log(teacherObj);
+                        courseTeachers[course].push(teacherObj);
+                        next_teacher(i+1, n_teachers);
+                      }
+                    });
+                  } else {
+                    next_course(j+1, n_courses);
+                  }
+                };
+
+                if (!(course in courseTeachers)) {
+                  courseTeachers[course] = [];
+                  next_teacher(0, course, course.teachers.length);
+                } else {
+                  next_course(j+1, n_courses);
+                }
+
+              } else {
+                res.render( 'courseList', {
+                  web: Config.web,
+                  self: req.user,
+                  teacherCourses: teacherCourses,
+                  studentCourses: studentCourses,
+                  courseTeachers: courseTeachers
+                } );
+              }
+            })(0, allCourses.length);
           }
         } );
-
       }
     } );
-
   } else {
     res.render( 'login', {
       web: Config.web
