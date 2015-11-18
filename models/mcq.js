@@ -31,7 +31,7 @@ function get( data, done ) {
     try {
 
         var criteria = Utils.validateObject( data, {
-            _id: { filter: 'MongoId' },
+            _id: { filter: 'MongoId' , required: true},
         } );
 
         /**
@@ -81,7 +81,6 @@ function get( data, done ) {
  */
 function add( data, done ) {
     try {
-
         var criteria = Utils.validateObject( data, {
             question: {
                 type: 'string',
@@ -92,15 +91,10 @@ function add( data, done ) {
                 },
             },
             answerChoicesList: {
-                type: 'array',
+                //type: 'array',
             },
             correctChoiceIndex: {
                 type: 'number',
-                filter: function ( name ) {
-                    if ( name ) {
-                        return name.trim();
-                    }
-                },
             }
         } );
 
@@ -142,9 +136,9 @@ function validateMCQ(question, answerChoicesList, correctChoiceIndex, done){
             done(new Error('Missing answer choices list.'));
         } else if (answerChoicesList.length == 0) {
             done(new Error('Answer choices list is empty.'));
-        } else if (!correctChoiceIndex) {
+        } else if (correctChoiceIndex == null) {
             done(new Error('Missing correct choice index'));
-        } else if (!(0 <= correctChoiceIndex || correctChoiceIndex < answerChoicesList.length)) {
+        } else if (!(0 <= correctChoiceIndex) || !(correctChoiceIndex < answerChoicesList.length)) {
             done(new Error('Correct choice index out of range'));
         } else {
             done(null);

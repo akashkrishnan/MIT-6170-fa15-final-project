@@ -1,0 +1,136 @@
+<!--
+  AUTHOR: Tiffany Wong 
+-->
+
+<!DOCTYPE html>
+<html lang="en">
+
+  <head>
+    <meta charset="UTF-8">
+    <title><%= web.name %>/MiniLesson</title>
+    <link rel="stylesheet" type="text/css" href="https://fonts.googleapis.com/css?family=Roboto">
+    <link rel="stylesheet" type="text/css" href="/styles/global.css">
+    <link rel="stylesheet" type="text/css" href="/styles/layout.css">
+    <link rel="stylesheet" type="text/css" href="/styles/shadow.css">
+    <link rel="stylesheet" type="text/css" href="/styles/dropdown.css">
+    <link rel="stylesheet" type="text/css" href="/styles/dialog.css">
+    <link rel="stylesheet" type="text/css" href="/styles/form.css">
+    <link rel="stylesheet" type="text/css" href="/styles/courseMiniLesson.css">
+  </head>
+
+  <body fullbleed fit>
+
+    <div masthead layout-horizontal layout-center shadow elevation="1">
+
+      <div name layout-horizontal layout-center layout-center-justified><strong><%= web.name %></strong></div>
+
+      <a href="/" tab layout-horizontal layout-center active>
+        <div>Home</div>
+        <div underline></div>
+      </a>
+
+      <div flex></div>
+
+      <div tab no-select dropdown-toggle-trigger="account-dropdown" layout-vertical>
+
+        <div flex layout-horizontal layout-center>
+          <div><%= self.name %></div>
+        </div>
+
+        <div id="account-dropdown" dropdown align-right shadow elevation="2" layout-vertical>
+          <a href="/settings" item hoverable layout-horizontal layout-center>
+            <div text>Settings</div>
+          </a>
+          <a href="/logout" item hoverable layout-horizontal layout-center>
+            <div text>Logout</div>
+          </a>
+        </div>
+
+      </div>
+
+
+    </div>
+
+    <div minilessonPanel>
+      <div header layout-horizontal layout-center>
+        <div title>
+          MINILESSONS
+        </div>
+        <div flex></div> 
+        <div toolbar-button hoverable
+              dialog-open-trigger="course-add-dialog"
+              layout-horizontal layout-center>
+          Add Minilesson
+        </div>
+      </div>
+
+      <a href="/">
+        <div lesson-item layout-horizontal layout-center>
+
+          <div layout-vertical>
+            <div name>Vectors vs Scalars</div>
+          </div>
+
+          <div flex></div>
+
+        </div>
+      </a>
+
+      <a href="/">
+        <div lesson-item layout-horizontal layout-center>
+
+          <div layout-vertical>
+            <div name>Adding and Subtracting Vectors</div>
+          </div>
+
+          <div flex></div>
+
+        </div>
+      </a>
+
+      <a href="/">
+        <div lesson-item layout-horizontal layout-center>
+
+          <div layout-vertical>
+            <div name>Introduction to Kinematics </div>
+          </div>
+
+          <div flex></div>
+
+        </div>
+      </a>
+
+      <a href="/">
+        <div lesson-item layout-horizontal layout-center>
+
+          <div layout-vertical>
+            <div name>Using Kinematics Equations </div>
+          </div>
+
+          <div flex></div>
+
+        </div>
+      </a>
+
+      <a href="/">
+        <div lesson-item layout-horizontal layout-center>
+
+          <div layout-vertical>
+            <div name>Kinematics in 2D </div>
+          </div>
+
+          <div flex></div>
+
+        </div>
+      </a>
+    </div>
+
+
+
+    <script src="/controllers/dropdownController.js"></script>
+    <script src="/controllers/dialogController.js"></script>
+    <script src="/controllers/courseListController.js"></script>
+
+  </body>
+
+</html>

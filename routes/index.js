@@ -144,7 +144,7 @@ function logout( req, res ) {
  */
 function courseMinilessons( req, res, next ) {
   if ( req.user ) {
-    res.render( 'courseList', {
+    res.render( 'courseMinilessons', {
       web: Config.web,
       self: req.user
     } );
