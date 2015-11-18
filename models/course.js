@@ -88,11 +88,15 @@ function courseNameExists( data, done ) {
       return done( new Error( 'Invalid parameters.' ), false );
     }
 
-    db.users.findOne( criteria, function ( err, course ) {
+    db.courses.findOne( criteria, function ( err, course ) {
       if ( err ) {
         done( err, false );
       } else {
-        done( null, Boolean( course ), course._id );
+        var courseId = null;
+        if (course) {
+          courseId = course._id;
+        } 
+        done( null, Boolean( course ), courseId );
       }
     } );
 
@@ -103,7 +107,7 @@ function courseNameExists( data, done ) {
 
 function getCoursesForStudent( data, done ) {
   try {
-    db.courses.find( { 'students.student_id': { $eq: data[ 'user_id' ] } }, function ( err, courses ) {
+    db.courses.find( { 'students': { $eq: data[ 'user_id' ] } }, function ( err, courses ) {
       if ( err ) {
         done( err, null );
       } else {
@@ -130,13 +134,15 @@ function getCoursesForTeacher( data, done ) {
 }
 
 function getCourseByName( data, done ) {
+
   try {
 
     var criteria = Utils.validateObject( data, {
       courseName: { type: 'string' },
     } );
 
-    db.users.findOne( criteria, function ( err, course ) {
+
+    db.courses.findOne( criteria, function ( err, course ) {
       if ( err ) {
         done( err, false );
       } else {
@@ -172,8 +178,7 @@ function add( data, done ) {
       if ( err ) {
         done( err, null );
       } else if ( _exists ) {
-        done(
-          new Error( 'Course Name already exists: ' + JSON.stringify( { name: criteria.courseName } ) + '.' ),
+        done(new Error( 'Course Name already exists.'),
           null
         );
       } else {
@@ -181,7 +186,7 @@ function add( data, done ) {
           ///////////////////////////////
           db.courses.insert(
             {
-              name: criteria.courseName,
+              courseName: criteria.courseName,
               teachers: [ criteria.teacher_id ],
               students: [],
               minilessons: [],
@@ -193,12 +198,12 @@ function add( data, done ) {
               }
             },
             function ( err, course ) {
-
+        
               if ( err ) {
                 done( err, null );
               } else {
                 // Get the new user object the proper way
-                get( { _id: course._id }, done );
+                getCourseByName( { courseName:criteria.courseName }, done );
               }
             }
           );
@@ -228,7 +233,15 @@ function addStudentToCourse( data, done ) {
         },
         required: true
       },
-      student: {}
+      student: {
+        type: 'string',
+        filter: function ( name ) {
+          if ( name ) {
+            return name.trim();
+          }
+        },
+        required: true
+      },
     } );
 
     courseNameExists( { courseName: criteria.courseName }, function ( err, _exists, course_id ) {
@@ -242,7 +255,7 @@ function addStudentToCourse( data, done ) {
               if ( err ) {
                 done( err, null );
               } else {
-                get( { _id: course._id }, done );
+                getCourseByName( { _id: course_id }, done );
               }
             } );
         } catch ( err ) {
