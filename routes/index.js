@@ -37,10 +37,33 @@ module.exports = function ( app ) {
  */
 function index( req, res ) {
   if ( req.user ) {
-    res.render( 'courseList', {
-      web: Config.web,
-      self: req.user
+
+    // Get courses the user teaches
+    Course.getCoursesForTeacher( { user_id: req.user._id }, function ( err, teacherCourses ) {
+      if ( err ) {
+        res.json( { err: err } );
+      } else {
+
+        // Get courses the user takes
+        Course.getCoursesForStudent( { user_id: req.user._id }, function ( err, studentCourses ) {
+          if ( err ) {
+            res.json( { err: err } );
+          } else {
+
+            // Render the course list page
+            res.render( 'courseList', {
+              web: Config.web,
+              self: req.user,
+              teacherCourses: teacherCourses,
+              studentCourses: studentCourses
+            } );
+
+          }
+        } );
+
+      }
     } );
+
   } else {
     res.render( 'login', {
       web: Config.web
