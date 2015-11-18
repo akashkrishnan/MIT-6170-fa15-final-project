@@ -5,9 +5,7 @@
 
 'use strict';
 
-(function () {
-
-  var flipper = Flipper();
+( function () {
 
   var courseAddDialog = document.querySelector( '#course-add-dialog' );
   if ( courseAddDialog ) {
@@ -26,11 +24,14 @@
           flipper.course.add( data, function ( err, course ) {
             if ( err ) {
               console.error( err );
-              alert( err );
+              toastr.error( err );
             } else {
 
-              // TODO: DO SOMETHING WITH THE COURSE OBJECT
+              // TODO: DO SOMETHING WITH THE COURSE OBJECT?
               console.log( course );
+              toastr.info( 'Course has been added.' );
+
+              // TODO: POSSIBLY REDIRECT TO COURSE PAGE?
 
               // Close the dialog --- this works because the dialog is a dialog-close-trigger
               courseAddDialog.click();
@@ -51,4 +52,4 @@
     console.error( 'Missing #course-add-dialog.' );
   }
 
-})();
+} )();

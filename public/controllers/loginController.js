@@ -4,7 +4,7 @@
 
 'use strict';
 
-( function () {
+(function () {
 
   // Add keyup listener for enter/return inside of the form
   document.querySelector( '#password' ).addEventListener( 'keyup', function ( e ) {
@@ -28,53 +28,26 @@
 
   function validate() {
 
-    var username = document.querySelector( '#username' ).value;
-    var password = document.querySelector( '#password' ).value;
+    var data = {
+      username: document.querySelector( '#username' ).value,
+      password: document.querySelector( '#password' ).value
+    };
 
     // Ensure username and password are set before querying the server
-    if ( username && password ) {
-      login( username, password );
+    if ( data.username && data.password ) {
+      flipper.user.login( data, function ( err ) {
+        if ( err ) {
+          console.error( err );
+          toastr.error( err );
+        } else {
+
+          // Account has been authenticated; refresh the page to show new content
+          window.location.replace( '/' );
+
+        }
+      } );
     }
 
   }
 
-  function login( username, password ) {
-
-    var data = {
-      username: username,
-      password: password
-    };
-
-    var xhr = new XMLHttpRequest();
-
-    xhr.onload = function () {
-
-      var data = xhr.response;
-
-      if ( data ) {
-
-        if ( data.err ) {
-          console.error( data.err );
-          alert( data.err );
-        } else {
-
-          // Account has been registered; refresh the page to show new content
-          window.location.replace( '/' );
-
-        }
-
-      } else {
-        console.error( 'Unable to authenticate account. Invalid server response.' );
-        alert( 'Unable to authenticate account. Invalid server response.' );
-      }
-
-    };
-
-    xhr.open( 'POST', '/api/login', true );
-    xhr.setRequestHeader( 'Content-Type', 'application/json;charset=UTF-8' );
-    xhr.responseType = 'json';
-    xhr.send( JSON.stringify( data ) );
-
-  }
-
-} )();
+})();
