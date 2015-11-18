@@ -13,7 +13,8 @@ var db = mongojs( Config.services.db.mongodb.uri, [ 'grades' ] );
 module.exports = {
 
     get: get,
-    compute: compute
+    compute: compute,
+    list:list
 
 };
 
@@ -68,14 +69,15 @@ function compute(data, done) {
                             studentId: criteria.studentId,
                             minilessonId: criteria.minilessonId,
                             grade: grade
-                            // TODO: INSERT PERIOD 
+                            classId: criteria.minilessonId.classId
+                            //TODO: classID: 
                         },
                         function ( err, grade ) {
 
                             if ( err ) {
                                 done( err, null );
                             } else {
-                                // Get the new user object the proper way
+                                // Get the new grade object the proper way
                                 get( { _id: grade._id }, done );
 
                             }
@@ -140,4 +142,56 @@ function get( data, done ) {
     } catch ( err ) {
         done( err, null );
     }
+}
+
+/**
+ * @callback listCallback
+ * @param {Error} err - Error object
+ * @param {Array.<object>} grades - list of Grade objects in the current page
+ * @param {number} count - total number of Grade objects across all pages
+ */
+
+/**
+ * Gets a list of Grade objects. 
+ *
+ * @param {object} data - data
+ * @param {listCallback} done - callback
+ */
+function list( data, done ) {
+  try {
+
+    var criteria = Utils.validateObject( data, {} );
+
+    var sort = Utils.validateObject( data, {
+      sort: {
+        type: {},
+        default: {}
+      }
+    } ).sort;
+
+    sort.name = 1;
+
+    db.grades.count( function ( err, count ) {
+      if ( err ) {
+        done( err, [], 0 );
+      } else {
+        db.courses
+          .find( criteria )
+          .sort( sort )
+          .skip( data.offset || 0 )
+          .limit( data.limit || 0, function ( err, courses ) {
+            if ( err ) {
+              done( err, [], 0 );
+            } else {
+
+              done( null, grades, count );
+
+            }
+          } );
+      }
+    } );
+
+  } catch ( err ) {
+    done( err, [], 0 );
+  }
 }
