@@ -140,6 +140,8 @@ function validateMCQ(question, answerChoicesList, correctChoiceIndex, done){
             done(new Error('Missing correct choice index'));
         } else if (!(0 <= correctChoiceIndex) || !(correctChoiceIndex < answerChoicesList.length)) {
             done(new Error('Correct choice index out of range'));
+        } else if (correctChoiceIndex % 1 !== 0){
+            done(new Error('Correct choice index not an integer'))
         } else {
             done(null);
         }
