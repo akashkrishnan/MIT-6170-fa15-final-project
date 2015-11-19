@@ -195,21 +195,19 @@ function addPage( data, done) {
       _id: { type: 'string', required: true },
       page_id: { type: 'string', required: true}
     } );
-
-    get( criteria, function(err, minilesson) {
+    get( {_id : criteria._id}, function(err, _minilesson) {
       if (err) {
         done(err, null);
       } else {
-        db.minilessons.update(minilesson,
+        db.minilessons.update({_id:_minilesson._id},
             {$addToSet: {pagesList: criteria.page_id}},
             {upsert: true},
-            function (err, minilesson) {
+            function (err) {
               if (err) {
                 done(err, null);
               } else {
                 // Get the new user object the proper way
-
-                get({_id: minilesson._id}, done);
+                get({_id: _minilesson._id}, done);
               }
             });
       }
@@ -247,12 +245,11 @@ function removePage( data, done) {
         db.minilessons.update(minilesson,
             {$pull: {pagesList: criteria.page_id}},
             {upsert: true},
-            function (err, minilesson) {
+            function (err) {
               if (err) {
                 done(err, null);
               } else {
                 // Get the new user object the proper way
-
                 get({_id: minilesson._id}, done);
               }
             });
