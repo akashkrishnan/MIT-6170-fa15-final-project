@@ -17,7 +17,7 @@ module.exports = function ( app ) {
   app.get( '/config.json', config );
   app.get( '/register', register );
   app.get( '/logout', logout );
-  app.get( '/courses/:name/minilessons/:minilessonId?', courseMinilessons );
+  app.get( '/courses/:courseId/minilessons/:minilessonId?', courseMinilessons );
 
   // API
   app.post( '/api/login', apiLogin );
@@ -183,10 +183,23 @@ function logout( req, res ) {
  */
 function courseMinilessons( req, res, next ) {
   if ( req.user ) {
-    res.render( 'courseMinilessons', {
-      web: Config.web,
-      self: req.user
-    } );
+
+    // Get course
+    Course.get( { _id: req.params.courseId }, Utils.safeFn( function ( err, course ) {
+      if ( err ) {
+        next();
+      } else {
+
+        // Render the view
+        res.render( 'courseMinilessons', {
+          web: Config.web,
+          self: req.user,
+          course: course
+        } );
+
+      }
+    } ) );
+
   } else {
     next();
   }
