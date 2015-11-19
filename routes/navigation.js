@@ -46,7 +46,7 @@ function index( req, res ) {
             var allCourses = teacherCourses.concat( studentCourses );
             var courseTeachers = {};
 
-            ( function next_course( j, n_courses ) {
+            (function next_course( j, n_courses ) {
               var course = allCourses[ j ];
 
               if ( j < n_courses ) {
@@ -83,7 +83,7 @@ function index( req, res ) {
                   courseTeachers: courseTeachers
                 } );
               }
-            } )( 0, allCourses.length );
+            })( 0, allCourses.length );
           }
         } ) );
       }
@@ -175,12 +175,32 @@ function courseMinilessons( req, res, next ) {
         next();
       } else {
 
-        // Render the view
-        res.render( 'courseMinilessons', {
-          web: Config.web,
-          self: req.user,
-          course: course
-        } );
+        // Get courses the user teaches
+        Course.getCoursesForTeacher( { user_id: req.user._id }, Utils.safeFn( function ( err, teacherCourses ) {
+          if ( err ) {
+            res.json( { err: err } );
+          } else {
+
+            // Get courses the user takes
+            Course.getCoursesForStudent( { user_id: req.user._id }, Utils.safeFn( function ( err, studentCourses ) {
+              if ( err ) {
+                res.json( { err: err } );
+              } else {
+
+                // Render the view
+                res.render( 'courseMinilessons', {
+                  web: Config.web,
+                  self: req.user,
+                  teacherCourses: teacherCourses,
+                  studentCourses: studentCourses,
+                  course: course
+                } );
+
+              }
+            } ) );
+
+          }
+        } ) );
 
       }
     } ) );

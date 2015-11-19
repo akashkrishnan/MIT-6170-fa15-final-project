@@ -25,26 +25,66 @@
 
       <div name layout-horizontal layout-center layout-center-justified><strong><%= web.name %></strong></div>
 
-      <a href="/" tab layout-horizontal layout-center active>
+      <a href="/" tab layout-horizontal layout-center>
         <div>Home</div>
         <div underline></div>
       </a>
 
+      <div relative layout-vertical style="height: 100%">
+
+        <div tab no-select dropdown-toggle-trigger="course-dropdown"
+             flex layout-horizontal layout-center
+             active>
+          <div><%= course.courseName %></div>
+          <div underline></div>
+        </div>
+
+        <div id="course-dropdown" dropdown align-left shadow elevation="2" layout-vertical>
+
+          <%
+          teacherCourses.forEach( function( course ) {
+          %>
+          <a href="/courses/<%= course._id %>/minilessons" item hoverable layout-horizontal layout-center>
+            <div text><%= course.courseName %></div>
+          </a>
+          <%
+          } );
+          %>
+
+          <%
+          studentCourses.forEach( function( course ) {
+          %>
+          <a href="/courses/<%= course._id %>/minilessons" item hoverable layout-horizontal layout-center>
+            <div text><%= course.courseName %></div>
+          </a>
+          <%
+          } );
+          %>
+
+        </div>
+
+      </div>
+
       <div flex></div>
 
-      <div tab no-select dropdown-toggle-trigger="account-dropdown" layout-vertical>
+      <div relative layout-vertical style="height: 100%">
 
-        <div flex layout-horizontal layout-center>
+        <div tab no-select dropdown-toggle-trigger="account-dropdown"
+             flex layout-horizontal layout-center>
           <div><%= self.name %></div>
+          <div underline></div>
         </div>
 
         <div id="account-dropdown" dropdown align-right shadow elevation="2" layout-vertical>
-          <a href="/settings" item hoverable layout-horizontal layout-center>
-            <div text>Settings</div>
-          </a>
+
+          <div item hoverable layout-horizontal layout-center>
+            <div text>Pending Course Requests</div>
+          </div>
+
           <a href="/logout" item hoverable layout-horizontal layout-center>
             <div text>Logout</div>
           </a>
+
         </div>
 
       </div>
@@ -61,8 +101,8 @@
           </div>
           <div flex></div>
           <div toolbar-button hoverable
-                dialog-open-trigger="minilesson-add-dialog"
-                layout-horizontal layout-center>
+               dialog-open-trigger="minilesson-add-dialog"
+               layout-horizontal layout-center>
             Add Minilesson
           </div>
         </div>
@@ -95,7 +135,7 @@
           <div lesson-item layout-horizontal layout-center>
 
             <div layout-vertical>
-              <div name>Introduction to Kinematics </div>
+              <div name>Introduction to Kinematics</div>
             </div>
 
             <div flex></div>
@@ -107,7 +147,7 @@
           <div lesson-item layout-horizontal layout-center>
 
             <div layout-vertical>
-              <div name>Using Kinematics Equations </div>
+              <div name>Using Kinematics Equations</div>
             </div>
 
             <div flex></div>
@@ -119,7 +159,7 @@
           <div lesson-item layout-horizontal layout-center>
 
             <div layout-vertical>
-              <div name>Kinematics in 2D </div>
+              <div name>Kinematics in 2D</div>
             </div>
 
             <div flex></div>
@@ -140,41 +180,41 @@
         </div>
         <div questionPanel flex>
         </div>
-    </div>
+      </div>
 
 
-    <div id="minilesson-add-dialog" dialog backdrop
-         course-id="<%= course._id %>"
-         dialog-close-trigger="minilesson-add-dialog"
-         layout-horizontal layout-center-center>
-      <div form shadow elevation="5" layout-vertical>
+      <div id="minilesson-add-dialog" dialog backdrop
+           course-id="<%= course._id %>"
+           dialog-close-trigger="minilesson-add-dialog"
+           layout-horizontal layout-center-center>
+        <div form shadow elevation="5" layout-vertical>
 
-        <div header>Add Minilesson</div>
+          <div header>Add Minilesson</div>
 
-        <div inputs layout-vertical>
+          <div inputs layout-vertical>
 
-          <div input layout-vertical>
-            <label>Minilesson Name</label>
-            <input type="text" name-input/>
+            <div input layout-vertical>
+              <label>Minilesson Name</label>
+              <input type="text" name-input/>
+            </div>
+
+          </div>
+
+          <div buttons layout-horizontal layout-end-justified>
+            <a button small dialog-close-trigger="minilesson-add-dialog">Cancel</a>
+            <a button small blue create>Create</a>
           </div>
 
         </div>
-
-        <div buttons layout-horizontal layout-end-justified>
-          <a button small dialog-close-trigger="minilesson-add-dialog">Cancel</a>
-          <a button small blue create>Create</a>
-        </div>
-
       </div>
-    </div>
 
-    <script src="/jquery/dist/jquery.min.js"></script>
-    <script src="/toastr/toastr.min.js"></script>
-    <script src="/flipper.js"></script>
-    <script src="/global.js"></script>
-    <script src="/controllers/dropdownController.js"></script>
-    <script src="/controllers/dialogController.js"></script>
-    <script src="/controllers/minilessonListController.js"></script>
+      <script src="/jquery/dist/jquery.min.js"></script>
+      <script src="/toastr/toastr.min.js"></script>
+      <script src="/flipper.js"></script>
+      <script src="/global.js"></script>
+      <script src="/controllers/dropdownController.js"></script>
+      <script src="/controllers/dialogController.js"></script>
+      <script src="/controllers/minilessonListController.js"></script>
 
   </body>
 

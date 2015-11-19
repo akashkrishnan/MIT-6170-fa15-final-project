@@ -32,6 +32,7 @@
 [dropdown] [item] [text] {
   padding-left: 16px;
   padding-right: 16px;
+  white-space: nowrap;
 }
 
 [dropdown] [item][hoverable]:hover {
