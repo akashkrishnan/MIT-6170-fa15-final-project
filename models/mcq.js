@@ -8,9 +8,9 @@ var db = mongojs( Config.services.db.mongodb.uri, [ 'MCQs' ] );
 
 module.exports = {
 
-    get: get,
-    add: add,
-    remove: remove,
+  get: get,
+  add: add,
+  remove: remove,
 
 };
 
@@ -28,39 +28,39 @@ module.exports = {
  * @param {getCallback} done - callback
  */
 function get( data, done ) {
-    try {
+  try {
 
-        var criteria = Utils.validateObject( data, {
-            _id: { filter: 'MongoId' , required: true},
-        } );
+    var criteria = Utils.validateObject( data, {
+        _id: { filter: 'MongoId', required: true },
+      } );
 
         /**
          * Called after MCQ is found in database.
          *
          * @param {object} criteria -
          */
-        var next = function ( criteria ) {
+    var next = function ( criteria ) {
 
-            db.MCQs.findOne( criteria, function ( err, mcq ) {
-                if ( err ) {
-                    done( err, null );
-                } else if ( mcq ) {
+        db.MCQs.findOne( criteria, function ( err, mcq ) {
+            if ( err ) {
+                done( err, null );
+              } else if ( mcq ) {
 
                     // Stringify the MongoId
-                    mcq._id = mcq._id.toString();
+                  mcq._id = mcq._id.toString();
 
-                    done( null, mcq );
+                  done( null, mcq );
 
                 } else {
-                    done( new Error( 'MCQ not found: ' + JSON.stringify( criteria ) ), null );
+                  done( new Error( 'MCQ not found: ' + JSON.stringify( criteria ) ), null );
                 }
-            } );
+          } );
 
-        };
-        next(criteria);
+      };
+    next(criteria);
 
-    } catch ( err ) {
-        done( err, null );
+  } catch ( err ) {
+      done( err, null );
     }
 }
 
@@ -80,73 +80,73 @@ function get( data, done ) {
  * @param {addCallback} done - callback
  */
 function add( data, done ) {
-    try {
-        var criteria = Utils.validateObject( data, {
-            question: {
-                type: 'string',
-                filter: function ( name ) {
-                    if ( name ) {
-                        return name.trim();
-                    }
-                },
-            },
-            answerChoicesList: {
+  try {
+    var criteria = Utils.validateObject( data, {
+        question: {
+            type: 'string',
+            filter: function ( name ) {
+                if ( name ) {
+                    return name.trim();
+                  }
+              },
+          },
+        answerChoicesList: {
                 //type: 'array',
-            },
-            correctChoiceIndex: {
-                type: 'number',
-            }
-        } );
+          },
+        correctChoiceIndex: {
+            type: 'number',
+          }
+      } );
 
-        validateMCQ(criteria.question, criteria.answerChoicesList, criteria.correctChoiceIndex, function( err ) {
-            if ( err ) {
-                done( err, null);
-            } else {
-                db.MCQs.insert(
-                    {
-                        question: criteria.question,
-                        answerChoicesList: criteria.answerChoicesList,
-                        correctChoiceIndex: criteria.correctChoiceIndex
-                    },
+    validateMCQ(criteria.question, criteria.answerChoicesList, criteria.correctChoiceIndex, function ( err ) {
+        if ( err ) {
+            done( err, null);
+          } else {
+            db.MCQs.insert(
+                {
+                  question: criteria.question,
+                  answerChoicesList: criteria.answerChoicesList,
+                  correctChoiceIndex: criteria.correctChoiceIndex
+                },
                     function (err, MCQ) {
 
-                        if (err) {
-                            done(err, null);
-                        } else {
+                      if (err) {
+                        done(err, null);
+                      } else {
                             // Get the new user object the proper way
-                            get({_id: MCQ._id}, done);
+                        get({ _id: MCQ._id }, done);
 
-                        }
+                      }
 
                     }
                 );
-            }
-        });
+          }
+      });
 
-    } catch ( err ) {
-        done( err, null );
+  } catch ( err ) {
+      done( err, null );
     }
 }
 //Make sure MCQ are semi-well defined.
-function validateMCQ(question, answerChoicesList, correctChoiceIndex, done){
-    try {
-        if (!question) {
-            done(new Error('Missing Question'));
-        } else if (!answerChoicesList) {
-            done(new Error('Missing answer choices list.'));
-        } else if (answerChoicesList.length == 0) {
-            done(new Error('Answer choices list is empty.'));
-        } else if (correctChoiceIndex == null) {
-            done(new Error('Missing correct choice index'));
+function validateMCQ(question, answerChoicesList, correctChoiceIndex, done) {
+  try {
+    if (!question) {
+        done(new Error('Missing Question'));
+      } else if (!answerChoicesList) {
+          done(new Error('Missing answer choices list.'));
+        } else if (answerChoicesList.length === 0) {
+          done(new Error('Answer choices list is empty.'));
+        } else if (correctChoiceIndex === null) {
+          done(new Error('Missing correct choice index'));
         } else if (!(0 <= correctChoiceIndex) || !(correctChoiceIndex < answerChoicesList.length)) {
-            done(new Error('Correct choice index out of range'));
-        } else if (correctChoiceIndex % 1 !== 0){
-            done(new Error('Correct choice index not an integer'))
+          done(new Error('Correct choice index out of range'));
+        } else if (correctChoiceIndex % 1 !== 0) {
+          done(new Error('Correct choice index not an integer'));
         } else {
-            done(null);
+          done(null);
         }
-    } catch(err) {
-        done(err);
+  } catch (err) {
+      done(err);
     }
 }
 
@@ -164,31 +164,31 @@ function validateMCQ(question, answerChoicesList, correctChoiceIndex, done){
  * @param {removeCallback} done - callback
  */
 function remove( data, done ) {
-    try {
+  try {
 
-        var criteria = Utils.validateObject( data, {
-            _id: { type: 'string', required: true }
-        } );
+    var criteria = Utils.validateObject( data, {
+        _id: { type: 'string', required: true }
+      } );
 
         // Ensure valid mcq
-        get( criteria, function ( err, MCQ ) {
-            if ( err ) {
-                done( err, null );
-            } else {
+    get( criteria, function ( err, MCQ ) {
+        if ( err ) {
+            done( err, null );
+          } else {
 
                 // Remove from database
-                db.MCQs.remove( criteria, true, function ( err ) {
-                    if ( err ) {
-                        done( err, null );
-                    } else {
-                        done( null, MCQ );
-                    }
-                } );
+            db.MCQs.remove( criteria, true, function ( err ) {
+                if ( err ) {
+                    done( err, null );
+                  } else {
+                    done( null, MCQ );
+                  }
+              } );
 
-            }
-        } );
+          }
+      } );
 
-    } catch ( err ) {
-        done( err, null );
+  } catch ( err ) {
+      done( err, null );
     }
 }

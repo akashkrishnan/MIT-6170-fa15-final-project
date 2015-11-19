@@ -24,6 +24,7 @@
     "install": "bower update --save --allow-root && bower install --save --allow-root",
     "init": "node init.js",
     "lint": "eslint . || exit 0",
+    "lint-fix": "eslint . --fix || exit 0",
     "test": "env branch=test npm run init && env branch=test mocha || exit 0",
     "start": "node server.js",
     "start-supervisor": "supervisor -e js,json -i public,source -q server.js",

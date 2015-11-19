@@ -8,9 +8,9 @@ var db = mongojs( Config.services.db.mongodb.uri, [ 'pages' ] );
 
 module.exports = {
 
-    get: get,
-    add: add,
-    remove: remove,
+  get: get,
+  add: add,
+  remove: remove,
 
 };
 
@@ -28,39 +28,39 @@ module.exports = {
  * @param {getCallback} done - callback
  */
 function get( data, done ) {
-    try {
+  try {
 
-        var criteria = Utils.validateObject( data, {
-            _id: { filter: 'MongoId' },
-        } );
+    var criteria = Utils.validateObject( data, {
+        _id: { filter: 'MongoId' },
+      } );
 
         /**
          * Called after MCQ is found in database.
          *
          * @param {object} criteria -
          */
-        var next = function ( criteria ) {
+    var next = function ( criteria ) {
 
-            db.pages.findOne( criteria, function ( err, page ) {
-                if ( err ) {
-                    done( err, null );
-                } else if ( page ) {
+        db.pages.findOne( criteria, function ( err, page ) {
+            if ( err ) {
+                done( err, null );
+              } else if ( page ) {
 
                     // Stringify the MongoId
-                    page._id = page._id.toString();
+                  page._id = page._id.toString();
 
-                    done( null, page );
+                  done( null, page );
 
                 } else {
-                    done( new Error( 'Page not found: ' + JSON.stringify( criteria ) ), null );
+                  done( new Error( 'Page not found: ' + JSON.stringify( criteria ) ), null );
                 }
-            } );
+          } );
 
-        };
-        next(criteria);
+      };
+    next(criteria);
 
-    } catch ( err ) {
-        done( err, null );
+  } catch ( err ) {
+      done( err, null );
     }
 }
 
@@ -80,60 +80,60 @@ function get( data, done ) {
  * @param {addCallback} done - callback
  */
 function add( data, done ) {
-    try {
+  try {
 
-        var criteria = Utils.validateObject( data, {
-            resource: {
-                type: 'string',
-                filter: function ( name ) {
-                    if ( name ) {
-                        return name.trim();
-                    }
+    var criteria = Utils.validateObject( data, {
+        resource: {
+            type: 'string',
+            filter: function ( name ) {
+                if ( name ) {
+                    return name.trim();
+                  }
+              },
+          },
+        mcqResourceList: {
+            type: 'array',
+          },
+      } );
+
+    validatePage(criteria.resource, criteria.mcqResourceList, function ( err ) {
+        if ( err ) {
+            done( err, null);
+          } else {
+            db.pages.insert(
+                {
+                  resource: criteria.resource,
+                  mcqResourceList: criteria.mcqResourceList,
                 },
-            },
-            mcqResourceList: {
-                type: 'array',
-            },
-        } );
-
-        validatePage(criteria.resource, criteria.mcqResourceList, function( err ) {
-            if ( err ) {
-                done( err, null);
-            } else {
-                db.pages.insert(
-                    {
-                        resource: criteria.resource,
-                        mcqResourceList: criteria.mcqResourceList,
-                    },
                     function (err, page) {
 
-                        if (err) {
-                            done(err, null);
-                        } else {
+                      if (err) {
+                        done(err, null);
+                      } else {
                             // Get the new user object the proper way
-                            get({_id: page._id}, done);
+                        get({ _id: page._id }, done);
 
-                        }
+                      }
 
                     }
                 );
-            }
-        });
+          }
+      });
 
-    } catch ( err ) {
-        done( err, null );
+  } catch ( err ) {
+      done( err, null );
     }
 }
 //Make sure page are semi-well defined.
-function validatePage(resource, mcqResourceList, done){
-    try {
-        if (resource == null && mcqResourceList.length == 0){
-            done(new Error('Resources or Questions must be non-empty'));
-        } else {
-            done(null);
-        }
-    } catch(err) {
-        done(err);
+function validatePage(resource, mcqResourceList, done) {
+  try {
+    if (resource === null && mcqResourceList.length === 0) {
+        done(new Error('Resources or Questions must be non-empty'));
+      } else {
+        done(null);
+      }
+  } catch (err) {
+      done(err);
     }
 }
 
@@ -151,31 +151,31 @@ function validatePage(resource, mcqResourceList, done){
  * @param {removeCallback} done - callback
  */
 function remove( data, done ) {
-    try {
+  try {
 
-        var criteria = Utils.validateObject( data, {
-            _id: { type: 'string', required: true }
-        } );
+    var criteria = Utils.validateObject( data, {
+        _id: { type: 'string', required: true }
+      } );
 
         // Ensure valid mcq
-        get( criteria, function ( err, page ) {
-            if ( err ) {
-                done( err, null );
-            } else {
+    get( criteria, function ( err, page ) {
+        if ( err ) {
+            done( err, null );
+          } else {
 
                 // Remove from database
-                db.pages.remove( criteria, true, function ( err ) {
-                    if ( err ) {
-                        done( err, null );
-                    } else {
-                        done( null, page );
-                    }
-                } );
+            db.pages.remove( criteria, true, function ( err ) {
+                if ( err ) {
+                    done( err, null );
+                  } else {
+                    done( null, page );
+                  }
+              } );
 
-            }
-        } );
+          }
+      } );
 
-    } catch ( err ) {
-        done( err, null );
+  } catch ( err ) {
+      done( err, null );
     }
 }

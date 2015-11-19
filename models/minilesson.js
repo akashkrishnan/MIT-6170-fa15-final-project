@@ -190,24 +190,24 @@ function remove( data, done ) {
  * @param {addCallback} done - callback
  */
 function addPage( data, done) {
-  try{
+  try {
     var criteria = Utils.validateObject( data, {
       _id: { type: 'string', required: true },
-      page_id: { type: 'string', required: true}
+      page_id: { type: 'string', required: true }
     } );
-    get( {_id : criteria._id}, function(err, _minilesson) {
+    get( { _id : criteria._id }, function (err, _minilesson) {
       if (err) {
         done(err, null);
       } else {
-        db.minilessons.update({_id:_minilesson._id},
-            {$addToSet: {pagesList: criteria.page_id}},
-            {upsert: true},
+        db.minilessons.update({ _id:_minilesson._id },
+            { $addToSet: { pagesList: criteria.page_id } },
+            { upsert: true },
             function (err) {
               if (err) {
                 done(err, null);
               } else {
                 // Get the new user object the proper way
-                get({_id: _minilesson._id}, done);
+                get({ _id: _minilesson._id }, done);
               }
             });
       }
@@ -232,25 +232,25 @@ function addPage( data, done) {
  * @param {addCallback} done - callback
  */
 function removePage( data, done) {
-  try{
+  try {
     var criteria = Utils.validateObject( data, {
       _id: { type: 'string', required: true },
-      page_id: { type: 'string', required: true}
+      page_id: { type: 'string', required: true }
     } );
 
-    get( criteria, function(err, minilesson) {
+    get( criteria, function (err, minilesson) {
       if (err) {
         done(err, null);
       } else {
         db.minilessons.update(minilesson,
-            {$pull: {pagesList: criteria.page_id}},
-            {upsert: true},
+            { $pull: { pagesList: criteria.page_id } },
+            { upsert: true },
             function (err) {
               if (err) {
                 done(err, null);
               } else {
                 // Get the new user object the proper way
-                get({_id: minilesson._id}, done);
+                get({ _id: minilesson._id }, done);
               }
             });
       }
