@@ -11,7 +11,8 @@ module.exports = {
   get: get,
   add: add,
   remove: remove,
-
+  addPage: addPage,
+  removePage: removePage,
 };
 
 
@@ -101,10 +102,6 @@ function add( data, done ) {
           }
         },
         required: true
-      },
-      pagesList: {
-        type: 'array',
-        required: true
       }
     } );
 
@@ -112,7 +109,7 @@ function add( data, done ) {
       {
         name: criteria.name,
         state: criteria.state,
-        pagesList: criteria.pagesList,
+        pagesList: [],
         timestamps: {
           created: new Date(),
         }
@@ -173,6 +170,94 @@ function remove( data, done ) {
       }
     } );
 
+  } catch ( err ) {
+    done( err, null );
+  }
+}
+
+/**
+ * @callback addPageCallback
+ * @param {Error} err - Error object
+ * @param {object} minilesson - Minilesson object
+ */
+
+/**
+ * Adds a page to minilesson.
+ *
+ * @param {object} data - data
+ * @param {string} data._id - Minilesson._id
+ * @param {string} data.page_id - Page._id
+ * @param {addCallback} done - callback
+ */
+function addPage( data, done) {
+  try{
+    var criteria = Utils.validateObject( data, {
+      _id: { type: 'string', required: true },
+      page_id: { type: 'string', required: true}
+    } );
+
+    get( criteria, function(err, minilesson) {
+      if (err) {
+        done(err, null);
+      } else {
+        db.minilessons.update(minilesson,
+            {$addToSet: {pagesList: criteria.page_id}},
+            {upsert: true},
+            function (err, minilesson) {
+              if (err) {
+                done(err, null);
+              } else {
+                // Get the new user object the proper way
+
+                get({_id: minilesson._id}, done);
+              }
+            });
+      }
+    });
+  } catch ( err ) {
+    done( err, null );
+  }
+}
+
+/**
+ * @callback addPageCallback
+ * @param {Error} err - Error object
+ * @param {object} minilesson - Minilesson object
+ */
+
+/**
+ * Removes a page to minilesson.
+ *
+ * @param {object} data - data
+ * @param {string} data._id - Minilesson._id
+ * @param {string} data.page_id - Page._id
+ * @param {addCallback} done - callback
+ */
+function removePage( data, done) {
+  try{
+    var criteria = Utils.validateObject( data, {
+      _id: { type: 'string', required: true },
+      page_id: { type: 'string', required: true}
+    } );
+
+    get( criteria, function(err, minilesson) {
+      if (err) {
+        done(err, null);
+      } else {
+        db.minilessons.update(minilesson,
+            {$pull: {pagesList: criteria.page_id}},
+            {upsert: true},
+            function (err, minilesson) {
+              if (err) {
+                done(err, null);
+              } else {
+                // Get the new user object the proper way
+
+                get({_id: minilesson._id}, done);
+              }
+            });
+      }
+    });
   } catch ( err ) {
     done( err, null );
   }
