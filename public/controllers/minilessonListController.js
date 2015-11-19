@@ -1,55 +1,57 @@
 /**
- * Created by akashkrishnan on 17-Nov-15.
- * Last modified by akashkrishnan on 17-Nov-15 15:29.
+ * Created by akashkrishnan on 18-Nov-15.
+ * Last modified by akashkrishnan on 18-Nov-15 21:00.
  */
 
 'use strict';
 
-( function () {
+(function () {
 
-  var courseAddDialog = document.querySelector( '#course-add-dialog' );
-  if ( courseAddDialog ) {
+  var minilessonAddDialog = document.querySelector( '#minilesson-add-dialog' );
+  if ( minilessonAddDialog ) {
 
-    // Click listener for add-course create button click event
-    var createBtn = document.querySelector( '#course-add-dialog [create]' );
+    var courseId = minilessonAddDialog.getAttribute( 'course-id' );
+
+    // Click listener for add-minilesson create button click event
+    var createBtn = document.querySelector( '#minilesson-add-dialog [create]' );
     if ( createBtn ) {
       createBtn.addEventListener( 'click', function () {
 
-        // Get course name from form
-        var nameInput = document.querySelector( '#course-add-dialog [name-input]' );
+        // Get minilesson name from form
+        var nameInput = document.querySelector( '#minilesson-add-dialog [name-input]' );
         if ( nameInput ) {
 
-          var data = { courseName: nameInput.value };
+          var data = { courseId: courseId, minilessonName: nameInput.value };
 
-          flipper.course.add( data, function ( err, course ) {
+          flipper.minilesson.add( data, function ( err, minilesson ) {
             if ( err ) {
               console.error( err );
               toastr.error( err );
             } else {
 
-              // TODO: DO SOMETHING WITH THE COURSE OBJECT?
-              console.log( course );
-              toastr.info( 'Course has been added.' );
+              // TODO: DO SOMETHING WITH THE MINILESSON OBJECT?
+              console.log( minilesson );
+              toastr.info( 'Minilesson has been added.' );
 
-              // TODO: POSSIBLY REDIRECT TO COURSE PAGE?
+              // TODO: POSSIBLY REDIRECT TO MINILESSON VIEW?
 
               // Close the dialog --- this works because the dialog is a dialog-close-trigger
-              courseAddDialog.click();
+              minilessonAddDialog.click();
 
             }
           } );
 
         } else {
-          console.error( 'Missing #course-add-dialog [name-input].' );
+          console.error( 'Missing #minilesson-add-dialog [name-input].' );
         }
 
       }, false );
     } else {
-      console.error( 'Missing #course-add-dialog [create].' );
+      console.error( 'Missing #minilesson-add-dialog [create].' );
     }
 
   } else {
-    console.error( 'Missing #course-add-dialog.' );
+    console.error( 'Missing #minilesson-add-dialog.' );
   }
 
-} )();
+})();
