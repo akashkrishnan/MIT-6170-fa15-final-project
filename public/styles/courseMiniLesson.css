@@ -7,6 +7,8 @@
   width: 300px;
   margin-left: 0px;
   margin-top: 20px;
+    border-color: #4285F4;
+  border-style: solid;
 }
 
 [minilessonPanel] [header] {
@@ -41,6 +43,7 @@
 [minilessonPanel] [lesson-item] {
   padding: 16px;
   border-bottom: 1px solid rgba(0, 0, 0, 0.1);
+
 }
 
 [minilessonPanel] [lesson-item]:last-of-type {
@@ -59,6 +62,39 @@
   white-space: nowrap;
 }
 
+[contentPanel] {
+  margin: 20px;
+}
+
+[contentPanel] [progress-bar] {
+  border-color: #4285F4;
+  border-style: solid;
+  height: 46px;
+  border-radius: 25px;
+  background-color: LightGray;
+
+}
+
+[contentPanel] [progress-bar-cell] {
+  border-radius: 25px;
+}
+
+[contentPanel] [done]{
+  content:url(http://www.clipartbest.com/cliparts/dT6/okx/dT6okxEbc.png);
+}
+
+[contentPanel] [current] {
+  background-color: #4285F4;
+}
+
+[contentPanel] [questionPanel] {
+  height: 100px;
+  border-radius: 25px;
+  border-color: #4285F4;
+  border-style: solid;
+  margin-top: 25px;
+  margin-bottom: 0px;
+}
 
 #lesson-add-dialog [form] {
   width: 300px;
