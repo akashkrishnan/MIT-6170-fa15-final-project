@@ -52,16 +52,16 @@
     </div>
 
     <div pageContent layout-horizontal>
-      
+
 
       <div minilessonPanel>
         <div header layout-horizontal layout-center>
           <div title>
             MINILESSONS
           </div>
-          <div flex></div> 
+          <div flex></div>
           <div toolbar-button hoverable
-                dialog-open-trigger="course-add-dialog"
+                dialog-open-trigger="minilesson-add-dialog"
                 layout-horizontal layout-center>
             Add Minilesson
           </div>
@@ -129,7 +129,7 @@
       </div>
 
       <div contentPanel layout-vertical flex>
-        <div progress-bar layout-horizontal layout-center-justified> 
+        <div progress-bar layout-horizontal layout-center-justified>
           <div progress-bar-cell pending flex></div>
           <div progress-bar-cell done flex></div>
           <div progress-bar-cell done flex></div>
@@ -141,7 +141,7 @@
         <div questionPanel flex>
         </div>
     </div>
-    
+
 
     <div id="minilesson-add-dialog" dialog backdrop
          course-id="<%= course._id %>"

@@ -7,7 +7,7 @@
   width: 300px;
   margin-left: 0px;
   margin-top: 20px;
-    border-color: #4285F4;
+  border-color: #4285F4;
   border-style: solid;
 }
 
@@ -64,7 +64,6 @@
   white-space: nowrap;
 }
 
-<<<<<<< HEAD
 [contentPanel] {
   margin: 20px;
 }
@@ -82,8 +81,8 @@
   border-radius: 25px;
 }
 
-[contentPanel] [done]{
-  content:url(http://www.clipartbest.com/cliparts/dT6/okx/dT6okxEbc.png);
+[contentPanel] [done] {
+  content: url(http://www.clipartbest.com/cliparts/dT6/okx/dT6okxEbc.png);
 }
 
 [contentPanel] [current] {
@@ -99,9 +98,6 @@
   margin-bottom: 0px;
 }
 
-#lesson-add-dialog [form] {
-=======
 #minilesson-add-dialog [form] {
->>>>>>> 9c54575e6584f981dd5c0a8fca06c2c466f24b4e
   width: 300px;
 }
