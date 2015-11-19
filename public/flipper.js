@@ -106,13 +106,119 @@ var Flipper = function () {
 
   };
 
-  that.minilesson = {};
+  that.minilesson = {
 
-  that.page = {};
+    add: function ( data, done ) {
+      if ( data ) {
+        if ( data.courseId && data.courseId.trim() ) {
+          ajax( 'POST', '/api/course/' + data.courseId.trim() + '/minilesson', data, function ( data ) {
+            if ( data ) {
+              if ( data.err ) {
+                done( data.err, null );
+              } else {
+                done( null, data );
+              }
+            } else {
+              done( new Error( 'Unable to add minilesson. Invalid server response.' ), null );
+            }
+          } );
+        } else {
+          done( new Error( 'A course ID is required to add a minilesson.' ) );
+        }
+      }
+    },
 
-  that.mcq = {};
+    remove: function ( data, done ) {
+      if ( data ) {
+        done( new Error( 'Not implemented.' ) );
+      }
+    }
 
-  that.submission = {};
+  };
+
+  that.page = {
+
+    add: function ( data, done ) {
+      if ( data ) {
+        if ( data.minilessonId && data.minilessonId.trim() ) {
+          ajax( 'POST', '/api/minilesson/' + data.minilessonId.trim() + '/page', data, function ( data ) {
+            if ( data ) {
+              if ( data.err ) {
+                done( data.err, null );
+              } else {
+                done( null, data );
+              }
+            } else {
+              done( new Error( 'Unable to add page. Invalid server response.' ), null );
+            }
+          } );
+        } else {
+          done( new Error( 'A minilesson ID is required to add a page.' ) );
+        }
+      }
+    },
+
+    remove: function ( data, done ) {
+      if ( data ) {
+        done( new Error( 'Not implemented.' ) );
+      }
+    }
+
+  };
+
+  that.mcq = {
+
+    add: function ( data, done ) {
+      if ( data ) {
+        if ( data.pageId && data.pageId.trim() ) {
+          ajax( 'POST', '/api/page/' + data.pageId.trim() + '/mcq', data, function ( data ) {
+            if ( data ) {
+              if ( data.err ) {
+                done( data.err, null );
+              } else {
+                done( null, data );
+              }
+            } else {
+              done( new Error( 'Unable to add MCQ. Invalid server response.' ), null );
+            }
+          } );
+        } else {
+          done( new Error( 'A page ID is required to add an MCQ.' ) );
+        }
+      }
+    },
+
+    remove: function ( data, done ) {
+      if ( data ) {
+        done( new Error( 'Not implemented.' ) );
+      }
+    }
+
+  };
+
+  that.submission = {
+
+    add: function ( data, done ) {
+      if ( data ) {
+        if ( data.mcqId && data.mcqId.trim() ) {
+          ajax( 'POST', '/api/mcq/' + data.mcqId.trim() + '/submission', data, function ( data ) {
+            if ( data ) {
+              if ( data.err ) {
+                done( data.err, null );
+              } else {
+                done( null, data );
+              }
+            } else {
+              done( new Error( 'Unable to add submission. Invalid server response.' ), null );
+            }
+          } );
+        } else {
+          done( new Error( 'A MCQ ID is required to add a submission.' ) );
+        }
+      }
+    }
+
+  };
 
   that.grade = {};
 

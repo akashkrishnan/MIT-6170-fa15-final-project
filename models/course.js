@@ -13,6 +13,7 @@ module.exports = {
 
   list: list,
   courseNameExists: courseNameExists,
+  get: get,
   add: add,
   getCoursesForStudent: getCoursesForStudent,
   getCoursesForTeacher: getCoursesForTeacher,
@@ -71,6 +72,26 @@ function list( data, done ) {
   }
 }
 
+function get( data, done ) {
+  try {
+
+    var criteria = Utils.validateObject( data, {
+      _id: { filter: 'MongoId', required: true }
+    } );
+
+    db.courses.findOne( criteria, function ( err, course ) {
+      if ( err ) {
+        done( err, null );
+      } else {
+        done( null, course );
+      }
+    } );
+
+  } catch ( err ) {
+    done( err, null );
+  }
+}
+
 function courseNameExists( data, done ) {
   try {
 
@@ -93,9 +114,9 @@ function courseNameExists( data, done ) {
         done( err, false );
       } else {
         var courseId = null;
-        if (course) {
+        if ( course ) {
           courseId = course._id;
-        } 
+        }
         done( null, Boolean( course ), courseId );
       }
     } );
@@ -178,7 +199,7 @@ function add( data, done ) {
       if ( err ) {
         done( err, null );
       } else if ( _exists ) {
-        done(new Error( 'Course Name already exists.'),
+        done( new Error( 'Course Name already exists.' ),
           null
         );
       } else {
@@ -198,12 +219,12 @@ function add( data, done ) {
               }
             },
             function ( err, course ) {
-        
+
               if ( err ) {
                 done( err, null );
               } else {
                 // Get the new user object the proper way
-                getCourseByName( { courseName:criteria.courseName }, done );
+                getCourseByName( { courseName: criteria.courseName }, done );
               }
             }
           );

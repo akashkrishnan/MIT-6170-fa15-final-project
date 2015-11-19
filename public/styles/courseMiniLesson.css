@@ -55,13 +55,16 @@
   margin-bottom: 10px;
   color: black;
 }
+
 [lesson-item]:hover {
   background-color: LightGrey;
 }
+
 [lesson-item] strong {
   white-space: nowrap;
 }
 
+<<<<<<< HEAD
 [contentPanel] {
   margin: 20px;
 }
@@ -97,5 +100,8 @@
 }
 
 #lesson-add-dialog [form] {
+=======
+#minilesson-add-dialog [form] {
+>>>>>>> 9c54575e6584f981dd5c0a8fca06c2c466f24b4e
   width: 300px;
 }
