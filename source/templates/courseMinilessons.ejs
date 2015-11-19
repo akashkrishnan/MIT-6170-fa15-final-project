@@ -1,5 +1,5 @@
 <!--
-  AUTHOR: Tiffany Wong 
+  AUTHOR: Tiffany Wong
 -->
 
 <!DOCTYPE html>
@@ -9,6 +9,7 @@
     <meta charset="UTF-8">
     <title><%= web.name %>/MiniLesson</title>
     <link rel="stylesheet" type="text/css" href="https://fonts.googleapis.com/css?family=Roboto">
+    <link rel="stylesheet" type="text/css" href="/toastr/toastr.min.css">
     <link rel="stylesheet" type="text/css" href="/styles/global.css">
     <link rel="stylesheet" type="text/css" href="/styles/layout.css">
     <link rel="stylesheet" type="text/css" href="/styles/shadow.css">
@@ -56,10 +57,10 @@
         <div title>
           MINILESSONS
         </div>
-        <div flex></div> 
+        <div flex></div>
         <div toolbar-button hoverable
-              dialog-open-trigger="course-add-dialog"
-              layout-horizontal layout-center>
+             dialog-open-trigger="minilesson-add-dialog"
+             layout-horizontal layout-center>
           Add Minilesson
         </div>
       </div>
@@ -92,7 +93,7 @@
         <div lesson-item layout-horizontal layout-center>
 
           <div layout-vertical>
-            <div name>Introduction to Kinematics </div>
+            <div name>Introduction to Kinematics</div>
           </div>
 
           <div flex></div>
@@ -104,7 +105,7 @@
         <div lesson-item layout-horizontal layout-center>
 
           <div layout-vertical>
-            <div name>Using Kinematics Equations </div>
+            <div name>Using Kinematics Equations</div>
           </div>
 
           <div flex></div>
@@ -116,7 +117,7 @@
         <div lesson-item layout-horizontal layout-center>
 
           <div layout-vertical>
-            <div name>Kinematics in 2D </div>
+            <div name>Kinematics in 2D</div>
           </div>
 
           <div flex></div>
@@ -125,11 +126,38 @@
       </a>
     </div>
 
+    <div id="minilesson-add-dialog" dialog backdrop
+         course-id="<%= course._id %>"
+         dialog-close-trigger="minilesson-add-dialog"
+         layout-horizontal layout-center-center>
+      <div form shadow elevation="5" layout-vertical>
 
+        <div header>Add Minilesson</div>
 
+        <div inputs layout-vertical>
+
+          <div input layout-vertical>
+            <label>Minilesson Name</label>
+            <input type="text" name-input/>
+          </div>
+
+        </div>
+
+        <div buttons layout-horizontal layout-end-justified>
+          <a button small dialog-close-trigger="minilesson-add-dialog">Cancel</a>
+          <a button small blue create>Create</a>
+        </div>
+
+      </div>
+    </div>
+
+    <script src="/jquery/dist/jquery.min.js"></script>
+    <script src="/toastr/toastr.min.js"></script>
+    <script src="/flipper.js"></script>
+    <script src="/global.js"></script>
     <script src="/controllers/dropdownController.js"></script>
     <script src="/controllers/dialogController.js"></script>
-    <script src="/controllers/courseListController.js"></script>
+    <script src="/controllers/minilessonListController.js"></script>
 
   </body>
 
