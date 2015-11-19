@@ -71,16 +71,13 @@
               <div layout-vertical>
                 <div name><%= course.courseName %></div>
                 <div authors>
-                <%
-                var teacherNamesArray = [];
-                courseTeachers[course].forEach( function( teacher ) {
-                  teacherNamesArray.push(teacher.name);
-                });
-                teacherNames = teacherNamesArray.join(", ");
-                %>
-
-                <strong><%= teacherNamesArray %></strong>
-
+                  <%
+                  courseTeachers[ course ].forEach( function ( teacher ) {
+                  %>
+                  <strong><%= teacher.name %></strong>
+                  <%
+                  } );
+                  %>
                 </div>
               </div>
 
@@ -102,6 +99,11 @@
             <div header layout-horizontal layout-center>
               <div title>Courses I'm Taking</div>
               <div flex></div>
+              <div toolbar-button hoverable
+                   dialog-open-trigger="course-join-dialog"
+                   layout-horizontal layout-center>
+                Join Course
+              </div>
             </div>
 
             <%
@@ -112,7 +114,13 @@
               <div layout-vertical>
                 <div name><%= course.courseName %></div>
                 <div authors>
-                  <strong>Course model needs to provide teacher objects.</strong>
+                  <%
+                  courseTeachers[ course ].forEach( function ( teacher ) {
+                  %>
+                  <strong><%= teacher.name %></strong>
+                  <%
+                  } );
+                  %>
                 </div>
               </div>
 
@@ -152,6 +160,62 @@
         <div buttons layout-horizontal layout-end-justified>
           <a button small dialog-close-trigger="course-add-dialog">Cancel</a>
           <a button small blue create>Create</a>
+        </div>
+
+      </div>
+    </div>
+
+    <div id="course-join-dialog" dialog backdrop
+         dialog-close-trigger="course-join-dialog"
+         layout-horizontal layout-center-center>
+      <div form shadow elevation="5" layout-vertical>
+
+        <div header>Join Course</div>
+
+        <div inputs layout-vertical>
+
+          <div input layout-vertical>
+            <label>Course Name</label>
+            <input type="text" name-input/>
+          </div>
+
+        </div>
+
+        <div course-list>
+
+          <%
+          teacherCourses.forEach( function( course ) {
+          %>
+          <div course-item layout-horizontal layout-center>
+
+            <div layout-vertical>
+              <div name><%= course.courseName %></div>
+              <div authors>
+                <%
+                courseTeachers[ course ].forEach( function ( teacher ) {
+                %>
+                <strong><%= teacher.name %></strong>
+                <%
+                } );
+                %>
+              </div>
+            </div>
+
+            <div flex></div>
+
+            <div buttons layout-vertical layout-end>
+              <a button blue join>Join</a>
+            </div>
+
+          </div>
+          <%
+          } );
+          %>
+
+        </div>
+
+        <div buttons layout-horizontal>
+          <a button small dialog-close-trigger="course-join-dialog">Close</a>
         </div>
 
       </div>
