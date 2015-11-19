@@ -8,8 +8,8 @@ var Log = require( '../models/log.js' );
 
 module.exports = function ( app ) {
 
-  require( './navigation.js' );
-  require( './api.js' );
+  require( './navigation.js' )( app );
+  require( './api.js' )( app );
 
   app.get( '*', otherwise );
 
