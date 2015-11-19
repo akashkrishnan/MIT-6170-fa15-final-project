@@ -24,6 +24,10 @@ module.exports = function ( app ) {
   app.post( '/api/register', apiRegister );
   app.post( '/api/logout', apiLogout );
   app.post( '/api/course', apiCourseAdd );
+  app.post( '/api/course/:courseId/minilesson', apiMinilessonAdd );
+  app.post( '/api/minilesson/:minilessonId/page', apiPageAdd );
+  app.post( '/api/page/:pageId/mcq', apiMcqAdd );
+  app.post( '/api/mcq/:mcqId/submission', apiSubmissionAdd );
 
   app.get( '*', otherwise );
 
@@ -53,35 +57,36 @@ function index( req, res ) {
 
             console.log( studentCourses );
 
-            var allCourses = teacherCourses.concat(studentCourses);
+            var allCourses = teacherCourses.concat( studentCourses );
             var courseTeachers = {};
 
-            (function next_course ( j, n_courses ) {
-              var course = allCourses[j];
+            (function next_course( j, n_courses ) {
+              var course = allCourses[ j ];
 
-              if (j < n_courses) {
+              if ( j < n_courses ) {
 
                 var next_teacher = function ( i, course, n_teachers ) {
-                  if(i < n_teachers ) {
-                    var teacherId = course.teachers[i];
-                    User.get({_id:teacherId}, function ( err, teacherObj ) {
-                      if(err) done(err);
-                      else {
-                        console.log(teacherObj);
-                        courseTeachers[course].push(teacherObj);
-                        next_teacher(i+1, n_teachers);
+                  if ( i < n_teachers ) {
+                    var teacherId = course.teachers[ i ];
+                    User.get( { _id: teacherId }, function ( err, teacherObj ) {
+                      if ( err ) {
+                        done( err );
+                      } else {
+                        console.log( teacherObj );
+                        courseTeachers[ course ].push( teacherObj );
+                        next_teacher( i + 1, n_teachers );
                       }
-                    });
+                    } );
                   } else {
-                    next_course(j+1, n_courses);
+                    next_course( j + 1, n_courses );
                   }
                 };
 
-                if (!(course in courseTeachers)) {
-                  courseTeachers[course] = [];
-                  next_teacher(0, course, course.teachers.length);
+                if ( !(course in courseTeachers) ) {
+                  courseTeachers[ course ] = [];
+                  next_teacher( 0, course, course.teachers.length );
                 } else {
-                  next_course(j+1, n_courses);
+                  next_course( j + 1, n_courses );
                 }
 
               } else {
@@ -93,7 +98,7 @@ function index( req, res ) {
                   courseTeachers: courseTeachers
                 } );
               }
-            })(0, allCourses.length);
+            })( 0, allCourses.length );
           }
         } );
       }
@@ -302,6 +307,94 @@ function apiCourseAdd( req, res ) {
         res.json( course );
       }
     } ) );
+
+  } else {
+    res.status( 400 ).json( { err: 'Bad Request: User must be authenticated to process request.' } );
+  }
+
+}
+
+/**
+ * Called to when a user wants to add a new minilesson to a course.
+ *
+ * @param {object} req - req
+ * @param {object} res - res
+ */
+function apiMinilessonAdd( req, res ) {
+
+  // Ensure user
+  if ( req.user ) {
+
+    // Enforce certain values
+    req.body.teacher_id = req.user._id;
+
+    res.json( { err: 'Not implemented.' } );
+
+  } else {
+    res.status( 400 ).json( { err: 'Bad Request: User must be authenticated to process request.' } );
+  }
+
+}
+
+/**
+ * Called to when a user wants to add a new page to a minilesson.
+ *
+ * @param {object} req - req
+ * @param {object} res - res
+ */
+function apiPageAdd( req, res ) {
+
+  // Ensure user
+  if ( req.user ) {
+
+    // Enforce certain values
+    req.body.teacher_id = req.user._id;
+
+    res.json( { err: 'Not implemented.' } );
+
+  } else {
+    res.status( 400 ).json( { err: 'Bad Request: User must be authenticated to process request.' } );
+  }
+
+}
+
+/**
+ * Called to when a user wants to add a new MCQ to a page.
+ *
+ * @param {object} req - req
+ * @param {object} res - res
+ */
+function apiMcqAdd( req, res ) {
+
+  // Ensure user
+  if ( req.user ) {
+
+    // Enforce certain values
+    req.body.teacher_id = req.user._id;
+
+    res.json( { err: 'Not implemented.' } );
+
+  } else {
+    res.status( 400 ).json( { err: 'Bad Request: User must be authenticated to process request.' } );
+  }
+
+}
+
+/**
+ * Called to when a user wants to add a submission to an MCQ.
+ *
+ * @param {object} req - req
+ * @param {object} res - res
+ */
+function apiSubmissionAdd( req, res ) {
+
+  // Ensure user
+  if ( req.user ) {
+
+    // Enforce certain values
+    req.body.teacher_id = req.user._id;
+
+    res.json( { err: 'Not implemented.' } );
 
   } else {
     res.status( 400 ).json( { err: 'Bad Request: User must be authenticated to process request.' } );
