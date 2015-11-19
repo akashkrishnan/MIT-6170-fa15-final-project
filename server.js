@@ -8,7 +8,7 @@ console.log( '-------------\nInitializing.' );
 
 // Imports
 var Config = require( './config.js' );
-var Logger = require( './models/logger.js' );
+var Log = require( './models/log.js' );
 var session = require( './middleware/session.js' );
 var domain = require( 'domain' );
 var express = require( 'express' );
@@ -22,7 +22,7 @@ var path = require( 'path' );
 var d = domain.create();
 
 d.on( 'error', function ( err ) {
-  Logger.error( err );
+  Log.error( err );
 } );
 
 d.run( function () {
