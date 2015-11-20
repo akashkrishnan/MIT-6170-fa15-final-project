@@ -352,7 +352,7 @@ function add( data, done ) {
                   password: saltedPasswordHash,
                   timestamps: {
                     created: new Date(),
-                    lastSigned: null,
+                    last_signed: null,
                     signed: null,
                     active: null
                   }

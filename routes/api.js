@@ -56,14 +56,25 @@ function apiLogin( req, res ) {
 
         // Add new session that persists indefinitely until logout
         Session.add( { value: user._id }, Utils.safeFn( function ( err, session ) {
+
+          // Set cookie to be used for future authentication
+          res.cookie( Config.web.cookie.name, session._id );
+
           if ( err ) {
             res.json( { err: err } );
           } else {
 
-            // Set cookie to be used for future authentication
-            res.cookie( Config.web.cookie.name, session._id ).json( {} );
+            // Update user stating that user has logged in
+            User.sign( user, Utils.safeFn( function ( err ) {
+              if ( err ) {
+                res.json( { err: err } );
+              } else {
+                res.json( {} );
+              }
+            } ) );
 
           }
+
         } ) );
 
       }
