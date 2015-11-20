@@ -83,7 +83,7 @@ var Flipper = function () {
           // TODO: USE CONFIG
           done( new Error( 'Name too long. Please shorten the name to at most 100 characters.' ) );
         } else {
-          ajax( 'POST', '/api/course', data, function ( data ) {
+          ajax( 'POST', '/api/courses', data, function ( data ) {
             if ( data ) {
               if ( data.err ) {
                 done( data.err, null );
@@ -111,7 +111,7 @@ var Flipper = function () {
     add: function ( data, done ) {
       if ( data ) {
         if ( data.courseId && data.courseId.trim() ) {
-          ajax( 'POST', '/api/course/' + data.courseId.trim() + '/minilesson', data, function ( data ) {
+          ajax( 'POST', '/api/courses/' + data.courseId.trim() + '/minilessons', data, function ( data ) {
             if ( data ) {
               if ( data.err ) {
                 done( data.err, null );
@@ -141,7 +141,7 @@ var Flipper = function () {
     add: function ( data, done ) {
       if ( data ) {
         if ( data.minilessonId && data.minilessonId.trim() ) {
-          ajax( 'POST', '/api/minilesson/' + data.minilessonId.trim() + '/page', data, function ( data ) {
+          ajax( 'POST', '/api/minilessons/' + data.minilessonId.trim() + '/pages', data, function ( data ) {
             if ( data ) {
               if ( data.err ) {
                 done( data.err, null );
@@ -171,7 +171,7 @@ var Flipper = function () {
     add: function ( data, done ) {
       if ( data ) {
         if ( data.pageId && data.pageId.trim() ) {
-          ajax( 'POST', '/api/page/' + data.pageId.trim() + '/mcq', data, function ( data ) {
+          ajax( 'POST', '/api/pages/' + data.pageId.trim() + '/mcqs', data, function ( data ) {
             if ( data ) {
               if ( data.err ) {
                 done( data.err, null );
@@ -201,7 +201,7 @@ var Flipper = function () {
     add: function ( data, done ) {
       if ( data ) {
         if ( data.mcqId && data.mcqId.trim() ) {
-          ajax( 'POST', '/api/mcq/' + data.mcqId.trim() + '/submission', data, function ( data ) {
+          ajax( 'POST', '/api/mcqs/' + data.mcqId.trim() + '/submissions', data, function ( data ) {
             if ( data ) {
               if ( data.err ) {
                 done( data.err, null );
