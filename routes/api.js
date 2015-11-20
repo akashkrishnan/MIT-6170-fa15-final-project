@@ -13,6 +13,8 @@ var Course = require( '../models/course.js' );
 
 module.exports = function ( app ) {
 
+  app.get( '/api/user.json', user );
+
   app.post( '/api/login', apiLogin );
   app.post( '/api/register', apiRegister );
   app.post( '/api/logout', apiLogout );
@@ -24,6 +26,14 @@ module.exports = function ( app ) {
   app.post( '/api/mcq/:mcqId/submission', apiSubmissionAdd );
 
 };
+
+function user( req, res ) {
+  if ( req.user ) {
+    res.json( req.user );
+  } else {
+    res.json( {} );
+  }
+}
 
 /**
  * Called to authenticate a user.
