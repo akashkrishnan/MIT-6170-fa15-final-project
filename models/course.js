@@ -2,6 +2,7 @@
 
 var Config = require( '../config.js' );
 var Utils = require( './utils.js' );
+var User = require( './user.js' );
 var mongojs = require( 'mongojs' );
 var crypto = require( 'crypto' );
 
@@ -283,7 +284,30 @@ function get( data, done ) {
       if ( err ) {
         done( err, null );
       } else {
-        done( null, course );
+
+        // Loop through teachers
+        (function nextTeacher( i, n ) {
+          if ( i < n ) {
+
+            // Get teacher's User object
+            User.get(
+              {
+                _id: course.teachers[ i ],
+                projection: {
+                  timestamps: false
+                }
+              },
+              Utils.safeFn( function ( err, user ) {
+                course.teachers[ i ] = user || {};
+                nextTeacher( i + 1, n );
+              } )
+            );
+
+          } else {
+            done( null, course );
+          }
+        })( 0, course.teachers.length );
+
       }
     } );
 
