@@ -77,6 +77,38 @@ var Flipper = function () {
 
   that.course = {
 
+    list: function ( data, done ) {
+      if ( data ) {
+        ajax( 'GET', '/api/courses', data, function ( data ) {
+          if ( data ) {
+            if ( data.err ) {
+              done( data.err, null );
+            } else {
+              done( null, data );
+            }
+          } else {
+            done( new Error( 'Unable to list courses. Invalid server response.' ), null );
+          }
+        } );
+      }
+    },
+
+    get: function ( data, done ) {
+      if ( data ) {
+        ajax( 'GET', '/api/courses/' + data._id, data, function ( data ) {
+          if ( data ) {
+            if ( data.err ) {
+              done( data.err, null );
+            } else {
+              done( null, data );
+            }
+          } else {
+            done( new Error( 'Unable to get course. Invalid server response.' ), null );
+          }
+        } );
+      }
+    },
+
     add: function ( data, done ) {
       if ( data && data.courseName ) {
         if ( data.courseName.length > 100 ) {
