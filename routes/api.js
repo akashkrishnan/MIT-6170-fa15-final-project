@@ -19,14 +19,33 @@ module.exports = function ( app ) {
   app.post( '/api/register', apiRegister );
   app.post( '/api/logout', apiLogout );
 
-  app.post( '/api/course', apiCourseAdd );
-  app.post( '/api/course/:courseId/minilesson', apiMinilessonAdd );
-  app.post( '/api/minilesson/:minilessonId/page', apiPageAdd );
-  app.post( '/api/page/:pageId/mcq', apiMcqAdd );
-  app.post( '/api/mcq/:mcqId/submission', apiSubmissionAdd );
+  app.get( '/api/courses', apiCourseList );
+  app.post( '/api/courses', apiCourseAdd );
+
+  //app.get( '/api/courses/:course_id', apiCourseGet );
+  //app.get( '/api/courses/:course_id/minilessons', apiMinilessonList );
+  app.post( '/api/courses/:course_id/minilessons', apiMinilessonAdd );
+
+  //app.get( '/api/minilessons/:minilesson_id', apiMinilessonGet );
+  //app.get( '/api/minilessons/:minilesson_id/pages', apiPageList );
+  app.post( '/api/minilessons/:minilesson_id/pages', apiPageAdd );
+
+  //app.get( '/api/pages/:page_id', apiPageGet );
+  //app.get( '/api/pages/:page_id/mcqs', apiMcqList );
+  app.post( '/api/pages/:page_id/mcqs', apiMcqAdd );
+
+  //app.get( '/api/mcqs/:mcq_id', apiMcqGet );
+  //app.get( '/api/mcqs/:mcq_id/submissions', apiSubmissionList );
+  app.post( '/api/mcqs/:mcq_id/submissions', apiSubmissionAdd );
 
 };
 
+/**
+ * Called to retrieve current user info.
+ *
+ * @param {object} req - req
+ * @param {object} res - res
+ */
 function user( req, res ) {
   if ( req.user ) {
     res.json( req.user );
@@ -136,6 +155,101 @@ function apiLogout( req, res ) {
   } else {
     res.status( 400 ).json( { err: 'Bad Request: User must be authenticated to process request.' } );
   }
+
+}
+
+/**
+ * Called to get a list of courses associated with the authenticated user.
+ *
+ * @param {object} req - req
+ * @param {object} res - res
+ */
+function apiCourseList( req, res ) {
+
+  // Ensure user
+  if ( req.user ) {
+
+    // Get courses the user teaches
+    Course.getCoursesForTeacher( { user_id: req.user._id }, Utils.safeFn( function ( err, teacherCourses ) {
+      if ( err ) {
+        res.json( { err: err } );
+      } else {
+
+        // Get courses the user takes
+        Course.getCoursesForStudent( { user_id: req.user._id }, Utils.safeFn( function ( err, studentCourses ) {
+          if ( err ) {
+            res.json( { err: err } );
+          } else {
+
+            /**
+             * Replaces teacher ids with user objects in courses.
+             *
+             * @param {Array.<Object>} courses - list of Course objects
+             * @param {function()} done - callback
+             */
+            var processCourses = function ( courses, done ) {
+
+              // Loop through courses
+              (function nextCourse( i, n ) {
+                if ( i < n ) {
+
+                  var course = courses[ i ];
+
+                  // Loop through teachers
+                  (function nextTeacher( j, m ) {
+                    if ( j < m ) {
+
+                      // Get User object
+                      User.get(
+                        {
+                          _id: course.teachers[ j ],
+                          projection: {
+                            timestamps: false
+                          }
+                        },
+                        Utils.safeFn( function ( err, user ) {
+                          course.teachers[ j ] = user || {};
+                          nextTeacher( j + 1, m );
+                        } )
+                      );
+
+                    } else {
+                      nextCourse( i + 1, n );
+                    }
+                  })( 0, course.teachers.length );
+
+                } else {
+                  done();
+                }
+              })( 0, courses.length );
+
+            };
+
+            processCourses( teacherCourses, function () {
+              processCourses( studentCourses, function () {
+
+                // Return results to client
+                res.json( {
+                  teaching: teacherCourses,
+                  taking: studentCourses
+                } );
+
+              } );
+            } );
+
+          }
+        } ) );
+
+      }
+    } ) );
+
+  } else {
+    res.status( 400 ).json( { err: 'Bad Request: User must be authenticated to process request.' } );
+  }
+
+}
+
+function apiCourseGet( req, res ) {
 
 }
 
