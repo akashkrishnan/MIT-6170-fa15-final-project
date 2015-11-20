@@ -170,13 +170,13 @@ function apiCourseList( req, res ) {
   if ( req.user ) {
 
     // Get courses the user teaches
-    Course.getCoursesForTeacher( { user_id: req.user._id }, Utils.safeFn( function ( err, teacherCourses ) {
+    Course.listForTeacher( { teacher_id: req.user._id }, Utils.safeFn( function ( err, teacherCourses ) {
       if ( err ) {
         res.json( { err: err } );
       } else {
 
         // Get courses the user takes
-        Course.getCoursesForStudent( { user_id: req.user._id }, Utils.safeFn( function ( err, studentCourses ) {
+        Course.listForStudent( { student_id: req.user._id }, Utils.safeFn( function ( err, studentCourses ) {
           if ( err ) {
             res.json( { err: err } );
           } else {

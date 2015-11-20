@@ -132,11 +132,11 @@ function exists( data, done ) {
       return done( new Error( 'Invalid parameters.' ), false );
     }
 
-    db.users.findOne( criteria, function ( err, user ) {
+    db.users.count( criteria, function ( err, count ) {
       if ( err ) {
         done( err, false );
       } else {
-        done( null, Boolean( user ) );
+        done( null, Boolean( count ) );
       }
     } );
 

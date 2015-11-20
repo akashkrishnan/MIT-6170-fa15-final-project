@@ -63,9 +63,9 @@ describe( 'Courses', function () {
 	  	});
 	});
 
-	    describe('#getCoursesForTeacher()', function () {
+	    describe('#listForTeacher()', function () {
 		    it('finds courses taught by a teacher', function (done) {
-	    	    Course.getCoursesForTeacher({ 'user_id':'1234' }, function (err, courses) {
+	    	    Course.listForTeacher({ teacher_id:'1234' }, function (err, courses) {
 			      	    assert.equal(courses[ 0 ].courseName, 'math');
 			      	    done();
 	    		}
@@ -75,7 +75,7 @@ describe( 'Courses', function () {
 
 	    describe('#getCoursesForStudent()', function () {
 		    it('finds courses a student is in', function (done) {
-	    	    Course.getCoursesForStudent({ 'user_id':'harini' }, function (err, courses) {
+	    	    Course.listForStudent({ student_id:'harini' }, function (err, courses) {
 			      	    assert.equal(courses[ 0 ].courseName, 'math');
 			      	    done();
 	    		}
