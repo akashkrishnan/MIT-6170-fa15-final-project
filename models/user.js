@@ -40,6 +40,8 @@ module.exports = {
  * Gets a list of User objects. Passwords and salts are not included.
  *
  * @param {object} data - data
+ * @param {object} [data.projection] - projection
+ * @param {boolean} [data.projection.timestamps] -
  * @param {number} [data.offset=0] - offset of first User object in the page
  * @param {number} [data.limit=0] - number of User objects in a page
  * @param {listCallback} done - callback
@@ -51,7 +53,9 @@ function list( data, done ) {
 
     var projection = Utils.validateObject( data, {
       projection: {
-        type: {},
+        type: {
+          timestamps: { type: 'boolean' }
+        },
         filter: 'projection',
         default: {}
       }
@@ -154,6 +158,8 @@ function exists( data, done ) {
  * @param {*} [data._id] - User._id
  * @param {string} [data.username] - User.username
  * @param {string} [data.password] - User.password
+ * @param {object} [data.projection] - projection
+ * @param {boolean} [data.projection.timestamps] -
  * @param {getCallback} done - callback
  */
 function get( data, done ) {
@@ -165,6 +171,16 @@ function get( data, done ) {
       password: { type: 'string' }
     } );
 
+    var projection = Utils.validateObject( data, {
+      projection: {
+        type: {
+          timestamps: { type: 'boolean' }
+        },
+        filter: 'projection',
+        default: {}
+      }
+    } ).projection;
+
     /**
      * Called after criteria is validated and password has been validated if applicable.
      *
@@ -172,7 +188,7 @@ function get( data, done ) {
      */
     var next = function ( criteria ) {
 
-      db.users.findOne( criteria, function ( err, user ) {
+      db.users.findOne( criteria, projection, function ( err, user ) {
         if ( err ) {
           done( err, null );
         } else if ( user ) {
