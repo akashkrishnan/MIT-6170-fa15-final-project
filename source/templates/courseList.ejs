@@ -28,19 +28,24 @@
 
       <div flex></div>
 
-      <div tab no-select dropdown-toggle-trigger="account-dropdown" layout-vertical>
+      <div relative layout-vertical style="height: 100%">
 
-        <div flex layout-horizontal layout-center>
+        <div tab no-select dropdown-toggle-trigger="account-dropdown"
+             flex layout-horizontal layout-center>
           <div><%= self.name %></div>
+          <div underline></div>
         </div>
 
         <div id="account-dropdown" dropdown align-right shadow elevation="2" layout-vertical>
-          <a href="/settings" item hoverable layout-horizontal layout-center>
-            <div text>Settings</div>
-          </a>
+
+          <div item hoverable layout-horizontal layout-center>
+            <div text>Pending Course Requests</div>
+          </div>
+
           <a href="/logout" item hoverable layout-horizontal layout-center>
             <div text>Logout</div>
           </a>
+
         </div>
 
       </div>
