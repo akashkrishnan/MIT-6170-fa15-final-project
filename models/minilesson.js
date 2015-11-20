@@ -7,14 +7,84 @@ var mongojs = require( 'mongojs' );
 var db = mongojs( Config.services.db.mongodb.uri, [ 'minilessons' ] );
 
 module.exports = {
-
+  list: list,
   get: get,
   add: add,
   remove: remove,
   addPage: addPage,
-  removePage: removePage,
+  removePage: removePage
 };
 
+/**
+ * @callback listCallback
+ * @param {Error} err - Error object
+ * @param {Array.<object>} minilessons - list of Minilesson objects in the current page
+ * @param {number} count - total number of Minilesson objects across all pages
+ */
+
+/**
+ * Gets a list of Minilesson objects.
+ *
+ * @param {object} data - data
+ * @param {string} data.course_id - Course._id
+ * @param {boolean} [data.states.published] -
+ * @param {object} [data.projection] - projection
+ * @param {boolean} [data.projection.states] -
+ * @param {boolean} [data.projection.timestamps] -
+ * @param {number} [data.offset=0] - offset of first Minilesson object in the page
+ * @param {number} [data.limit=0] - number of Minilesson objects in a page
+ * @param {listCallback} done - callback
+ */
+function list( data, done ) {
+  try {
+
+    var criteria = Utils.validateObject( data, {
+      course_id: { type: 'string', required: true },
+      'states.published': { type: 'boolean' }
+    } );
+
+    var projection = Utils.validateObject( data, {
+      projection: {
+        type: {
+          timestamps: { type: 'boolean' }
+        },
+        filter: 'projection',
+        default: {}
+      }
+    } ).projection;
+
+    var sort = Utils.validateObject( data, {
+      sort: {
+        type: {},
+        default: { 'timestamps.publish': 1 }
+      }
+    } ).sort;
+
+    db.minilessons.count( criteria, function ( err, count ) {
+      if ( err ) {
+        done( err, [], 0 );
+      } else {
+        db.minilessons
+          .find( criteria, projection )
+          .sort( sort )
+          .skip( data.offset || 0 )
+          .limit( data.limit || 0, function ( err, minilessons ) {
+            if ( err ) {
+              done( err, [], 0 );
+            } else {
+
+              // Return list of courses
+              done( null, minilessons, count );
+
+            }
+          } );
+      }
+    } );
+
+  } catch ( err ) {
+    done( err, [], 0 );
+  }
+}
 
 /**
  * @callback getCallback
@@ -33,7 +103,7 @@ function get( data, done ) {
   try {
 
     var criteria = Utils.validateObject( data, {
-      _id: { filter: 'MongoId' },
+      _id: { filter: 'MongoId' }
     } );
 
     /**
@@ -189,29 +259,29 @@ function remove( data, done ) {
  * @param {string} data.page_id - Page._id
  * @param {addCallback} done - callback
  */
-function addPage( data, done) {
+function addPage( data, done ) {
   try {
     var criteria = Utils.validateObject( data, {
       _id: { type: 'string', required: true },
       page_id: { type: 'string', required: true }
     } );
-    get( { _id : criteria._id }, function (err, _minilesson) {
-      if (err) {
-        done(err, null);
+    get( { _id: criteria._id }, function ( err, _minilesson ) {
+      if ( err ) {
+        done( err, null );
       } else {
-        db.minilessons.update({ _id:_minilesson._id },
-            { $addToSet: { pagesList: criteria.page_id } },
-            { upsert: true },
-            function (err) {
-              if (err) {
-                done(err, null);
-              } else {
-                // Get the new user object the proper way
-                get({ _id: _minilesson._id }, done);
-              }
-            });
+        db.minilessons.update( { _id: _minilesson._id },
+          { $addToSet: { pagesList: criteria.page_id } },
+          { upsert: true },
+          function ( err ) {
+            if ( err ) {
+              done( err, null );
+            } else {
+              // Get the new user object the proper way
+              get( { _id: _minilesson._id }, done );
+            }
+          } );
       }
-    });
+    } );
   } catch ( err ) {
     done( err, null );
   }
@@ -231,30 +301,30 @@ function addPage( data, done) {
  * @param {string} data.page_id - Page._id
  * @param {addCallback} done - callback
  */
-function removePage( data, done) {
+function removePage( data, done ) {
   try {
     var criteria = Utils.validateObject( data, {
       _id: { type: 'string', required: true },
       page_id: { type: 'string', required: true }
     } );
 
-    get( criteria, function (err, minilesson) {
-      if (err) {
-        done(err, null);
+    get( criteria, function ( err, minilesson ) {
+      if ( err ) {
+        done( err, null );
       } else {
-        db.minilessons.update(minilesson,
-            { $pull: { pagesList: criteria.page_id } },
-            { upsert: true },
-            function (err) {
-              if (err) {
-                done(err, null);
-              } else {
-                // Get the new user object the proper way
-                get({ _id: minilesson._id }, done);
-              }
-            });
+        db.minilessons.update( minilesson,
+          { $pull: { pagesList: criteria.page_id } },
+          { upsert: true },
+          function ( err ) {
+            if ( err ) {
+              done( err, null );
+            } else {
+              // Get the new user object the proper way
+              get( { _id: minilesson._id }, done );
+            }
+          } );
       }
-    });
+    } );
   } catch ( err ) {
     done( err, null );
   }
