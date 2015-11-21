@@ -210,7 +210,7 @@ function get( data, done ) {
  * @param {string} data.page_id - Page._id
  * @param {string} data.question - question
  * @param {Array.<string>} data.answers - answer choices
- * @param {number} data.correctIdx - index of answer choice that is correct
+ * @param {number} data.answer - index of answer choice that is correct
  * @param {addCallback} done - callback
  */
 function add( data, done ) {
@@ -224,7 +224,7 @@ function add( data, done ) {
     var insertData = Utils.validateObject( data, {
       page_id: { type: 'string', required: true },
       answers: { required: true },
-      correctIdx: { type: 'number', required: true }
+      answer: { type: 'string', required: true }
     } );
 
     // TODO: ADD SOME VALIDATION TO ANSWERS AND CORRECTIDX
