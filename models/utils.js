@@ -120,7 +120,13 @@ function validateObject( data, structure ) {
           if ( prop.filter === 'string' ) {
 
             // Convert to string
-            query[ q ] = ( data[ p ] || '' ).toString();
+            query[ q ] = String( data[ p ] );
+
+          } else if ( prop.filter === 'trim' ) {
+
+            if ( data[ p ] && data[ p ].trim() ) {
+              query[ q ] = data[ p ].trim();
+            }
 
           } else if ( prop.filter === 'MongoId' ) {
 
