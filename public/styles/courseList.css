@@ -4,7 +4,7 @@
 
 [course-list] {
   margin: 10px;
-  width: 600px;
+  width: 500px;
 }
 
 [course-list] [header] {
@@ -33,18 +33,29 @@
 [course-list] [course-item] {
   padding: 16px;
   border-bottom: 1px solid rgba(0, 0, 0, 0.1);
+  color: black;
+  text-decoration: none !important;
 }
 
 [course-list] [course-item]:last-of-type {
   border-bottom: none;
 }
 
-[course-item] [name] {
-  font-size: 26px;
-  margin-bottom: 10px;
+[course-list] [course-item]:hover {
+  background-color: rgba(0, 0, 0, 0.1);
 }
 
-[course-item] strong {
+[course-list] [course-item]:hover:not(:last-of-type) {
+  background-color: rgba(0, 0, 0, 0.1);
+  border-bottom: 1px solid rgba(0, 0, 0, 0);
+}
+
+[course-item] [name] {
+  font-size: 22px;
+  margin-bottom: 5px;
+}
+
+[course-item] span {
   white-space: nowrap;
 }
 

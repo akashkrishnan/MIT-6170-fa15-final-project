@@ -52,97 +52,83 @@
 
     </div>
 
-    <div content layout-horizontal layout-center-justified>
-      <div container layout-horizontal>
-        <div layout-vertical>
+    <div content layout-horizontal layout-start layout-center-justified>
+      <div layout-horizontal layout-center-justified layout-wrap>
 
-          <div course-list shadow="1">
+        <div course-list shadow="1">
 
-            <div header no-select layout-horizontal layout-center>
-              <div title>Courses I'm Teaching</div>
-              <div flex></div>
-              <div toolbar-button hoverable
-                   dialog-open-trigger="course-add-dialog"
-                   layout-horizontal layout-center>
-                Add Course
-              </div>
+          <div header no-select layout-horizontal layout-center>
+            <div title>Courses I'm Teaching</div>
+            <div flex></div>
+            <div toolbar-button hoverable
+                 dialog-open-trigger="course-add-dialog"
+                 layout-horizontal layout-center>
+              Add
             </div>
-
-            <%
-            teacherCourses.forEach( function( course ) {
-            %>
-            <div course-item layout-horizontal layout-center>
-
-              <div layout-vertical>
-                <div name><%= course.courseName %></div>
-                <div authors>
-                  <%
-                  courseTeachers[ course ].forEach( function ( teacher ) {
-                  %>
-                  <strong><%= teacher.name %></strong>
-                  <%
-                  } );
-                  %>
-                </div>
-              </div>
-
-              <div flex></div>
-
-              <div buttons layout-vertical layout-end>
-                <a button blue href="/courses/<%= course._id %>/minilessons">View Course</a>
-              </div>
-
-            </div>
-            <%
-            } );
-            %>
-
           </div>
 
-          <div course-list shadow="1">
+          <%
+          teacherCourses.forEach( function( course ) {
+          %>
+          <a href="/courses/<%= course._id %>/minilessons" course-item layout-horizontal layout-center>
 
-            <div header layout-horizontal layout-center>
-              <div title>Courses I'm Taking</div>
-              <div flex></div>
-              <div toolbar-button hoverable
-                   dialog-open-trigger="course-join-dialog"
-                   layout-horizontal layout-center>
-                Join Course
+            <div layout-vertical>
+              <div name><strong><%= course.courseName %></strong></div>
+              <div authors>
+                <%
+                courseTeachers[ course ].forEach( function ( teacher ) {
+                %>
+                <span><%= teacher.name %></span>
+                <%
+                } );
+                %>
               </div>
             </div>
 
-            <%
-            studentCourses.forEach( function( course ) {
-            %>
-            <div course-item layout-horizontal layout-center>
-
-              <div layout-vertical>
-                <div name><%= course.courseName %></div>
-                <div authors>
-                  <%
-                  courseTeachers[ course ].forEach( function ( teacher ) {
-                  %>
-                  <strong><%= teacher.name %></strong>
-                  <%
-                  } );
-                  %>
-                </div>
-              </div>
-
-              <div flex></div>
-
-              <div buttons layout-vertical layout-end>
-                <a button blue href="/courses/<%= course._id %>/minilessons">View Course</a>
-              </div>
-
-            </div>
-            <%
-            } );
-            %>
-
-          </div>
+          </a>
+          <%
+          } );
+          %>
 
         </div>
+
+        <div course-list shadow="1">
+
+          <div header layout-horizontal layout-center>
+            <div title>Courses I'm Taking</div>
+            <div flex></div>
+            <div toolbar-button hoverable
+                 dialog-open-trigger="course-join-dialog"
+                 layout-horizontal layout-center>
+              Join
+            </div>
+          </div>
+
+          <%
+          studentCourses.forEach( function( course ) {
+          %>
+          <div course-item layout-horizontal layout-center>
+
+            <div layout-vertical>
+              <div name><strong><%= course.courseName %></strong></div>
+              <div authors>
+                <%
+                courseTeachers[ course ].forEach( function ( teacher ) {
+                %>
+                <span><%= teacher.name %></span>
+                <%
+                } );
+                %>
+              </div>
+            </div>
+
+          </div>
+          <%
+          } );
+          %>
+
+        </div>
+
       </div>
     </div>
 
@@ -199,12 +185,12 @@
           <div course-item layout-horizontal layout-center>
 
             <div layout-vertical>
-              <div name><%= course.courseName %></div>
+              <div name><strong><%= course.courseName %></strong></div>
               <div authors>
                 <%
                 courseTeachers[ course ].forEach( function ( teacher ) {
                 %>
-                <strong><%= teacher.name %></strong>
+                <span><%= teacher.name %></span>
                 <%
                 } );
                 %>
@@ -214,7 +200,7 @@
             <div flex></div>
 
             <div buttons layout-vertical layout-end>
-              <a button blue join>Join</a>
+              <a button small blue join>Join</a>
             </div>
 
           </div>
