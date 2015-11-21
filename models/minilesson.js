@@ -2,7 +2,6 @@
 
 var Config = require( '../config.js' );
 var Utils = require( './utils.js' );
-var User = require( './user.js' );
 var Course = require( './course.js' );
 var mongojs = require( 'mongojs' );
 
@@ -82,7 +81,7 @@ function list( data, done ) {
                 done( err, [], 0 );
               } else {
 
-                // Return list of courses
+                // Return list of minilessons
                 done( null, minilessons, count );
 
               }
@@ -131,6 +130,7 @@ function list( data, done ) {
  * @callback getCallback
  * @param {Error} err - Error object
  * @param {object} minilesson - Minilesson object
+ * @param {object} course - Course object if valid user_id was provided
  */
 
 /**
@@ -178,7 +178,7 @@ function get( data, done ) {
     // Ensure valid minilesson
     findOne( { _id: criteria._id }, projection, function ( err, minilesson ) {
       if ( err ) {
-        done( err, null );
+        done( err, null, null );
       } else if ( criteria.user_id ) {
 
         // Ensure user is in the course
@@ -195,28 +195,34 @@ function get( data, done ) {
           },
           function ( err, course ) {
             if ( err ) {
-              done( err, null );
+              done( err, null, null );
             } else if ( course.teaching ) {
 
               // Teachers can see all minilessons
-              done( null, minilesson );
+              done( null, minilesson, course );
 
             } else {
 
               // Students can only see published minilessons
-              findOne( { _id: criteria._id, 'states.published': true }, projection, done );
+              findOne( { _id: criteria._id, 'states.published': true }, projection, function ( err, minilesson ) {
+                if ( err ) {
+                  done( err, null, null );
+                } else {
+                  done( null, minilesson, course );
+                }
+              } );
 
             }
           }
         );
 
       } else {
-        done( null, minilesson );
+        done( null, minilesson, null );
       }
     } );
 
   } catch ( err ) {
-    done( err, null );
+    done( err, null, null );
   }
 }
 
