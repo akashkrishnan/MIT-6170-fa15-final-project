@@ -105,10 +105,13 @@ function list( data, done ) {
         } else {
 
           // Ensure user is in the course
-          Course.get(
+          Course.getWithUser(
             {
               _id: listCriteria.course_id,
+              user_id: userCriteria.user_id,
               projection: {
+                teachers: false,
+                students: false,
                 states: false,
                 timestamps: false
               }
@@ -116,28 +119,16 @@ function list( data, done ) {
             function ( err, course ) {
               if ( err ) {
                 done( err, [], 0 );
+              } else if ( course.teaching ) {
+
+                // Teachers can see all minilessons
+                next();
+
               } else {
 
-                // TODO: POSSIBLY MOVE THIS INTO THE COURSE MODEL
-                // Check type of user in course
-                if ( course.teachers
-                       .map( function ( a ) { return a._id; } )
-                       .indexOf( user._id.toString() ) !== -1 ) {
-
-                  // Teachers can see all minilessons
-                  next();
-
-                } else if ( course.students
-                              .map( function ( a ) { return a._id; } )
-                              .indexOf( user._id.toString() ) !== -1 ) {
-
-                  // Students can only see published minilessons
-                  listCriteria[ 'states.published' ] = true;
-                  next();
-
-                } else {
-                  done( new Error( 'User not associated with course.' ), [], 0 );
-                }
+                // Students can only see published minilessons
+                listCriteria[ 'states.published' ] = true;
+                next();
 
               }
             }
@@ -205,17 +196,17 @@ function get( data, done ) {
 /**
  * @callback addCallback
  * @param {Error} err - Error object
- * @param {object} user - newly created minilesson object
+ * @param {object} minilesson - newly created Minilesson object
  */
 
 /**
  * Adds a minilesson.
  *
  * @param {object} data - data
- * @param {string} data.name - Minilesson.name
- * @param {string} data.state - Minilesson.state
- * @param {string} data.pagesList - Minilesson.pagesList
- * @param {addCallback} done - callback
+ * @param {string} data.user_id - User._id
+ * @param {string} data.course_id - Course._id
+ * @param {string} data.title - title of minilesson
+ * @param {listCallback} done - callback
  */
 function add( data, done ) {
   try {

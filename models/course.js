@@ -17,6 +17,7 @@ module.exports = {
   listForStudent: listForStudent,
   courseNameExists: courseNameExists,
   get: get,
+  getWithUser: getWithUser,
   getCourseByName: getCourseByName,
   add: add,
   addStudentToCourse: addStudent
@@ -283,7 +284,7 @@ function get( data, done ) {
     db.courses.findOne( criteria, projection, function ( err, course ) {
       if ( err ) {
         done( err, null );
-      } else {
+      } else if ( course.teachers ) {
 
         // Loop through teachers
         (function nextTeacher( i, n ) {
@@ -308,6 +309,8 @@ function get( data, done ) {
           }
         })( 0, course.teachers.length );
 
+      } else {
+        done( null, course );
       }
     } );
 
@@ -347,6 +350,117 @@ function courseNameExists( data, done ) {
 
   } catch ( err ) {
     done( err, false );
+  }
+}
+
+/**
+ * @callback getWithUserCallback
+ * @param {Error} err - Error object
+ * @param {object} course - Course object
+ */
+
+/**
+ * Gets a Course object with the specified user.
+ *
+ * @param {object} data - data
+ * @param {*} data._id - Course._id
+ * @param {string} data.user_id - User._id
+ * @param {object} [data.projection] - projection
+ * @param {boolean} [data.projection.teachers] -
+ * @param {boolean} [data.projection.students] -
+ * @param {boolean} [data.projection.states] -
+ * @param {boolean} [data.projection.timestamps] -
+ * @param {getWithUserCallback} done - callback
+ */
+function getWithUser( data, done ) {
+  try {
+
+    var criteria = Utils.validateObject( data, {
+      _id: { filter: 'MongoId', required: true },
+      user_id: { type: 'string', required: true }
+    } );
+
+    var projection = Utils.validateObject( data, {
+      projection: {
+        type: {
+          teachers: { type: 'boolean' },
+          students: { type: 'boolean' },
+          states: { type: 'boolean' },
+          timestamps: { type: 'boolean' }
+        },
+        filter: 'projection',
+        default: {}
+      }
+    } ).projection;
+
+    // Check if user is a teacher
+    db.courses.count(
+      {
+        _id: criteria._id,
+        teachers: criteria.user_id
+      },
+      function ( err, count ) {
+        if ( err ) {
+          done( err, null );
+        } else if ( count ) {
+
+          // Get the Course object
+          get(
+            {
+              _id: criteria._id,
+              projection: projection
+            },
+            function ( err, course ) {
+              if ( err ) {
+                done( err, null );
+              } else {
+                course.teaching = true;
+                done( null, course );
+              }
+            }
+          );
+
+        } else {
+
+          // Check if user is a student
+          db.courses.count(
+            {
+              _id: criteria._id,
+              students: criteria.user_id
+            },
+            function ( err, count ) {
+              if ( err ) {
+                done( err, null );
+              } else if ( count ) {
+
+                // Get the Course object
+                get(
+                  {
+                    _id: criteria._id,
+                    projection: projection
+                  },
+                  function ( err, course ) {
+                    if ( err ) {
+                      done( err, null );
+                    } else {
+                      course.taking = true;
+                      done( null, course );
+                    }
+                  }
+                );
+
+              } else {
+                done( new Error( 'Course not found.' ), null );
+              }
+            }
+          );
+
+        }
+      }
+    );
+
+  } catch ( err ) {
+    done( err, null );
   }
 }
 
