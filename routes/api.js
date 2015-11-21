@@ -457,6 +457,7 @@ function apiPageList( req, res ) {
 
     // Enforce certain values
     req.params.user_id = req.user._id;
+    req.params.projection = { timestamps: false };
 
     // Get list of minilessons
     Page.list( req.params, Utils.safeFn( function ( err, pages ) {
