@@ -2,29 +2,24 @@
  * AUTHOR: Tiffany Wong
  */
 
-[minilessonPanel] {
-  margin: 10px;
-  width: 300px;
-  margin-left: 0px;
-  margin-top: 20px;
-  border-color: #4285F4;
-  border-style: solid;
+[minilesson-list] {
+  width: 350px;
 }
 
-[minilessonPanel] [header] {
+[minilesson-list] [header] {
   height: 46px;
   color: white;
   background-color: #4285F4;
 }
 
-[minilessonPanel] [header] [title] {
+[minilesson-list] [header] [title] {
   padding-left: 16px;
   padding-right: 16px;
   font-size: 18px;
   text-transform: uppercase;
 }
 
-[minilessonPanel] [header] [toolbar-button] {
+[minilesson-list] [header] [toolbar-button] {
   height: 100%;
   padding-left: 16px;
   padding-right: 16px;
@@ -32,36 +27,37 @@
   text-transform: uppercase;
   text-decoration: none !important;
   cursor: pointer;
-  -webkit-touch-callout: none;
-  -webkit-user-select: none;
-  -khtml-user-select: none;
-  -moz-user-select: none;
-  -ms-user-select: none;
-  user-select: none;
 }
 
-[minilessonPanel] [lesson-item] {
-  padding: 16px;
+[minilesson-list] [content] {
+  overflow-y: auto;
+}
+
+[minilesson-list] [minilesson-item] {
+  padding: 16px 14px 16px 16px;
+  border-right: 1px solid rgba(0, 0, 0, 0);
   border-bottom: 1px solid rgba(0, 0, 0, 0.1);
-
+  text-decoration: none !important;
 }
 
-[minilessonPanel] [lesson-item]:last-of-type {
-  border-bottom: none;
+[minilesson-list] [minilesson-item]:hover {
+  background-color: rgba(0, 0, 0, 0.1);
+  border-bottom: 1px solid rgba(0, 0, 0, 0);
 }
 
-[lesson-item] [name] {
-  font-size: 15px;
-  margin-bottom: 10px;
+[minilesson-list] [minilesson-item][active] {
+  border-right: 3px solid rgb(114, 192, 44);
+}
+
+[minilesson-item] [name] {
+  font-size: 16px;
+  margin-bottom: 5px;
   color: black;
 }
 
-[lesson-item]:hover {
-  background-color: LightGrey;
-}
-
-[lesson-item] strong {
-  white-space: nowrap;
+[minilesson-item] [due-date] {
+  font-size: 12px;
+  color: black;
 }
 
 [contentPanel] {
