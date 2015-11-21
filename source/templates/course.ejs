@@ -116,7 +116,8 @@
             <% minilessons.forEach( function( _minilesson ) { %>
 
             <a href="/courses/<%= course._id %>/minilessons/<%= _minilesson._id %>"
-               minilesson-item <%= _minilesson._id === minilesson._id ? 'active' : '' %>
+               minilesson-item no-select
+              <%= minilesson._id && _minilesson._id.toString() === minilesson._id.toString() ? 'active' : '' %>
                layout-vertical>
               <div name><strong><%= _minilesson.title %></strong></div>
 
@@ -143,8 +144,8 @@
             <% pages.forEach( function( _page, i ) { %>
 
             <a href="/courses/<%= course._id %>/minilessons/<%= minilesson._id %>/<%= _page._id %>"
-              <%= _page._id === page._id ? 'active' : '' %>
-               page-item flex layout-horizontal layout-center-center>
+               page-item no-select <%= page._id && _page._id.toString() === page._id.toString() ? 'active' : '' %>
+               flex layout-horizontal layout-center-center>
               Page <%= i %>
             </a>
 
