@@ -7,6 +7,8 @@ var mongojs = require( 'mongojs' );
 var crypto = require( 'crypto' );
 
 var db = mongojs( Config.services.db.mongodb.uri, [ 'courses' ] );
+var mongoose = require('mongoose');
+
 
 module.exports = {
 
@@ -20,7 +22,8 @@ module.exports = {
   getWithUser: getWithUser,
   getCourseByName: getCourseByName,
   add: add,
-  addStudentToCourse: addStudent
+  addStudentToCourse: addStudent,
+  addPendingStudent: addPendingStudent
 
 };
 
@@ -583,6 +586,67 @@ function addStudent( data, done ) {
           );
         } catch ( err ) {
           done( new Error( 'Unable to add user to course. Please try again.' ), null );
+        }
+      } else {
+        done(
+          new Error( 'Course does not exist: ' + JSON.stringify( { name: criteria.courseName } ) + '.' ),
+          null
+        );
+      }
+    } );
+
+  } catch ( err ) {
+    done( err, null );
+  }
+}
+
+
+function addPendingStudent( data, done ) {
+  try {
+    var criteria = Utils.validateObject( data, {
+      courseName: {
+        type: 'string',
+        filter: function ( name ) {
+          if ( name ) {
+            return name.trim();
+          }
+        },
+        filter: 'trim',
+        required: true
+      },
+      courseId: {
+        type: 'string',
+        filter: function ( name ) {
+          if ( name ) {
+            return name.trim();
+          }
+        },
+        filter: 'trim',
+        required: true
+      },
+      student: {
+        type: 'string',
+        required: true
+      },
+    } );
+
+    courseNameExists( { courseName: criteria.courseName, _id: mongoose.Types.ObjectId(criteria.courseId) }, function ( err, _exists, course_id ) {
+      if ( err ) {
+        done( err, null );
+      } else if ( _exists ) {
+        try {
+          // Insert new student into class
+          db.courses.update( { '_id': course_id }, { $addToSet: { 'pendingStudents': criteria.student } },
+            function ( err, result ) {
+              if ( err ) {
+                done( err, null );
+              } else {
+                getCourseByName( { _id: course_id }, done );
+              }
+            }
+          );
+        } catch ( err ) {
+          done( new Error( 'Unable to add pending user to course. Please try again.' ), null );
         }
       } else {
         done(
