@@ -110,8 +110,6 @@ function validateObject( data, structure ) {
           // Don't set property if it is undefined
           if ( typeof res !== 'undefined' ) {
             query[ q ] = res;
-          } else if ( prop.required ) {
-            throw new Error( util.format( 'Missing required post-filter property: %s.', p ) );
           }
 
         } else if ( typeof prop.filter === 'string' ) {
@@ -183,6 +181,10 @@ function validateObject( data, structure ) {
           p, prop.type, typeof data[ p ]
         ) );
 
+      }
+
+      if ( !( q in query ) && prop.required ) {
+        throw new Error( util.format( 'Missing required post-filter property: %s.', p ) );
       }
 
     };
