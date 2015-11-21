@@ -260,6 +260,36 @@ function course( req, res, next ) {
                         Utils.safeFn( function ( err, minilessons ) {
                           if ( err ) {
                             next();
+                          } else if ( req.params.minilesson_id ) {
+
+                            // Get minilesson
+                            Minilesson.get(
+                              {
+                                _id: req.params.minilesson_id,
+                                user_id: req.user._id
+                              },
+                              Utils.safeFn( function ( err, minilesson ) {
+                                if ( err ) {
+                                  next();
+                                } else {
+
+                                  // Render the view
+                                  res.render( 'course', {
+                                    web: Config.web,
+                                    self: req.user,
+                                    teacherCourses: teacherCourses,
+                                    studentCourses: studentCourses,
+                                    course: course,
+                                    minilessons: minilessons,
+                                    minilesson: minilesson,
+                                    pages: minilessons,
+                                    page: {}
+                                  } );
+
+                                }
+                              } )
+                            );
+
                           } else {
 
                             // Render the view
@@ -270,9 +300,7 @@ function course( req, res, next ) {
                               studentCourses: studentCourses,
                               course: course,
                               minilessons: minilessons,
-                              minilesson: {},
-                              pages: minilessons,
-                              page: {}
+                              minilesson: {}
                             } );
 
                           }

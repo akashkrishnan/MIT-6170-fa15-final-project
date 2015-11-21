@@ -386,7 +386,25 @@ function apiMinilessonGet( req, res ) {
 
   // Ensure user
   if ( req.user ) {
-    res.json( { err: 'Not implemented.' } );
+
+    // Get minilesson
+    Minilesson.get(
+      {
+        _id: req.params.minilesson_id,
+        user_id: req.user._id,
+        projection: {
+          timestamps: false
+        }
+      },
+      Utils.safeFn( function ( err, minilesson ) {
+        if ( err ) {
+          res.json( { err: err } );
+        } else {
+          res.json( minilesson );
+        }
+      } )
+    );
+
   } else {
     res.status( 400 ).json( { err: 'Bad Request: User must be authenticated to process request.' } );
   }

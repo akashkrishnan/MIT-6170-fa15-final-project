@@ -51,6 +51,7 @@ function list( data, done ) {
     var projection = Utils.validateObject( data, {
       projection: {
         type: {
+          states: { type: 'boolean' },
           timestamps: { type: 'boolean' }
         },
         filter: 'projection',
@@ -65,7 +66,7 @@ function list( data, done ) {
       }
     } ).sort;
 
-    var next = function () {
+    var find = function () {
 
       // Get from database
       db.minilessons.count( listCriteria, function ( err, count ) {
@@ -91,48 +92,31 @@ function list( data, done ) {
 
     };
 
-    // Ensure valid user
-    User.get(
+    // Ensure user is in the course
+    Course.getWithUser(
       {
-        _id: userCriteria.user_id,
+        _id: listCriteria.course_id,
+        user_id: userCriteria.user_id,
         projection: {
+          teachers: false,
+          students: false,
+          states: false,
           timestamps: false
         }
       },
-      function ( err, user ) {
+      function ( err, course ) {
         if ( err ) {
           done( err, [], 0 );
+        } else if ( course.teaching ) {
+
+          // Teachers can see all minilessons
+          find();
+
         } else {
 
-          // Ensure user is in the course
-          Course.getWithUser(
-            {
-              _id: listCriteria.course_id,
-              user_id: userCriteria.user_id,
-              projection: {
-                teachers: false,
-                students: false,
-                states: false,
-                timestamps: false
-              }
-            },
-            function ( err, course ) {
-              if ( err ) {
-                done( err, [], 0 );
-              } else if ( course.teaching ) {
-
-                // Teachers can see all minilessons
-                next();
-
-              } else {
-
-                // Students can only see published minilessons
-                listCriteria[ 'states.published' ] = true;
-                next();
-
-              }
-            }
-          );
+          // Students can only see published minilessons
+          listCriteria[ 'states.published' ] = true;
+          find();
 
         }
       }
@@ -150,43 +134,86 @@ function list( data, done ) {
  */
 
 /**
- * Gets a Minilesson object.
+ * Adds a Minilesson object.
  *
  * @param {object} data - data
- * @param {*} [data._id] - Minilesson._id
+ * @param {string} data._id - Minilesson._id
+ * @param {string} [data.user_id] - User._id
+ * @param {object} [data.projection] - projection
+ * @param {boolean} [data.projection.states] -
+ * @param {boolean} [data.projection.timestamps] -
  * @param {getCallback} done - callback
  */
 function get( data, done ) {
   try {
 
     var criteria = Utils.validateObject( data, {
-      _id: { filter: 'MongoId' }
+      _id: { filter: 'MongoId', required: true },
+      user_id: { type: 'string' }
     } );
 
-    /**
-     * Called after minilesson is found in database.
-     *
-     * @param {object} criteria -
-     */
-    var next = function ( criteria ) {
+    var projection = Utils.validateObject( data, {
+      projection: {
+        type: {
+          states: { type: 'boolean' },
+          timestamps: { type: 'boolean' }
+        },
+        filter: 'projection',
+        default: {}
+      }
+    } ).projection;
 
-      db.minilessons.findOne( criteria, function ( err, minilesson ) {
+    var findOne = function ( query, projection, done ) {
+      db.minilessons.findOne( query, projection, function ( err, minilesson ) {
         if ( err ) {
-          done( err, null );
+          done( err );
         } else if ( minilesson ) {
-
-          // Stringify the MongoId
-          minilesson._id = minilesson._id.toString();
-
           done( null, minilesson );
-
         } else {
-          done( new Error( 'Minilesson not found: ' + JSON.stringify( criteria ) ), null );
+          done( new Error( 'Minilesson not found.' ), null );
         }
       } );
-
     };
-    next( criteria );
+
+    // Ensure valid minilesson
+    findOne( { _id: criteria._id }, projection, function ( err, minilesson ) {
+      if ( err ) {
+        done( err, null );
+      } else if ( criteria.user_id ) {
+
+        // Ensure user is in the course
+        Course.getWithUser(
+          {
+            _id: minilesson.course_id,
+            user_id: criteria.user_id,
+            projection: {
+              teachers: false,
+              students: false,
+              states: false,
+              timestamps: false
+            }
+          },
+          function ( err, course ) {
+            if ( err ) {
+              done( err, null );
+            } else if ( course.teaching ) {
+
+              // Teachers can see all minilessons
+              done( null, minilesson );
+
+            } else {
+
+              // Students can only see published minilessons
+              findOne( { _id: criteria._id, 'states.published': true }, projection, done );
+
+            }
+          }
+        );
+
+      } else {
+        done( null, minilesson );
+      }
+    } );
 
   } catch ( err ) {
     done( err, null );
@@ -225,66 +252,49 @@ function add( data, done ) {
       }
     } );
 
-    // Ensure valid user
-    User.get(
+    // Ensure user is teaching the course
+    Course.getWithUser(
       {
-        _id: criteria.user_id,
+        _id: criteria.course_id,
+        user_id: criteria.user_id,
         projection: {
+          teachers: false,
+          students: false,
+          states: false,
           timestamps: false
         }
       },
-      function ( err ) {
+      function ( err, course ) {
         if ( err ) {
           done( err, null );
-        } else {
+        } else if ( course.teaching ) {
 
-          // Ensure user is teaching the course
-          Course.getWithUser(
+          // Insert into database
+          db.minilessons.insert(
             {
-              _id: criteria.course_id,
-              user_id: criteria.user_id,
-              projection: {
-                teachers: false,
-                students: false,
-                states: false,
-                timestamps: false
+              course_id: criteria.course_id,
+              title: criteria.title,
+              states: {
+                published: false
+              },
+              timestamps: {
+                created: new Date()
               }
             },
-            function ( err, course ) {
+            function ( err, minilesson ) {
               if ( err ) {
                 done( err, null );
-              } else if ( course.teaching ) {
-
-                // Insert into database
-                db.minilessons.insert(
-                  {
-                    course_id: criteria.course_id,
-                    title: criteria.title,
-                    states: {
-                      published: false
-                    },
-                    timestamps: {
-                      created: new Date()
-                    }
-                  },
-                  function ( err, minilesson ) {
-                    if ( err ) {
-                      done( err, null );
-                    } else {
-
-                      // Get the new minilesson object the proper way
-                      get( { _id: minilesson._id }, done );
-
-                    }
-                  }
-                );
-
               } else {
-                done( new Error( 'Only a teacher may add a minilesson to a course.' ), null );
+
+                // Get the new minilesson object the proper way
+                get( { _id: minilesson._id }, done );
+
               }
             }
           );
 
+        } else {
+          done( new Error( 'Only a teacher may add a minilesson to a course.' ), null );
         }
       }
     );

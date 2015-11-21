@@ -87,7 +87,7 @@ var Flipper = function () {
               done( null, data );
             }
           } else {
-            done( new Error( 'Unable to list courses. Invalid server response.' ), null );
+            done( new Error( 'Unable to get a list courses. Invalid server response.' ), null );
           }
         } );
       }
@@ -139,6 +139,46 @@ var Flipper = function () {
   };
 
   that.minilesson = {
+
+    list: function ( data, done ) {
+      if ( data ) {
+        if ( data.course_id && data.course_id.trim() ) {
+          ajax( 'GET', '/api/courses/' + data.course_id.trim() + '/minilessons', data, function ( data ) {
+            if ( data ) {
+              if ( data.err ) {
+                done( data.err, null );
+              } else {
+                done( null, data );
+              }
+            } else {
+              done( new Error( 'Unable to get a list of minilessons. Invalid server response.' ), null );
+            }
+          } );
+        } else {
+          done( new Error( 'A course ID is required to get a list of minilessons.' ) );
+        }
+      }
+    },
+
+    get: function ( data, done ) {
+      if ( data ) {
+        if ( data.minilesson_id && data.minilesson_id.trim() ) {
+          ajax( 'GET', '/api/minilessons/' + data.minilesson_id.trim(), data, function ( data ) {
+            if ( data ) {
+              if ( data.err ) {
+                done( data.err, null );
+              } else {
+                done( null, data );
+              }
+            } else {
+              done( new Error( 'Unable to get minilesson. Invalid server response.' ), null );
+            }
+          } );
+        } else {
+          done( new Error( 'A minilesson ID is required to get a minilesson.' ) );
+        }
+      }
+    },
 
     add: function ( data, done ) {
       if ( data ) {
