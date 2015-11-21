@@ -7,6 +7,8 @@ var mongojs = require( 'mongojs' );
 var crypto = require( 'crypto' );
 
 var db = mongojs( Config.services.db.mongodb.uri, [ 'courses' ] );
+var mongoose = require('mongoose');
+
 
 module.exports = {
 
@@ -20,7 +22,8 @@ module.exports = {
   getWithUser: getWithUser,
   getCourseByName: getCourseByName,
   add: add,
-  addStudentToCourse: addStudent
+  addStudentToCourse: addStudent,
+  addPendingStudent: addPendingStudent
 
 };
 
@@ -464,6 +467,20 @@ function getWithUser( data, done ) {
   }
 }
 
+
+/**
+ * @callback getCourseByNameCallback
+ * @param {Error} err - Error object
+ * @param {object} course - Course object
+ */
+
+/**
+ * Gets a Course object with the name.
+ *
+ * @param {object} data - data
+ * @param {*} data.courseName - Course.courseName
+ * @param {getCourseByName} done - callback
+ */
 function getCourseByName( data, done ) {
 
   try {
@@ -487,7 +504,20 @@ function getCourseByName( data, done ) {
 
 }
 
+/**
+ * @callback addCallback
+ * @param {Error} err - Error object
+ * @param {object} course - Course object
+ */
 
+/**
+ * Adds a course object.
+ *
+ * @param {object} data - data
+ * @param {*} data.courseName - Course.courseName
+ * @param {*} data.teacher_id - Course.teachers
+ * @param {add} done - callback
+ */
 function add( data, done ) {
   try {
     var criteria = Utils.validateObject( data, {
@@ -511,11 +541,11 @@ function add( data, done ) {
         );
       } else {
         try {
-          ///////////////////////////////
           db.courses.insert(
             {
               courseName: criteria.courseName,
               teachers: [ criteria.teacher_id ],
+              pendingStudents: [],
               students: [],
               states: {
                 active: true
@@ -537,8 +567,6 @@ function add( data, done ) {
         } catch ( err ) {
           done( new Error( 'Unable to add course. Please try again.' ), null );
         }
-
-        /////////////////////////////////////
       }
     } );
 
@@ -569,11 +597,76 @@ function addStudent( data, done ) {
         done( err, null );
       } else if ( _exists ) {
         try {
+          // Remove student from pending 
+          db.courses.update ({'_id': course_id}, { $pull: { 'pendingStudents': criteria.student } }, 
+            function ( err, result ) {
+              if (err) {
+                done( err, null );
+              } else {
+                // Insert new student into class
+                db.courses.update( { '_id': course_id }, { $push: { 'students': criteria.student } },
+                  function ( err, result ) {
+                    if ( err ) {
+                      done( err, null );
+                    } else {
+                      getCourseByName( { _id: course_id }, done );
+                    }
+                } );
+              }
+            });
+        } catch ( err ) {
+          done( new Error( 'Unable to add user to course. Please try again.' ), null );
+        }
+      } else {
+        done(
+          new Error( 'Course does not exist: ' + JSON.stringify( { name: criteria.courseName } ) + '.' ),
+          null
+        );
+      }
+    } );
+  } catch ( err ) {
+    done( err, null );
+  }
+}
+
+
+function addPendingStudent( data, done ) {
+  try {
+    var criteria = Utils.validateObject( data, {
+      courseName: {
+        type: 'string',
+        filter: function ( name ) {
+          if ( name ) {
+            return name.trim();
+          }
+        },
+        filter: 'trim',
+        required: true
+      },
+      courseId: {
+        type: 'string',
+        filter: function ( name ) {
+          if ( name ) {
+            return name.trim();
+          }
+        },
+        filter: 'trim',
+        required: true
+      },
+      student: {
+        type: 'string',
+        required: true
+      },
+    } );
+
+    courseNameExists( { courseName: criteria.courseName, _id: mongoose.Types.ObjectId(criteria.courseId) }, function ( err, _exists, course_id ) {
+      if ( err ) {
+        done( err, null );
+      } else if ( _exists ) {
+        try {
           // Insert new student into class
-          db.courses.update(
-            { _id: course_id },
-            { $push: { students: criteria.student } },
-            function ( err ) {
+          db.courses.update( { '_id': course_id }, { $addToSet: { 'pendingStudents': criteria.student } },
+            function ( err, result ) {
               if ( err ) {
                 done( err, null );
               } else {
@@ -582,7 +675,7 @@ function addStudent( data, done ) {
             }
           );
         } catch ( err ) {
-          done( new Error( 'Unable to add user to course. Please try again.' ), null );
+          done( new Error( 'Unable to add pending user to course. Please try again.' ), null );
         }
       } else {
         done(
