@@ -178,6 +178,7 @@
                 Set
               </div>
               <% } %>
+
             </div>
 
             <% if ( page.resource ) { %>
@@ -205,10 +206,27 @@
                 Add
               </div>
               <% } %>
+
             </div>
 
-            <% if ( page.mcq && page.mcq.length ) { %>
-            <div content></div>
+            <% var lookup = [ 'A', 'B', 'C', 'D', 'E' ]; %>
+
+            <% if ( mcqs && mcqs.length ) { %>
+            <div content layout-horizontal layout-around-justified layout-wrap>
+
+              <% mcqs.forEach( function ( mcq ) { %>
+              <div mcq-item flex layout-vertical>
+
+                <div question><strong><%= mcq.question %></strong></div>
+
+                <% mcq.answers.forEach( function ( answer, i ) { %>
+                <div choice><%= lookup[ i ] + '. ' + answer %></div>
+                <% } ); %>
+
+              </div>
+              <% } ); %>
+
+            </div>
             <% } else { %>
             <div content flex layout-horizontal layout-center-center>
               There are no multiple choice questions for this page.

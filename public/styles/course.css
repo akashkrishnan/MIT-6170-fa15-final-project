@@ -91,6 +91,18 @@
   border-bottom: 4px solid rgb(114, 192, 44);
 }
 
+[mcq-list] [content] {
+  padding: 5px;
+}
+
+[mcq-list] [mcq-item] {
+  width: 100%;
+  min-width: 250px;
+  max-width: 510px;
+  margin: 5px;
+  border: 1px solid rgba(0, 0, 0, 0.1);
+}
+
 [resource] {
   margin-bottom: 10px;
 }
