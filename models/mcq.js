@@ -179,7 +179,7 @@ function get( data, done ) {
               done( err, null, null );
             } else {
 
-              // Teachers can see all mqcs
+              // Teachers can see all mcqs
               done( null, mcq, course );
 
             }

@@ -549,7 +549,20 @@ function apiMcqList( req, res ) {
 
   // Ensure user
   if ( req.user ) {
-    res.json( { err: 'Not implemented.' } );
+
+    // Enforce certain values
+    req.params.user_id = req.user._id;
+    req.params.projection = { timestamps: false };
+
+    // Get list of minilessons
+    Mcq.list( req.params, Utils.safeFn( function ( err, mcqs ) {
+      if ( err ) {
+        res.json( { err: err } );
+      } else {
+        res.json( mcqs );
+      }
+    } ) );
+
   } else {
     res.status( 400 ).json( { err: 'Bad Request: User must be authenticated to process request.' } );
   }
@@ -566,7 +579,25 @@ function apiMcqGet( req, res ) {
 
   // Ensure user
   if ( req.user ) {
-    res.json( { err: 'Not implemented.' } );
+
+    // Get mcq
+    Mcq.get(
+      {
+        _id: req.params.mcq_id,
+        user_id: req.user._id,
+        projection: {
+          timestamps: false
+        }
+      },
+      Utils.safeFn( function ( err, mcq ) {
+        if ( err ) {
+          res.json( { err: err } );
+        } else {
+          res.json( mcq );
+        }
+      } )
+    );
+
   } else {
     res.status( 400 ).json( { err: 'Bad Request: User must be authenticated to process request.' } );
   }
@@ -583,7 +614,20 @@ function apiMcqAdd( req, res ) {
 
   // Ensure user
   if ( req.user ) {
-    res.json( { err: 'Not implemented.' } );
+
+    // Enforce some invariants
+    req.body.user_id = req.user._id;
+    req.body.page_id = req.params.page_id;
+
+    // Add mcq
+    Mcq.add( req.body, Utils.safeFn( function ( err, mcq ) {
+      if ( err ) {
+        res.json( { err: err } );
+      } else {
+        res.json( mcq );
+      }
+    } ) );
+
   } else {
     res.status( 400 ).json( { err: 'Bad Request: User must be authenticated to process request.' } );
   }
