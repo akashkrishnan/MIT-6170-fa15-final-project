@@ -104,7 +104,10 @@
 }
 
 #minilesson-add-dialog [form],
-#page-add-dialog [form],
-#mcq-add-dialog [form] {
+#page-add-dialog [form] {
   width: 300px;
+}
+
+#mcq-add-dialog [form] {
+  width: 450px;
 }

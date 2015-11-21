@@ -228,6 +228,8 @@ function add( data, done ) {
       resource: { type: 'string', filter: 'trim' }
     } );
 
+    // TODO: VALIDATE RESOURCE
+
     // Ensure user is associated with page's minilesson
     Minilesson.get(
       {
