@@ -219,28 +219,34 @@ function apiCourseList( req, res ) {
 
                       var course = courses[ i ];
 
-                      // Loop through teachers
-                      (function nextTeacher( j, m ) {
-                        if ( j < m ) {
+                      if ( course.teachers ) {
 
-                          // Get User object
-                          User.get(
-                            {
-                              _id: course.teachers[ j ],
-                              projection: {
-                                timestamps: false
-                              }
-                            },
-                            Utils.safeFn( function ( err, user ) {
-                              course.teachers[ j ] = user || {};
-                              nextTeacher( j + 1, m );
-                            } )
-                          );
+                        // Loop through teachers
+                        (function nextTeacher( j, m ) {
+                          if ( j < m ) {
 
-                        } else {
-                          nextCourse( i + 1, n );
-                        }
-                      })( 0, course.teachers.length );
+                            // Get User object
+                            User.get(
+                              {
+                                _id: course.teachers[ j ],
+                                projection: {
+                                  timestamps: false
+                                }
+                              },
+                              Utils.safeFn( function ( err, user ) {
+                                course.teachers[ j ] = user || {};
+                                nextTeacher( j + 1, m );
+                              } )
+                            );
+
+                          } else {
+                            nextCourse( i + 1, n );
+                          }
+                        })( 0, course.teachers.length );
+
+                      } else {
+                        nextCourse( i + 1, n );
+                      }
 
                     } else {
                       done();
