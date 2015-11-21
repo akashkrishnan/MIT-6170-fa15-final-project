@@ -35,7 +35,7 @@
 
               // TODO: WE SHOULDN'T NEED TO REFRESH
               // Refresh for now
-              location.reload( true );
+              location.reload();
 
               // Close the dialog --- this works because the dialog is a dialog-close-trigger
               minilessonAddDialog.click();

@@ -2,22 +2,22 @@
  * AUTHOR: Tiffany Wong
  */
 
-[minilesson-list] {
-  margin-right: 10px;
-  width: 350px;
-}
-
-[minilesson-list] [header] {
+[shadow] [header] {
   height: 46px;
   color: white;
   background-color: #4285F4;
 }
 
-[minilesson-list] [header] [title] {
+[shadow] [header] [title] {
   padding-left: 16px;
   padding-right: 16px;
   font-size: 18px;
   text-transform: uppercase;
+}
+
+[minilesson-list] {
+  margin-right: 10px;
+  width: 350px;
 }
 
 [toolbar-button] {
@@ -71,6 +71,8 @@
 }
 
 [page-list] [page-item] {
+  border-top: 4px solid rgba(0, 0, 0, 0);
+  border-bottom: 4px solid rgba(0, 0, 0, 0);
   border-right: 1px solid rgba(0, 0, 0, 0.1);
   color: white;
   text-decoration: none !important;
@@ -82,6 +84,23 @@
 
 [page-list] [page-item]:hover {
   background-color: rgba(255, 255, 255, 0.1);
+}
+
+[page-list] [page-item][active] {
+  background-color: rgba(255, 255, 255, 0.1);
+  border-bottom: 4px solid rgb(114, 192, 44);
+}
+
+[resource] {
+  margin-bottom: 10px;
+}
+
+[resource] [content] {
+  padding: 16px;
+}
+
+[mcq-list] [content] {
+  overflow-y: auto;
 }
 
 #minilesson-add-dialog [form],

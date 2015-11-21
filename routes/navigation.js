@@ -283,7 +283,7 @@ function course( req, res, next ) {
                                     minilessons: minilessons,
                                     minilesson: minilesson,
                                     pages: minilessons,
-                                    page: {},
+                                    page: minilessons[ 5 ] || {},
                                     mcqs: []
                                   } );
 

@@ -164,23 +164,29 @@
           <% if ( page._id ) { %>
 
           <% if ( course.teaching || page.resource ) { %>
-          <div resource>
+          <div resource shadow elevation="1">
 
             <div header no-select layout-horizontal layout-center>
 
-              <div text>Resource</div>
+              <div title>Resource</div>
               <div flex></div>
 
               <% if ( course.teaching ) { %>
               <div toolbar-button hoverable
-                   dialog-open-trigger="mcq-add-dialog"
+                   dialog-open-trigger="resource-set-dialog"
                    layout-horizontal layout-center>
                 Set
               </div>
               <% } %>
             </div>
 
-            <div content><%= page.resource %></div>
+            <% if ( page.resource ) { %>
+            <div content flex layout-horizontal layout-center-center><%= page.resource %></div>
+            <% } else { %>
+            <div content flex layout-horizontal layout-center-center>
+              No resource is available for this page. This section will not show up for students.
+            </div>
+            <% } %>
 
           </div>
           <% } %>
@@ -189,7 +195,7 @@
 
             <div header no-select layout-horizontal layout-center>
 
-              <div text>Multiple Choice Questions</div>
+              <div title>Multiple Choice Questions</div>
               <div flex></div>
 
               <% if ( course.teaching ) { %>
@@ -200,6 +206,14 @@
               </div>
               <% } %>
             </div>
+
+            <% if ( page.resource ) { %>
+            <div content></div>
+            <% } else { %>
+            <div content flex layout-horizontal layout-center-center>
+              There are no multiple choice questions for this page.
+            </div>
+            <% } %>
 
           </div>
 
