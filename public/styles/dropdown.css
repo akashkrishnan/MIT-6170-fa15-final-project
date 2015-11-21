@@ -5,7 +5,6 @@
 
 [dropdown] {
   position: absolute;
-  border-top: 1px solid white;
   z-index: 2;
 }
 
@@ -19,7 +18,7 @@
 
 [dropdown] [item] {
   height: 40px;
-  border-bottom: 1px solid rgba(0, 0, 0, 0.065);
+  border-bottom: 1px solid rgba(0, 0, 0, 0.1);
   font-size: 14px;
   text-decoration: none !important;
   color: black;
@@ -36,6 +35,10 @@
 }
 
 [dropdown] [item][hoverable]:hover {
-  color: white;
-  background-color: rgb(114, 192, 44);
+  color: black;
+  background-color: rgba(0, 0, 0, 0.1);
+}
+
+[dropdown] [item][hoverable]:hover:not(:last-child) {
+  border-bottom: 1px solid rgba(0, 0, 0, 0);
 }
