@@ -43,11 +43,13 @@
 
 [minilesson-list] [minilesson-item]:hover {
   background-color: rgba(0, 0, 0, 0.1);
-  border-bottom: 1px solid rgba(0, 0, 0, 0);
+  border-bottom: 1px solid white;
 }
 
 [minilesson-list] [minilesson-item][active] {
   padding: 16px 16px 16px 12px;
+  background-color: rgba(0, 0, 0, 0.1);
+  border-bottom: 1px solid white;
   border-left: 4px solid rgb(114, 192, 44);
 }
 
