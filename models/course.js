@@ -575,24 +575,40 @@ function add( data, done ) {
   }
 }
 
+/**
+ * @callback addStudentCallback
+ * @param {Error} err - Error object
+ * @param {object} course - Course object
+ */
 
+/**
+ * Adds a course object.
+ *
+ * @param {object} data - data
+ * @param {*} data.courseName - Course.courseName
+ * @param {*} data.student - Course.students
+ * @param {addStudent} done - callback
+ */
 function addStudent( data, done ) {
   try {
 
     var criteria = Utils.validateObject( data, {
       courseName: {
         type: 'string',
-        filter: 'trim',
-        required: true
+        filter: 'trim'
       },
-      student: {
+      courseId: {
+        type: 'string',
+        filter: 'trim'
+      },
+      studentId: {
         type: 'string',
         filter: 'trim',
         required: true
       }
     } );
 
-    courseNameExists( { courseName: criteria.courseName }, function ( err, _exists, course_id ) {
+    courseNameExists( { courseName: criteria.courseName, _id: mongoose.Types.ObjectId(criteria.courseId) }, function ( err, _exists, course_id ) {
       if ( err ) {
         done( err, null );
       } else if ( _exists ) {
@@ -609,7 +625,7 @@ function addStudent( data, done ) {
                     if ( err ) {
                       done( err, null );
                     } else {
-                      getCourseByName( { _id: course_id }, done );
+                      get( { _id: course_id }, done );
                     }
                 } );
               }
@@ -619,7 +635,7 @@ function addStudent( data, done ) {
         }
       } else {
         done(
-          new Error( 'Course does not exist: ' + JSON.stringify( { name: criteria.courseName } ) + '.' ),
+          new Error( 'Course does not exist.' ),
           null
         );
       }
@@ -640,8 +656,7 @@ function addPendingStudent( data, done ) {
             return name.trim();
           }
         },
-        filter: 'trim',
-        required: true
+        filter: 'trim'
       },
       courseId: {
         type: 'string',
@@ -651,7 +666,6 @@ function addPendingStudent( data, done ) {
           }
         },
         filter: 'trim',
-        required: true
       },
       student: {
         type: 'string',
@@ -679,7 +693,7 @@ function addPendingStudent( data, done ) {
         }
       } else {
         done(
-          new Error( 'Course does not exist: ' + JSON.stringify( { name: criteria.courseName } ) + '.' ),
+          new Error( 'Course does not exist.' ),
           null
         );
       }
