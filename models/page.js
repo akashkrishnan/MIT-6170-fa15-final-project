@@ -31,8 +31,8 @@ module.exports = {
  * @param {string} data.minilesson_id - Minilesson._id
  * @param {object} [data.projection] - projection
  * @param {boolean} [data.projection.timestamps] -
- * @param {number} [data.offset=0] - offset of first Minilesson object in the page
- * @param {number} [data.limit=0] - number of Minilesson objects in a page
+ * @param {number} [data.offset=0] - offset of first Page object in the page
+ * @param {number} [data.limit=0] - number of Page objects in a page
  * @param {listCallback} done - callback
  */
 function list( data, done ) {

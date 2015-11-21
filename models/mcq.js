@@ -2,152 +2,294 @@
 
 var Config = require( '../config.js' );
 var Utils = require( './utils.js' );
+var Page = require( './page.js' );
 var mongojs = require( 'mongojs' );
 
-var db = mongojs( Config.services.db.mongodb.uri, [ 'MCQs' ] );
+var db = mongojs( Config.services.db.mongodb.uri, [ 'mcqs' ] );
 
 module.exports = {
 
+  list: list,
   get: get,
   add: add,
-  remove: remove,
+  remove: remove
 
 };
 
 /**
- * @callback getCallback
+ * @callback listCallback
  * @param {Error} err - Error object
- * @param {object} mcq - MCQ object
+ * @param {Array.<object>} mcqs - list of Mcq objects in the current page
+ * @param {number} count - total number of Mcq objects across all pages
  */
 
 /**
- * Gets a MCQ object.
+ * Gets a list of Mcq objects.
  *
  * @param {object} data - data
- * @param {*} [data._id] - MCQ._id
+ * @param {string} data.user_id - User._id
+ * @param {string} data.page_id - Page._id
+ * @param {object} [data.projection] - projection
+ * @param {boolean} [data.projection.timestamps] -
+ * @param {number} [data.offset=0] - offset of first Mcq object in the page
+ * @param {number} [data.limit=0] - number of Mcq objects in a page
+ * @param {listCallback} done - callback
+ */
+function list( data, done ) {
+  try {
+
+    var userCriteria = Utils.validateObject( data, {
+      user_id: { type: 'string', required: true }
+    } );
+
+    var listCriteria = Utils.validateObject( data, {
+      page_id: { type: 'string', required: true }
+    } );
+
+    var projection = Utils.validateObject( data, {
+      projection: {
+        type: {
+          timestamps: { type: 'boolean' }
+        },
+        filter: 'projection',
+        default: {}
+      }
+    } ).projection;
+
+    var sort = Utils.validateObject( data, {
+      sort: {
+        type: {},
+        default: { 'timestamps.created': 1 }
+      }
+    } ).sort;
+
+    var find = function ( query, projection ) {
+
+      // Get from database
+      db.mcqs.count( query, function ( err, count ) {
+        if ( err ) {
+          done( err, [], 0 );
+        } else {
+          db.mcqs
+            .find( query, projection )
+            .sort( sort )
+            .skip( data.offset || 0 )
+            .limit( data.limit || 0, function ( err, pages ) {
+              if ( err ) {
+                done( err, [], 0 );
+              } else {
+
+                // Return list of pages
+                done( null, pages, count );
+
+              }
+            } );
+        }
+      } );
+
+    };
+
+    // Ensure user is associated with the page
+    Page.get(
+      {
+        _id: listCriteria.page_id,
+        user_id: userCriteria.user_id,
+        projection: {
+          timestamps: false
+        }
+      },
+      function ( err ) {
+        if ( err ) {
+          done( err, [], 0 );
+        } else {
+          find( listCriteria, projection );
+        }
+      }
+    );
+
+  } catch ( err ) {
+    done( err, [], 0 );
+  }
+}
+
+/**
+ * @callback getCallback
+ * @param {Error} err - Error object
+ * @param {object} mcq - Mcq object
+ * @param {object} course - Course object if a valid user_id was provided
+ */
+
+/**
+ * Gets an Mcq object.
+ *
+ * @param {object} data - data
+ * @param {string} data._id - Mcq._id
+ * @param {string} [data.user_id] - User._id
+ * @param {object} [data.projection] - projection
+ * @param {boolean} [data.projection.timestamps] -
  * @param {getCallback} done - callback
  */
 function get( data, done ) {
   try {
 
     var criteria = Utils.validateObject( data, {
-        _id: { filter: 'MongoId', required: true },
+      _id: { filter: 'MongoId', required: true },
+      user_id: { type: 'string' }
+    } );
+
+    var projection = Utils.validateObject( data, {
+      projection: {
+        type: {
+          timestamps: { type: 'boolean' }
+        },
+        filter: 'projection',
+        default: {}
+      }
+    } ).projection;
+
+    var findOne = function ( query, projection, done ) {
+      db.mcqs.findOne( query, projection, function ( err, page ) {
+        if ( err ) {
+          done( err );
+        } else if ( page ) {
+          done( null, page );
+        } else {
+          done( new Error( 'Mcq not found.' ), null );
+        }
       } );
+    };
 
-        /**
-         * Called after MCQ is found in database.
-         *
-         * @param {object} criteria -
-         */
-    var next = function ( criteria ) {
+    // Ensure valid mcq
+    findOne( { _id: criteria._id }, projection, function ( err, mcq ) {
+      if ( err ) {
+        done( err, null, null );
+      } else if ( criteria.user_id ) {
 
-        db.MCQs.findOne( criteria, function ( err, mcq ) {
+        // Ensure user is associated with mcq's page
+        Page.get(
+          {
+            _id: mcq.page_id,
+            user_id: criteria.user_id,
+            projection: {
+              timestamps: false
+            }
+          },
+          function ( err, page, course ) {
             if ( err ) {
-                done( err, null );
-              } else if ( mcq ) {
+              done( err, null, null );
+            } else {
 
-                    // Stringify the MongoId
-                  mcq._id = mcq._id.toString();
+              // Teachers can see all mqcs
+              done( null, mcq, course );
 
-                  done( null, mcq );
+            }
+          }
+        );
 
-                } else {
-                  done( new Error( 'MCQ not found: ' + JSON.stringify( criteria ) ), null );
-                }
-          } );
-
-      };
-    next(criteria);
+      } else {
+        done( null, mcq, null );
+      }
+    } );
 
   } catch ( err ) {
-      done( err, null );
-    }
+    done( err, null, null );
+  }
 }
 
 /**
  * @callback addCallback
  * @param {Error} err - Error object
- * @param {object} MCQ - newly created MCQ object
+ * @param {object} mcq - Mcq object
  */
 
 /**
- * Adds a MCQ.
+ * Adds an mcq.
  *
  * @param {object} data - data
- * @param {string} data.question - MCQ.question
- * @param {array} data.answerChoicesList - MCQ.answerChoicesList
- * @param {number} data.correctChoiceIndex - MCQ.correctChoiceIndex
+ * @param {string} data.user_id - User._id
+ * @param {string} data.page_id - Page._id
+ * @param {string} data.question - question
+ * @param {Array.<string>} data.answers - answer choices
+ * @param {number} data.correctIdx - index of answer choice that is correct
  * @param {addCallback} done - callback
  */
 function add( data, done ) {
   try {
+
     var criteria = Utils.validateObject( data, {
-        question: {
-            type: 'string',
-            filter: function ( name ) {
-                if ( name ) {
-                    return name.trim();
-                  }
-              },
-          },
-        answerChoicesList: {
-                //type: 'array',
-          },
-        correctChoiceIndex: {
-            type: 'number',
-          }
-      } );
+      user_id: { type: 'string', required: true },
+      page_id: { type: 'string', required: true }
+    } );
 
-    validateMCQ(criteria.question, criteria.answerChoicesList, criteria.correctChoiceIndex, function ( err ) {
+    var insertData = Utils.validateObject( data, {
+      page_id: { type: 'string', required: true },
+      answers: { required: true },
+      correctIdx: { type: 'number', required: true }
+    } );
+
+    // TODO: ADD SOME VALIDATION TO ANSWERS AND CORRECTIDX
+
+    // Ensure user is associated with mcq's page
+    Page.get(
+      {
+        _id: criteria.page_id,
+        user_id: criteria.user_id,
+        projection: {
+          timestamps: false
+        }
+      },
+      function ( err, page, course ) {
         if ( err ) {
-            done( err, null);
-          } else {
-            db.MCQs.insert(
-                {
-                  question: criteria.question,
-                  answerChoicesList: criteria.answerChoicesList,
-                  correctChoiceIndex: criteria.correctChoiceIndex
-                },
-                    function (err, MCQ) {
+          done( err, null );
+        } else if ( course.teaching ) {
 
-                      if (err) {
-                        done(err, null);
-                      } else {
-                            // Get the new user object the proper way
-                        get({ _id: MCQ._id }, done);
+          // Only teachers can add pages
+          insertData.timestamps = { created: new Date() };
 
-                      }
+          // Insert into database
+          db.mcqs.insert( insertData, function ( err, mcq ) {
+            if ( err ) {
+              done( err, null );
+            } else {
 
-                    }
-                );
-          }
-      });
+              // Get the new mcq object the proper way
+              get( { _id: mcq._id }, done );
+
+            }
+          } );
+
+        } else {
+          done( new Error( 'Only teachers can add mcqs to pages.' ), null );
+        }
+      }
+    );
 
   } catch ( err ) {
-      done( err, null );
-    }
+    done( err, null );
+  }
 }
+
 //Make sure MCQ are semi-well defined.
-function validateMCQ(question, answerChoicesList, correctChoiceIndex, done) {
+function validateMCQ( question, answerChoicesList, correctChoiceIndex, done ) {
   try {
-    if (!question) {
-        done(new Error('Missing Question'));
-      } else if (!answerChoicesList) {
-          done(new Error('Missing answer choices list.'));
-        } else if (answerChoicesList.length === 0) {
-          done(new Error('Answer choices list is empty.'));
-        } else if (correctChoiceIndex === null) {
-          done(new Error('Missing correct choice index'));
-        } else if (!(0 <= correctChoiceIndex) || !(correctChoiceIndex < answerChoicesList.length)) {
-          done(new Error('Correct choice index out of range'));
-        } else if (correctChoiceIndex % 1 !== 0) {
-          done(new Error('Correct choice index not an integer'));
-        } else {
-          done(null);
-        }
-  } catch (err) {
-      done(err);
+    if ( !question ) {
+      done( new Error( 'Missing Question' ) );
+    } else if ( !answerChoicesList ) {
+      done( new Error( 'Missing answer choices list.' ) );
+    } else if ( answerChoicesList.length === 0 ) {
+      done( new Error( 'Answer choices list is empty.' ) );
+    } else if ( correctChoiceIndex === null ) {
+      done( new Error( 'Missing correct choice index' ) );
+    } else if ( !(0 <= correctChoiceIndex) || !(correctChoiceIndex < answerChoicesList.length) ) {
+      done( new Error( 'Correct choice index out of range' ) );
+    } else if ( correctChoiceIndex % 1 !== 0 ) {
+      done( new Error( 'Correct choice index not an integer' ) );
+    } else {
+      done( null );
     }
+  } catch ( err ) {
+    done( err );
+  }
 }
 
 /**
@@ -167,28 +309,28 @@ function remove( data, done ) {
   try {
 
     var criteria = Utils.validateObject( data, {
-        _id: { type: 'string', required: true }
-      } );
+      _id: { type: 'string', required: true }
+    } );
 
-        // Ensure valid mcq
+    // Ensure valid mcq
     get( criteria, function ( err, MCQ ) {
-        if ( err ) {
+      if ( err ) {
+        done( err, null );
+      } else {
+
+        // Remove from database
+        db.MCQs.remove( criteria, true, function ( err ) {
+          if ( err ) {
             done( err, null );
           } else {
-
-                // Remove from database
-            db.MCQs.remove( criteria, true, function ( err ) {
-                if ( err ) {
-                    done( err, null );
-                  } else {
-                    done( null, MCQ );
-                  }
-              } );
-
+            done( null, MCQ );
           }
-      } );
+        } );
+
+      }
+    } );
 
   } catch ( err ) {
-      done( err, null );
-    }
+    done( err, null );
+  }
 }
