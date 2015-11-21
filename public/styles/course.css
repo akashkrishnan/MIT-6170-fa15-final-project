@@ -24,6 +24,7 @@
   height: 100%;
   padding-left: 16px;
   padding-right: 16px;
+  border-left: 1px solid rgba(0, 0, 0, 0.1);
   font-size: 14px;
   color: white;
   text-transform: uppercase;
@@ -75,7 +76,7 @@
   text-decoration: none !important;
 }
 
-[page-list] [page-item]:last-child {
+[page-list] [page-item]:last-of-type {
   border-right: none;
 }
 
