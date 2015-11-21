@@ -3,6 +3,7 @@
  */
 
 [minilesson-list] {
+  margin-right: 10px;
   width: 350px;
 }
 
@@ -34,9 +35,9 @@
 }
 
 [minilesson-list] [minilesson-item] {
-  padding: 16px 12px 16px 16px;
-  border-right: 1px solid rgba(0, 0, 0, 0);
+  padding: 16px 16px 16px 16px;
   border-bottom: 1px solid rgba(0, 0, 0, 0.1);
+  color: black;
   text-decoration: none !important;
 }
 
@@ -46,52 +47,37 @@
 }
 
 [minilesson-list] [minilesson-item][active] {
-  border-right: 4px solid rgb(114, 192, 44);
+  padding: 16px 16px 16px 12px;
+  border-left: 4px solid rgb(114, 192, 44);
 }
 
 [minilesson-item] [name] {
   font-size: 16px;
   margin-bottom: 5px;
-  color: black;
 }
 
 [minilesson-item] [due-date] {
   font-size: 12px;
-  color: black;
 }
 
-[contentPanel] {
-  margin: 20px;
-}
-
-[contentPanel] [progress-bar] {
-  border-color: #4285F4;
-  border-style: solid;
+[page-list] {
   height: 46px;
-  border-radius: 25px;
-  background-color: LightGray;
-
-}
-
-[contentPanel] [progress-bar-cell] {
-  border-radius: 25px;
-}
-
-[contentPanel] [done] {
-  content: url(http://www.clipartbest.com/cliparts/dT6/okx/dT6okxEbc.png);
-}
-
-[contentPanel] [current] {
+  margin-bottom: 10px;
   background-color: #4285F4;
+  color: white;
 }
 
-[contentPanel] [questionPanel] {
-  height: 100px;
-  border-radius: 25px;
-  border-color: #4285F4;
-  border-style: solid;
-  margin-top: 25px;
-  margin-bottom: 0px;
+[page-list] [page-item] {
+  border-right: 1px solid rgba(0, 0, 0, 0.1);
+  text-decoration: none !important;
+}
+
+[page-list] [page-item]:last-child {
+  border-right: none;
+}
+
+[page-list] [page-item]:hover {
+  background-color: rgba(0, 0, 0, 0.1);
 }
 
 #minilesson-add-dialog [form] {

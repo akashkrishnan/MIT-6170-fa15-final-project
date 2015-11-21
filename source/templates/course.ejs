@@ -111,7 +111,7 @@
             <% minilessons.forEach( function( _minilesson ) { %>
 
             <a href="/courses/<%= course._id %>/minilessons/<%= _minilesson._id %>"
-               minilesson-item
+               minilesson-item <%= _minilesson._id === minilesson._id ? 'active' : '' %>
                layout-vertical>
               <div name><strong>The Foundations of Copyright Law</strong></div>
 
@@ -179,25 +179,38 @@
         </div>
 
         <div flex layout-vertical>
-          <div pageContent layout-horizontal>
 
-            <div contentPanel layout-vertical flex>
-              <div progress-bar layout-horizontal layout-center-justified>
-                <div progress-bar-cell pending flex></div>
-                <div progress-bar-cell done flex></div>
-                <div progress-bar-cell done flex></div>
-                <div progress-bar-cell done flex></div>
-                <div progress-bar-cell current flex></div>
-                <div progress-bar-cell pending flex></div>
-                <div progress-bar-cell done flex></div>
-              </div>
-              <div questionPanel flex>
+          <div page-list shadow elevation="1" layout-horizontal>
+
+            <% pages.forEach( function( _page ) { %>
+
+            <a href="/courses/<%= course._id %>/minilessons/<%= minilesson._id %>/<%= _page._id %>"
+              <%= _page._id === page._id ? 'active' : '' %>
+               page-item flex layout-horizontal layout-center-center>
+              Page 1
+            </a>
+
+            <% } ); %>
+
+          </div>
+
+          <div resource></div>
+
+          <div mcq-list shadow elevation="1" flex layout-vertical>
+
+            <div header>
+              <div text></div>
+              <div flex></div>
+              <div toolbar-button hoverable
+                   dialog-open-trigger="mcq-add-dialog"
+                   layout-horizontal layout-center>
+                Add
               </div>
             </div>
 
           </div>
-        </div>
 
+        </div>
       </div>
     </div>
 

@@ -264,7 +264,10 @@ function course( req, res, next ) {
                             teacherCourses: teacherCourses,
                             studentCourses: studentCourses,
                             course: course,
-                            minilessons: minilessons
+                            minilessons: minilessons,
+                            minilesson: {},
+                            pages: minilessons,
+                            page: {}
                           } );
 
                         }
