@@ -3,11 +3,16 @@
  * Last modified by akashkrishnan on 19-Nov-15 01:04.
  */
 
+'use strict';
+
 var Config = require( '../config.js' );
 var Utils = require( '../models/utils.js' );
 var Session = require( '../models/session.js' );
 var User = require( '../models/user.js' );
 var Course = require( '../models/course.js' );
+var Minilesson = require( '../models/minilesson.js' );
+var Page = require( '../models/page.js' );
+var Mcq = require( '../models/mcq.js' );
 
 module.exports = function ( app ) {
 
@@ -18,7 +23,8 @@ module.exports = function ( app ) {
   app.get( '/register', register );
   app.get( '/logout', logout );
 
-  app.get( '/courses/:courseId/minilessons/:minilessonId?', courseMinilessons );
+  app.get( '/courses/:course_id/', courseRedirect );
+  app.get( '/courses/:course_id/minilessons/:minilesson_id?/:page_id?', course );
 
 };
 
@@ -180,17 +186,32 @@ function logout( req, res ) {
 }
 
 /**
- * Called when the user wants to view the list of minilessons or a specific minilesson.
+ * Redirects invalid course route to a valid default route.
  *
  * @param {object} req - req
  * @param {object} res - res
  * @param {function} next - callback
  */
-function courseMinilessons( req, res, next ) {
+function courseRedirect( req, res, next ) {
+  if ( req.user ) {
+    res.redirect( '/courses/' + req.params.course_id + '/minilessons' );
+  } else {
+    next();
+  }
+}
+
+/**
+ * Called when the user wants to view a course.
+ *
+ * @param {object} req - req
+ * @param {object} res - res
+ * @param {function} next - callback
+ */
+function course( req, res, next ) {
   if ( req.user ) {
 
     // Get course
-    Course.get( { _id: req.params.courseId }, Utils.safeFn( function ( err, course ) {
+    Course.get( { _id: req.params.course_id }, Utils.safeFn( function ( err, course ) {
       if ( err ) {
         next();
       } else {
@@ -205,9 +226,9 @@ function courseMinilessons( req, res, next ) {
               states: false
             }
           },
-          Utils.safeFn( function ( err, teacherCourses ) {
+          Utils.safeFn( Utils.safeFn( function ( err, teacherCourses ) {
             if ( err ) {
-              res.json( { err: err } );
+              next();
             } else {
 
               // Get courses the user takes
@@ -220,26 +241,42 @@ function courseMinilessons( req, res, next ) {
                     states: false
                   }
                 },
-                Utils.safeFn( function ( err, studentCourses ) {
+                Utils.safeFn( Utils.safeFn( function ( err, studentCourses ) {
                   if ( err ) {
-                    res.json( { err: err } );
+                    next();
                   } else {
 
-                    // Render the view
-                    res.render( 'courseMinilessons', {
-                      web: Config.web,
-                      self: req.user,
-                      teacherCourses: teacherCourses,
-                      studentCourses: studentCourses,
-                      course: course
-                    } );
+                    // Get minilessons in the course
+                    Minilesson.list(
+                      {
+                        user_id: req.user._id,
+                        course_id: course._id.toString()
+                      },
+                      Utils.safeFn( function ( err, minilessons ) {
+                        if ( err ) {
+                          next();
+                        } else {
+
+                          // Render the view
+                          res.render( 'course', {
+                            web: Config.web,
+                            self: req.user,
+                            teacherCourses: teacherCourses,
+                            studentCourses: studentCourses,
+                            course: course,
+                            minilessons: minilessons
+                          } );
+
+                        }
+                      } )
+                    );
 
                   }
-                } )
+                } ) )
               );
 
             }
-          } )
+          } ) )
         );
 
       }

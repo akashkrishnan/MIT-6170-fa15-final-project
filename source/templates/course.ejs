@@ -102,11 +102,28 @@
             <div toolbar-button hoverable
                  dialog-open-trigger="minilesson-add-dialog"
                  layout-horizontal layout-center>
-              Add Minilesson
+              Add
             </div>
           </div>
 
           <div content flex layout-vertical>
+
+            <% minilessons.forEach( function( _minilesson ) { %>
+
+            <a href="/courses/<%= course._id %>/minilessons/<%= _minilesson._id %>"
+               minilesson-item
+               layout-vertical>
+              <div name><strong>The Foundations of Copyright Law</strong></div>
+
+              <% if ( _minilesson.timestamps.due ) { %>
+              <div due-date><%= _minilesson.timestamps.due %></div>
+              <% } else { %>
+              <div due-date>No due date.</div>
+              <% } %>
+
+            </a>
+
+            <% } ); %>
 
             <a href="/courses/<%= course._id %>/minilessons/:minilesson_id"
                minilesson-item
