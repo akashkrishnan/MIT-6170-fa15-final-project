@@ -117,49 +117,84 @@ function list( data, done ) {
  * @callback getCallback
  * @param {Error} err - Error object
  * @param {object} page - Page object
+ * @param {object} course - Course object if a valid user_id was provided
  */
 
 /**
  * Gets a Page object.
  *
  * @param {object} data - data
- * @param {*} [data._id] - page._id
+ * @param {string} data._id - Page._id
+ * @param {string} [data.user_id] - User._id
+ * @param {object} [data.projection] - projection
+ * @param {boolean} [data.projection.timestamps] -
  * @param {getCallback} done - callback
  */
 function get( data, done ) {
   try {
 
     var criteria = Utils.validateObject( data, {
-      _id: { filter: 'MongoId' },
+      _id: { filter: 'MongoId', required: true },
+      user_id: { type: 'string' }
     } );
 
-    /**
-     * Called after MCQ is found in database.
-     *
-     * @param {object} criteria -
-     */
-    var next = function ( criteria ) {
+    var projection = Utils.validateObject( data, {
+      projection: {
+        type: {
+          timestamps: { type: 'boolean' }
+        },
+        filter: 'projection',
+        default: {}
+      }
+    } ).projection;
 
-      db.pages.findOne( criteria, function ( err, page ) {
+    var findOne = function ( query, projection, done ) {
+      db.pages.findOne( query, projection, function ( err, page ) {
         if ( err ) {
-          done( err, null );
+          done( err );
         } else if ( page ) {
-
-          // Stringify the MongoId
-          page._id = page._id.toString();
-
           done( null, page );
-
         } else {
-          done( new Error( 'Page not found: ' + JSON.stringify( criteria ) ), null );
+          done( new Error( 'Page not found.' ), null );
         }
       } );
-
     };
-    next( criteria );
+
+    // Ensure valid page
+    findOne( { _id: criteria._id }, projection, function ( err, page ) {
+      if ( err ) {
+        done( err, null, null );
+      } else if ( criteria.user_id ) {
+
+        // Ensure user is associated with page's minilesson
+        Minilesson.get(
+          {
+            _id: page.minilesson_id,
+            user_id: criteria.user_id,
+            projection: {
+              states: false,
+              timestamps: false
+            }
+          },
+          function ( err, minilesson, course ) {
+            if ( err ) {
+              done( err, null, null );
+            } else {
+
+              // Teachers can see all pages
+              done( null, page, course );
+
+            }
+          }
+        );
+
+      } else {
+        done( null, page, null );
+      }
+    } );
 
   } catch ( err ) {
-    done( err, null );
+    done( err, null, null );
   }
 }
 

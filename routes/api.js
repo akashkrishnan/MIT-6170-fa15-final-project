@@ -483,7 +483,25 @@ function apiPageGet( req, res ) {
 
   // Ensure user
   if ( req.user ) {
-    res.json( { err: 'Not implemented.' } );
+
+    // Get page
+    Page.get(
+      {
+        _id: req.params.page_id,
+        user_id: req.user._id,
+        projection: {
+          timestamps: false
+        }
+      },
+      Utils.safeFn( function ( err, page ) {
+        if ( err ) {
+          res.json( { err: err } );
+        } else {
+          res.json( page );
+        }
+      } )
+    );
+
   } else {
     res.status( 400 ).json( { err: 'Bad Request: User must be authenticated to process request.' } );
   }

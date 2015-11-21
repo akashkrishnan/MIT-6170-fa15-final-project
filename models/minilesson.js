@@ -134,7 +134,7 @@ function list( data, done ) {
  */
 
 /**
- * Adds a Minilesson object.
+ * Gets a Minilesson object.
  *
  * @param {object} data - data
  * @param {string} data._id - Minilesson._id
