@@ -201,73 +201,71 @@ function get( data, done ) {
 /**
  * @callback addCallback
  * @param {Error} err - Error object
- * @param {object} page - newly created Page object
+ * @param {object} page - Page object
  */
 
 /**
- * Adds a MCQ.
+ * Adds a Page.
  *
  * @param {object} data - data
- * @param {string} data.question - MCQ.question
- * @param {array} data.answerChoicesList - MCQ.answerChoicesList
- * @param {number} data.correctChoiceIndex - MCQ.correctChoiceIndex
+ * @param {string} data.user_id - User._id
+ * @param {string} data.minilesson_id - Minilesson._id
+ * @param {string} data.title - title of minilesson
+ * @param {string} [data.resource] - resource link
  * @param {addCallback} done - callback
  */
 function add( data, done ) {
   try {
 
     var criteria = Utils.validateObject( data, {
-      resource: {
-        type: 'string',
-        filter: function ( name ) {
-          if ( name ) {
-            return name.trim();
-          }
-        },
-      },
-      mcqResourceList: {
-        type: 'array',
-      },
+      user_id: { type: 'string', required: true },
+      minilesson_id: { type: 'string', required: true }
     } );
 
-    validatePage( criteria.resource, criteria.mcqResourceList, function ( err ) {
-      if ( err ) {
-        done( err, null );
-      } else {
-        db.pages.insert(
-          {
-            resource: criteria.resource,
-            mcqResourceList: criteria.mcqResourceList,
-          },
-          function ( err, page ) {
+    var insertData = Utils.validateObject( data, {
+      minilesson_id: { type: 'string', required: true },
+      title: { type: 'string', required: true },
+      resource: { type: 'string' }
+    } );
 
+    // Ensure user is associated with page's minilesson
+    Minilesson.get(
+      {
+        _id: criteria.minilesson_id,
+        user_id: criteria.user_id,
+        projection: {
+          states: false,
+          timestamps: false
+        }
+      },
+      function ( err, minilesson, course ) {
+        if ( err ) {
+          done( err, null );
+        } else if ( course.teaching ) {
+
+          // Only teachers can add pages
+          insertData.timestamps = { created: new Date() }
+
+          // Insert into database
+          db.pages.insert( insertData, function ( err, page ) {
             if ( err ) {
               done( err, null );
             } else {
-              // Get the new user object the proper way
+
+              // Get the new page object the proper way
               get( { _id: page._id }, done );
 
             }
+          } );
 
-          }
-        );
+        } else {
+          done( new Error( 'Only teachers can add pages to minilessons.' ), null );
+        }
       }
-    } );
+    );
 
   } catch ( err ) {
     done( err, null );
-  }
-}
-//Make sure page are semi-well defined.
-function validatePage( resource, mcqResourceList, done ) {
-  try {
-    if ( resource === null && mcqResourceList.length === 0 ) {
-      done( new Error( 'Resources or Questions must be non-empty' ) );
-    } else {
-      done( null );
-    }
-  } catch ( err ) {
-    done( err );
   }
 }
 

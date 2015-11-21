@@ -518,7 +518,20 @@ function apiPageAdd( req, res ) {
 
   // Ensure user
   if ( req.user ) {
-    res.json( { err: 'Not implemented.' } );
+
+    // Enforce some invariants
+    req.body.user_id = req.user._id;
+    req.body.minilesson_id = req.params.minilesson_id;
+
+    // Add page
+    Page.add( req.body, Utils.safeFn( function ( err, page ) {
+      if ( err ) {
+        res.json( { err: err } );
+      } else {
+        res.json( page );
+      }
+    } ) );
+
   } else {
     res.status( 400 ).json( { err: 'Bad Request: User must be authenticated to process request.' } );
   }
