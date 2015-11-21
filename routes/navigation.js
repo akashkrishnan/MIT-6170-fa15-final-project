@@ -283,7 +283,8 @@ function course( req, res, next ) {
                                     minilessons: minilessons,
                                     minilesson: minilesson,
                                     pages: minilessons,
-                                    page: {}
+                                    page: {},
+                                    mcqs: []
                                   } );
 
                                 }
@@ -300,7 +301,10 @@ function course( req, res, next ) {
                               studentCourses: studentCourses,
                               course: course,
                               minilessons: minilessons,
-                              minilesson: {}
+                              minilesson: {},
+                              pages: [],
+                              page: {},
+                              mcqs: []
                             } );
 
                           }

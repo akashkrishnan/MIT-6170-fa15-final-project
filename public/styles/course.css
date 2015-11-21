@@ -20,11 +20,12 @@
   text-transform: uppercase;
 }
 
-[minilesson-list] [header] [toolbar-button] {
+[toolbar-button] {
   height: 100%;
   padding-left: 16px;
   padding-right: 16px;
   font-size: 14px;
+  color: white;
   text-transform: uppercase;
   text-decoration: none !important;
   cursor: pointer;
@@ -66,11 +67,11 @@
   height: 46px;
   margin-bottom: 10px;
   background-color: #4285F4;
-  color: white;
 }
 
 [page-list] [page-item] {
   border-right: 1px solid rgba(0, 0, 0, 0.1);
+  color: white;
   text-decoration: none !important;
 }
 
@@ -79,9 +80,11 @@
 }
 
 [page-list] [page-item]:hover {
-  background-color: rgba(0, 0, 0, 0.1);
+  background-color: rgba(255, 255, 255, 0.1);
 }
 
-#minilesson-add-dialog [form] {
+#minilesson-add-dialog [form],
+#page-add-dialog [form],
+#mcq-add-dialog [form] {
   width: 300px;
 }

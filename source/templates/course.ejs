@@ -140,25 +140,55 @@
 
           <div page-list shadow elevation="1" layout-horizontal>
 
-            <% pages.forEach( function( _page ) { %>
+            <% pages.forEach( function( _page, i ) { %>
 
             <a href="/courses/<%= course._id %>/minilessons/<%= minilesson._id %>/<%= _page._id %>"
               <%= _page._id === page._id ? 'active' : '' %>
                page-item flex layout-horizontal layout-center-center>
-              Page 1
+              Page <%= i %>
             </a>
 
             <% } ); %>
 
+            <% if ( course.teaching ) { %>
+            <div toolbar-button hoverable
+                 dialog-open-trigger="page-add-dialog"
+                 layout-horizontal layout-center>
+              Add
+            </div>
+            <% } %>
+
           </div>
 
-          <div resource></div>
+          <% if ( page._id ) { %>
+
+          <% if ( course.teaching || page.resource ) { %>
+          <div resource>
+
+            <div header no-select layout-horizontal layout-center>
+
+              <div text>Resource</div>
+              <div flex></div>
+
+              <% if ( course.teaching ) { %>
+              <div toolbar-button hoverable
+                   dialog-open-trigger="mcq-add-dialog"
+                   layout-horizontal layout-center>
+                Set
+              </div>
+              <% } %>
+            </div>
+
+            <div content><%= page.resource %></div>
+
+          </div>
+          <% } %>
 
           <div mcq-list shadow elevation="1" flex layout-vertical>
 
             <div header no-select layout-horizontal layout-center>
 
-              <div text> Multiple Choice Questions</div>
+              <div text>Multiple Choice Questions</div>
               <div flex></div>
 
               <% if ( course.teaching ) { %>
@@ -171,6 +201,14 @@
             </div>
 
           </div>
+
+          <% } else { %>
+
+          <div shadow elevation="1" flex layout-horizontal layout-center-center>
+            Please select a page.
+          </div>
+
+          <% } %>
 
         </div>
 
@@ -203,6 +241,94 @@
 
       </div>
     </div>
+
+    <% if ( minilesson._id ) { %>
+
+    <div id="page-add-dialog" dialog backdrop
+         minilesson-id="<%= minilesson._id %>"
+         dialog-close-trigger="page-add-dialog"
+         layout-horizontal layout-center-center>
+      <div form shadow elevation="5" layout-vertical>
+
+        <div header>Add Page</div>
+
+        <div inputs layout-vertical>
+
+          <div input layout-vertical>
+            <label>Page Title</label>
+            <input type="text" title-input/>
+          </div>
+
+          <div input layout-vertical>
+            <label>Resource Link (optional)</label>
+            <input type="url" resource-input/>
+          </div>
+
+        </div>
+
+        <div buttons layout-horizontal layout-end-justified>
+          <a button small dialog-close-trigger="page-add-dialog">Cancel</a>
+          <a button small blue create>Create</a>
+        </div>
+
+      </div>
+    </div>
+
+    <% } %>
+
+    <% if ( page._id ) { %>
+
+    <div id="mcq-add-dialog" dialog backdrop
+         page-id="<%= page._id %>"
+         dialog-close-trigger="mcq-add-dialog"
+         layout-horizontal layout-center-center>
+      <div form shadow elevation="5" layout-vertical>
+
+        <div header>Add Multiple Choice Question</div>
+
+        <div inputs layout-vertical>
+
+          <div input layout-vertical>
+            <label>Question</label>
+            <input type="text" question-input/>
+          </div>
+
+          <div input layout-vertical>
+            <label>Choice A</label>
+            <input type="text" choiceA-input/>
+          </div>
+
+          <div input layout-vertical>
+            <label>Choice B</label>
+            <input type="text" choiceB-input/>
+          </div>
+
+          <div input layout-vertical>
+            <label>Choice C (optional)</label>
+            <input type="text" choiceC-input/>
+          </div>
+
+          <div input layout-vertical>
+            <label>Choice D (optional)</label>
+            <input type="text" choiceD-input/>
+          </div>
+
+          <div input layout-vertical>
+            <label>Choice E (optional)</label>
+            <input type="text" choiceE-input/>
+          </div>
+
+        </div>
+
+        <div buttons layout-horizontal layout-end-justified>
+          <a button small dialog-close-trigger="mcq-add-dialog">Cancel</a>
+          <a button small blue create>Create</a>
+        </div>
+
+      </div>
+    </div>
+
+    <% } %>
 
     <script src="/jquery/dist/jquery.min.js"></script>
     <script src="/toastr/toastr.min.js"></script>
