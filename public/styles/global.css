@@ -15,7 +15,7 @@
 }
 
 ::-webkit-scrollbar-thumb:vertical:active {
-  background: rgb(79, 125, 201);
+  background: #4285F4;
 }
 
 /* ---------------- OTHER ---------------- */
