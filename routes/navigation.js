@@ -295,21 +295,37 @@ function course( req, res, next ) {
                                               next();
                                             } else {
 
-                                              // TODO: GET MCQS ON PAGE
+                                              // Get mcqs on page
+                                              Mcq.list(
+                                                {
+                                                  user_id: req.user._id,
+                                                  page_id: req.params.page_id
+                                                },
+                                                Utils.safeFn( function ( err, mcqs ) {
+                                                  if ( err ) {
+                                                    next();
+                                                  } else if ( req.params.page_id ) {
 
-                                              // Render the view
-                                              res.render( 'course', {
-                                                web: Config.web,
-                                                self: req.user,
-                                                teacherCourses: teacherCourses,
-                                                studentCourses: studentCourses,
-                                                course: course,
-                                                minilessons: minilessons,
-                                                minilesson: minilesson,
-                                                pages: pages,
-                                                page: page,
-                                                mcqs: []
-                                              } );
+                                                    // TODO: GET SUBMISSION ON PAGE
+
+                                                    // Render the view
+                                                    res.render( 'course', {
+                                                      web: Config.web,
+                                                      self: req.user,
+                                                      teacherCourses: teacherCourses,
+                                                      studentCourses: studentCourses,
+                                                      course: course,
+                                                      minilessons: minilessons,
+                                                      minilesson: minilesson,
+                                                      pages: pages,
+                                                      page: page,
+                                                      mcqs: mcqs,
+                                                      submissions: []
+                                                    } );
+
+                                                  }
+                                                } )
+                                              );
 
                                             }
                                           } )
@@ -328,7 +344,8 @@ function course( req, res, next ) {
                                           minilesson: minilesson,
                                           pages: pages,
                                           page: {},
-                                          mcqs: []
+                                          mcqs: [],
+                                          submissions: []
                                         } );
 
                                       }
@@ -352,7 +369,8 @@ function course( req, res, next ) {
                               minilesson: {},
                               pages: [],
                               page: {},
-                              mcqs: []
+                              mcqs: [],
+                              submissions: []
                             } );
 
                           }
