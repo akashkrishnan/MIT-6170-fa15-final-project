@@ -211,79 +211,85 @@ function course( req, res, next ) {
   if ( req.user ) {
 
     // Get course
-    Course.get( { _id: req.params.course_id }, Utils.safeFn( function ( err, course ) {
-      if ( err ) {
-        next();
-      } else {
+    Course.getWithUser(
+      {
+        _id: req.params.course_id,
+        user_id: req.user._id
+      },
+      Utils.safeFn( function ( err, course ) {
+        if ( err ) {
+          next();
+        } else {
 
-        // Get courses the user teaches
-        Course.listForTeacher(
-          {
-            teacher_id: req.user._id,
-            projection: {
-              students: false,
-              timestamps: false,
-              states: false
-            }
-          },
-          Utils.safeFn( Utils.safeFn( function ( err, teacherCourses ) {
-            if ( err ) {
-              next();
-            } else {
+          // Get courses the user teaches
+          Course.listForTeacher(
+            {
+              teacher_id: req.user._id,
+              projection: {
+                students: false,
+                timestamps: false,
+                states: false
+              }
+            },
+            Utils.safeFn( Utils.safeFn( function ( err, teacherCourses ) {
+              if ( err ) {
+                next();
+              } else {
 
-              // Get courses the user takes
-              Course.listForStudent(
-                {
-                  student_id: req.user._id,
-                  projection: {
-                    students: false,
-                    timestamps: false,
-                    states: false
-                  }
-                },
-                Utils.safeFn( Utils.safeFn( function ( err, studentCourses ) {
-                  if ( err ) {
-                    next();
-                  } else {
+                // Get courses the user takes
+                Course.listForStudent(
+                  {
+                    student_id: req.user._id,
+                    projection: {
+                      students: false,
+                      timestamps: false,
+                      states: false
+                    }
+                  },
+                  Utils.safeFn( Utils.safeFn( function ( err, studentCourses ) {
+                    if ( err ) {
+                      next();
+                    } else {
 
-                    // Get minilessons in the course
-                    Minilesson.list(
-                      {
-                        user_id: req.user._id,
-                        course_id: course._id.toString()
-                      },
-                      Utils.safeFn( function ( err, minilessons ) {
-                        if ( err ) {
-                          next();
-                        } else {
+                      // Get minilessons in the course
+                      Minilesson.list(
+                        {
+                          user_id: req.user._id,
+                          course_id: course._id.toString()
+                        },
+                        Utils.safeFn( function ( err, minilessons ) {
+                          if ( err ) {
+                            next();
+                          } else {
 
-                          // Render the view
-                          res.render( 'course', {
-                            web: Config.web,
-                            self: req.user,
-                            teacherCourses: teacherCourses,
-                            studentCourses: studentCourses,
-                            course: course,
-                            minilessons: minilessons,
-                            minilesson: {},
-                            pages: minilessons,
-                            page: {}
-                          } );
+                            // Render the view
+                            res.render( 'course', {
+                              web: Config.web,
+                              self: req.user,
+                              teacherCourses: teacherCourses,
+                              studentCourses: studentCourses,
+                              course: course,
+                              minilessons: minilessons,
+                              minilesson: {},
+                              pages: minilessons,
+                              page: {}
+                            } );
 
-                        }
-                      } )
-                    );
+                          }
+                        } )
+                      );
 
-                  }
-                } ) )
-              );
+                    }
+                  } ) )
+                );
 
-            }
-          } ) )
-        );
+              }
+            } ) )
+          );
 
-      }
-    } ) );
+        }
+      } )
+    );
 
   } else {
     next();
