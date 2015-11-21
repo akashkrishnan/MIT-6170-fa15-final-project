@@ -109,7 +109,6 @@ function list( data, done ) {
             {
               _id: listCriteria.course_id,
               projection: {
-                students: false,
                 states: false,
                 timestamps: false
               }
@@ -121,12 +120,16 @@ function list( data, done ) {
 
                 // TODO: POSSIBLY MOVE THIS INTO THE COURSE MODEL
                 // Check type of user in course
-                if ( course.teachers.indexOf( user._id ) !== -1 ) {
+                if ( course.teachers
+                       .map( function ( a ) { return a._id; } )
+                       .indexOf( user._id.toString() ) !== -1 ) {
 
                   // Teachers can see all minilessons
                   next();
 
-                } else if ( course.students.indexOf( user._id ) !== -1 ) {
+                } else if ( course.students
+                              .map( function ( a ) { return a._id; } )
+                              .indexOf( user._id.toString() ) !== -1 ) {
 
                   // Students can only see published minilessons
                   listCriteria[ 'states.published' ] = true;
