@@ -37,82 +37,102 @@ module.exports = function ( app ) {
 function index( req, res ) {
   if ( req.user ) {
 
-    // Get courses the user teaches
-    Course.listForTeacher(
+    // get courses where the user is pending
+    Course.listForPendingStudent(
       {
-        teacher_id: req.user._id,
+        student_id: req.user._id,
         projection: {
           students: false,
           timestamps: false,
           states: false
         }
       },
-      Utils.safeFn( function ( err, teacherCourses ) {
+      Utils.safeFn( function ( err, pendingCourses ) {
         if ( err ) {
-          res.json( { err: err } );
+              res.json( { err: err } );
         } else {
-
-          // Get courses the user takes
-          Course.listForStudent(
+          // Get courses the user teaches
+          Course.listForTeacher(
             {
-              student_id: req.user._id,
+              teacher_id: req.user._id,
               projection: {
                 students: false,
                 timestamps: false,
                 states: false
               }
             },
-            Utils.safeFn( function ( err, studentCourses ) {
+            Utils.safeFn( function ( err, teacherCourses ) {
               if ( err ) {
                 res.json( { err: err } );
               } else {
-
-                var allCourses = teacherCourses.concat( studentCourses );
-                var courseTeachers = {};
-
-                (function next_course( j, n_courses ) {
-                  var course = allCourses[ j ];
-
-                  if ( j < n_courses ) {
-
-                    var next_teacher = function ( i, course, n_teachers ) {
-                      if ( i < n_teachers ) {
-                        var teacherId = course.teachers[ i ];
-                        User.get( { _id: teacherId }, Utils.safeFn( function ( err, teacherObj ) {
-                          if ( err ) {
-                            next_teacher( i + 1, n_teachers );
-                          } else {
-                            courseTeachers[ course ].push( teacherObj );
-                            next_teacher( i + 1, n_teachers );
-                          }
-                        } ) );
-                      } else {
-                        next_course( j + 1, n_courses );
-                      }
-                    };
-
-                    if ( !(course in courseTeachers) ) {
-                      courseTeachers[ course ] = [];
-                      next_teacher( 0, course, course.teachers.length );
-                    } else {
-                      next_course( j + 1, n_courses );
+                // Get courses the user takes
+                Course.listForStudent(
+                  {
+                    student_id: req.user._id,
+                    projection: {
+                      students: false,
+                      timestamps: false,
+                      states: false
                     }
+                  },
+                  Utils.safeFn( function ( err, studentCourses ) {
+                    if ( err ) {
+                      res.json( { err: err } );
+                    } else {
 
-                  } else {
-                    res.render( 'courseList', {
-                      web: Config.web,
-                      self: req.user,
-                      teacherCourses: teacherCourses,
-                      studentCourses: studentCourses,
-                      courseTeachers: courseTeachers
-                    } );
-                  }
-                })( 0, allCourses.length );
+                      var allCourses = teacherCourses.concat( studentCourses );
+                      allCourses = allCourses.concat( pendingCourses );
+                      var courseTeachers = {};
+
+                      (function next_course( j, n_courses ) {
+                        var course = allCourses[ j ];
+
+                        if ( j < n_courses ) {
+
+                          var next_teacher = function ( i, course, n_teachers ) {
+                            if ( i < n_teachers ) {
+                              var teacherId = course.teachers[ i ];
+                              User.get( { _id: teacherId }, Utils.safeFn( function ( err, teacherObj ) {
+                                if ( err ) {
+                                  next_teacher( i + 1, n_teachers );
+                                } else {
+                                  courseTeachers[ course ].push( teacherObj );
+                                  next_teacher( i + 1, n_teachers );
+                                }
+                              } ) );
+                            } else {
+                              next_course( j + 1, n_courses );
+                            }
+                          };
+
+                          if ( !(course in courseTeachers) ) {
+                            courseTeachers[ course ] = [];
+                            next_teacher( 0, course, course.teachers.length );
+                          } else {
+                            next_course( j + 1, n_courses );
+                          }
+
+                        } else {
+                          console.log(pendingCourses);
+                          res.render( 'courseList', {
+                            web: Config.web,
+                            self: req.user,
+                            teacherCourses: teacherCourses,
+                            pendingCourses: pendingCourses,
+                            studentCourses: studentCourses,
+                            courseTeachers: courseTeachers
+                          } );
+                        }
+                      })( 0, allCourses.length );
+
+                    }
+                  } )
+                )
               }
             } )
-          );
+          )
         }
-      } )
+      } ) 
     );
   } else {
     res.render( 'login', {

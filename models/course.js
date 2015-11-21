@@ -17,6 +17,7 @@ module.exports = {
   list: list,
   listForTeacher: listForTeacher,
   listForStudent: listForStudent,
+  listForPendingStudent: listForPendingStudent,
   courseNameExists: courseNameExists,
   get: get,
   getWithUser: getWithUser,
@@ -57,6 +58,7 @@ function list( data, done ) {
         type: {
           teachers: { type: 'boolean' },
           students: { type: 'boolean' },
+          pendingStudents: { type: 'boolean' },
           states: { type: 'boolean' },
           timestamps: { type: 'boolean' }
         },
@@ -131,6 +133,7 @@ function listForTeacher( data, done ) {
         type: {
           teachers: { type: 'boolean' },
           students: { type: 'boolean' },
+          pendingStudents: { type: 'boolean' },
           states: { type: 'boolean' },
           timestamps: { type: 'boolean' }
         },
@@ -205,6 +208,7 @@ function listForStudent( data, done ) {
         type: {
           teachers: { type: 'boolean' },
           students: { type: 'boolean' },
+          pendingStudents: { type: 'boolean' },
           states: { type: 'boolean' },
           timestamps: { type: 'boolean' }
         },
@@ -246,6 +250,84 @@ function listForStudent( data, done ) {
   }
 }
 
+
+
+/**
+ * @callback listForPendingStudent
+ * @param {Error} err - Error object
+ * @param {Array.<object>} courses - list of Course objects in the current page
+ * @param {number} count - total number of Course objects across all pages
+ */
+
+/**
+ * Gets a list of Course objects for which the specified student is a pending student.
+ *
+ * @param {object} data - data
+ * @param {string} data.student_id - User._id
+ * @param {object} [data.projection] - projection
+ * @param {boolean} [data.projection.teachers] -
+ * @param {boolean} [data.projection.students] -
+ * @param {boolean} [data.projection.states] -
+ * @param {boolean} [data.projection.timestamps] -
+ * @param {number} [data.offset=0] - offset of first Course object in the page
+ * @param {number} [data.limit=0] - number of Course objects in a page
+ * @param {listforPendingStudent} done - callback
+ */
+function listForPendingStudent( data, done ) {
+  try {
+
+    var criteria = Utils.validateObject( data, {
+      student_id: { name: 'pendingStudents', type: 'string', required: true }
+    } );
+
+    var projection = Utils.validateObject( data, {
+      projection: {
+        type: {
+          teachers: { type: 'boolean' },
+          students: { type: 'boolean' },
+          pendingStudents: { type: 'boolean' },
+          states: { type: 'boolean' },
+          timestamps: { type: 'boolean' }
+        },
+        filter: 'projection',
+        default: {}
+      }
+    } ).projection;
+
+    var sort = Utils.validateObject( data, {
+      sort: {
+        type: {},
+        default: { courseName: 1 }
+      }
+    } ).sort;
+
+    db.courses.count( criteria, function ( err, count ) {
+      if ( err ) {
+        done( err, [], 0 );
+      } else {
+        db.courses
+          .find( criteria, projection )
+          .sort( sort )
+          .skip( data.offset || 0 )
+          .limit( data.limit || 0, function ( err, courses ) {
+            if ( err ) {
+              done( err, [], 0 );
+            } else {
+
+              // Return list of courses
+              done( null, courses, count );
+
+            }
+          } );
+      }
+    } );
+
+  } catch ( err ) {
+    done( err, [], 0 );
+  }
+}
+
+
 /**
  * @callback getCallback
  * @param {Error} err - Error object
@@ -276,6 +358,7 @@ function get( data, done ) {
         type: {
           teachers: { type: 'boolean' },
           students: { type: 'boolean' },
+          pendingStudents: { type: 'boolean' },
           states: { type: 'boolean' },
           timestamps: { type: 'boolean' }
         },
@@ -388,6 +471,7 @@ function getWithUser( data, done ) {
         type: {
           teachers: { type: 'boolean' },
           students: { type: 'boolean' },
+          pendingStudents: { type: 'boolean' },
           states: { type: 'boolean' },
           timestamps: { type: 'boolean' }
         },
