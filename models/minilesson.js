@@ -243,11 +243,7 @@ function add( data, done ) {
       course_id: { type: 'string', required: true },
       title: {
         type: 'string',
-        filter: function ( name ) {
-          if ( name ) {
-            return name.trim();
-          }
-        },
+        filter: 'trim',
         required: true
       }
     } );

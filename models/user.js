@@ -306,29 +306,17 @@ function add( data, done ) {
     var criteria = Utils.validateObject( data, {
       name: {
         type: 'string',
-        filter: function ( name ) {
-          if ( name ) {
-            return name.trim();
-          }
-        },
+        filter: 'trim',
         required: true
       },
       username: {
         type: 'string',
-        filter: function ( username ) {
-          if ( username ) {
-            return username.trim();
-          }
-        },
+        filter: 'trim',
         required: true
       },
       password: {
         type: 'string',
-        filter: function ( password ) {
-          if ( password ) {
-            return password.trim();
-          }
-        },
+        filter: 'trim',
         required: true
       }
     } );

@@ -493,11 +493,7 @@ function add( data, done ) {
     var criteria = Utils.validateObject( data, {
       courseName: {
         type: 'string',
-        filter: function ( name ) {
-          if ( name ) {
-            return name.trim();
-          }
-        },
+        filter: 'trim',
         required: true
       },
       teacher_id: {
@@ -558,20 +554,12 @@ function addStudent( data, done ) {
     var criteria = Utils.validateObject( data, {
       courseName: {
         type: 'string',
-        filter: function ( name ) {
-          if ( name ) {
-            return name.trim();
-          }
-        },
+        filter: 'trim',
         required: true
       },
       student: {
         type: 'string',
-        filter: function ( name ) {
-          if ( name ) {
-            return name.trim();
-          }
-        },
+        filter: 'trim',
         required: true
       }
     } );
