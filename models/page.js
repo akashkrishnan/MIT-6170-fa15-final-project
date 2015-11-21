@@ -224,8 +224,8 @@ function add( data, done ) {
 
     var insertData = Utils.validateObject( data, {
       minilesson_id: { type: 'string', required: true },
-      title: { type: 'string', required: true },
-      resource: { type: 'string' }
+      title: { type: 'string', filter: 'trim', required: true },
+      resource: { type: 'string', filter: 'trim' }
     } );
 
     // Ensure user is associated with page's minilesson
@@ -244,7 +244,7 @@ function add( data, done ) {
         } else if ( course.teaching ) {
 
           // Only teachers can add pages
-          insertData.timestamps = { created: new Date() }
+          insertData.timestamps = { created: new Date() };
 
           // Insert into database
           db.pages.insert( insertData, function ( err, page ) {
