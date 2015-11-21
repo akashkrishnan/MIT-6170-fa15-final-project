@@ -273,19 +273,67 @@ function course( req, res, next ) {
                                   next();
                                 } else {
 
-                                  // Render the view
-                                  res.render( 'course', {
-                                    web: Config.web,
-                                    self: req.user,
-                                    teacherCourses: teacherCourses,
-                                    studentCourses: studentCourses,
-                                    course: course,
-                                    minilessons: minilessons,
-                                    minilesson: minilesson,
-                                    pages: minilessons,
-                                    page: minilessons[ 5 ] || {},
-                                    mcqs: []
-                                  } );
+                                  // Get pages in the minilesson
+                                  Page.list(
+                                    {
+                                      user_id: req.user._id,
+                                      minilesson_id: req.params.minilesson_id
+                                    },
+                                    Utils.safeFn( function ( err, pages ) {
+                                      if ( err ) {
+                                        next();
+                                      } else if ( req.params.page_id ) {
+
+                                        // Get page
+                                        Page.get(
+                                          {
+                                            _id: req.params.page_id,
+                                            user_id: req.user._id
+                                          },
+                                          Utils.safeFn( function ( err, page ) {
+                                            if ( err ) {
+                                              next();
+                                            } else {
+
+                                              // TODO: GET MCQS ON PAGE
+
+                                              // Render the view
+                                              res.render( 'course', {
+                                                web: Config.web,
+                                                self: req.user,
+                                                teacherCourses: teacherCourses,
+                                                studentCourses: studentCourses,
+                                                course: course,
+                                                minilessons: minilessons,
+                                                minilesson: minilesson,
+                                                pages: pages,
+                                                page: page,
+                                                mcqs: []
+                                              } );
+
+                                            }
+                                          } )
+                                        );
+
+                                      } else {
+
+                                        // Render the view
+                                        res.render( 'course', {
+                                          web: Config.web,
+                                          self: req.user,
+                                          teacherCourses: teacherCourses,
+                                          studentCourses: studentCourses,
+                                          course: course,
+                                          minilessons: minilessons,
+                                          minilesson: minilesson,
+                                          pages: pages,
+                                          page: {},
+                                          mcqs: []
+                                        } );
+
+                                      }
+                                    } )
+                                  );
 
                                 }
                               } )
