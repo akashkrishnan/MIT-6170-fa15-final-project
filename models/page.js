@@ -2,17 +2,116 @@
 
 var Config = require( '../config.js' );
 var Utils = require( './utils.js' );
+var Minilesson = require( './minilesson.js' );
 var mongojs = require( 'mongojs' );
 
 var db = mongojs( Config.services.db.mongodb.uri, [ 'pages' ] );
 
 module.exports = {
 
+  list: list,
   get: get,
   add: add,
-  remove: remove,
+  remove: remove
 
 };
+
+/**
+ * @callback listCallback
+ * @param {Error} err - Error object
+ * @param {Array.<object>} pages - list of Page objects in the current page
+ * @param {number} count - total number of Page objects across all pages
+ */
+
+/**
+ * Gets a list of Page objects.
+ *
+ * @param {object} data - data
+ * @param {string} data.user_id - User._id
+ * @param {string} data.minilesson_id - Minilesson._id
+ * @param {object} [data.projection] - projection
+ * @param {boolean} [data.projection.timestamps] -
+ * @param {number} [data.offset=0] - offset of first Minilesson object in the page
+ * @param {number} [data.limit=0] - number of Minilesson objects in a page
+ * @param {listCallback} done - callback
+ */
+function list( data, done ) {
+  try {
+
+    var userCriteria = Utils.validateObject( data, {
+      user_id: { type: 'string', required: true }
+    } );
+
+    var listCriteria = Utils.validateObject( data, {
+      minilesson_id: { type: 'string', required: true }
+    } );
+
+    var projection = Utils.validateObject( data, {
+      projection: {
+        type: {
+          timestamps: { type: 'boolean' }
+        },
+        filter: 'projection',
+        default: {}
+      }
+    } ).projection;
+
+    var sort = Utils.validateObject( data, {
+      sort: {
+        type: {},
+        default: { 'position': 1 }
+      }
+    } ).sort;
+
+    var find = function ( query, projection ) {
+
+      // Get from database
+      db.pages.count( query, function ( err, count ) {
+        if ( err ) {
+          done( err, [], 0 );
+        } else {
+          db.pages
+            .find( query, projection )
+            .sort( sort )
+            .skip( data.offset || 0 )
+            .limit( data.limit || 0, function ( err, pages ) {
+              if ( err ) {
+                done( err, [], 0 );
+              } else {
+
+                // Return list of pages
+                done( null, pages, count );
+
+              }
+            } );
+        }
+      } );
+
+    };
+
+    // Ensure user is associated with the minilesson
+    Minilesson.get(
+      {
+        _id: listCriteria.minilesson_id,
+        user_id: userCriteria.user_id,
+        projection: {
+          states: false,
+          timestamps: false
+        }
+      },
+      function ( err ) {
+        if ( err ) {
+          done( err, [], 0 );
+        } else {
+          find( listCriteria, projection );
+        }
+      }
+    );
+
+  } catch ( err ) {
+    done( err, [], 0 );
+  }
+}
 
 /**
  * @callback getCallback
@@ -31,37 +130,37 @@ function get( data, done ) {
   try {
 
     var criteria = Utils.validateObject( data, {
-        _id: { filter: 'MongoId' },
-      } );
+      _id: { filter: 'MongoId' },
+    } );
 
-        /**
-         * Called after MCQ is found in database.
-         *
-         * @param {object} criteria -
-         */
+    /**
+     * Called after MCQ is found in database.
+     *
+     * @param {object} criteria -
+     */
     var next = function ( criteria ) {
 
-        db.pages.findOne( criteria, function ( err, page ) {
-            if ( err ) {
-                done( err, null );
-              } else if ( page ) {
+      db.pages.findOne( criteria, function ( err, page ) {
+        if ( err ) {
+          done( err, null );
+        } else if ( page ) {
 
-                    // Stringify the MongoId
-                  page._id = page._id.toString();
+          // Stringify the MongoId
+          page._id = page._id.toString();
 
-                  done( null, page );
+          done( null, page );
 
-                } else {
-                  done( new Error( 'Page not found: ' + JSON.stringify( criteria ) ), null );
-                }
-          } );
+        } else {
+          done( new Error( 'Page not found: ' + JSON.stringify( criteria ) ), null );
+        }
+      } );
 
-      };
-    next(criteria);
+    };
+    next( criteria );
 
   } catch ( err ) {
-      done( err, null );
-    }
+    done( err, null );
+  }
 }
 
 /**
@@ -83,58 +182,58 @@ function add( data, done ) {
   try {
 
     var criteria = Utils.validateObject( data, {
-        resource: {
-            type: 'string',
-            filter: function ( name ) {
-                if ( name ) {
-                    return name.trim();
-                  }
-              },
-          },
-        mcqResourceList: {
-            type: 'array',
-          },
-      } );
-
-    validatePage(criteria.resource, criteria.mcqResourceList, function ( err ) {
-        if ( err ) {
-            done( err, null);
-          } else {
-            db.pages.insert(
-                {
-                  resource: criteria.resource,
-                  mcqResourceList: criteria.mcqResourceList,
-                },
-                    function (err, page) {
-
-                      if (err) {
-                        done(err, null);
-                      } else {
-                            // Get the new user object the proper way
-                        get({ _id: page._id }, done);
-
-                      }
-
-                    }
-                );
+      resource: {
+        type: 'string',
+        filter: function ( name ) {
+          if ( name ) {
+            return name.trim();
           }
-      });
+        },
+      },
+      mcqResourceList: {
+        type: 'array',
+      },
+    } );
+
+    validatePage( criteria.resource, criteria.mcqResourceList, function ( err ) {
+      if ( err ) {
+        done( err, null );
+      } else {
+        db.pages.insert(
+          {
+            resource: criteria.resource,
+            mcqResourceList: criteria.mcqResourceList,
+          },
+          function ( err, page ) {
+
+            if ( err ) {
+              done( err, null );
+            } else {
+              // Get the new user object the proper way
+              get( { _id: page._id }, done );
+
+            }
+
+          }
+        );
+      }
+    } );
 
   } catch ( err ) {
-      done( err, null );
-    }
+    done( err, null );
+  }
 }
 //Make sure page are semi-well defined.
-function validatePage(resource, mcqResourceList, done) {
+function validatePage( resource, mcqResourceList, done ) {
   try {
-    if (resource === null && mcqResourceList.length === 0) {
-        done(new Error('Resources or Questions must be non-empty'));
-      } else {
-        done(null);
-      }
-  } catch (err) {
-      done(err);
+    if ( resource === null && mcqResourceList.length === 0 ) {
+      done( new Error( 'Resources or Questions must be non-empty' ) );
+    } else {
+      done( null );
     }
+  } catch ( err ) {
+    done( err );
+  }
 }
 
 /**
@@ -154,28 +253,28 @@ function remove( data, done ) {
   try {
 
     var criteria = Utils.validateObject( data, {
-        _id: { type: 'string', required: true }
-      } );
+      _id: { type: 'string', required: true }
+    } );
 
-        // Ensure valid mcq
+    // Ensure valid mcq
     get( criteria, function ( err, page ) {
-        if ( err ) {
+      if ( err ) {
+        done( err, null );
+      } else {
+
+        // Remove from database
+        db.pages.remove( criteria, true, function ( err ) {
+          if ( err ) {
             done( err, null );
           } else {
-
-                // Remove from database
-            db.pages.remove( criteria, true, function ( err ) {
-                if ( err ) {
-                    done( err, null );
-                  } else {
-                    done( null, page );
-                  }
-              } );
-
+            done( null, page );
           }
-      } );
+        } );
+
+      }
+    } );
 
   } catch ( err ) {
-      done( err, null );
-    }
+    done( err, null );
+  }
 }

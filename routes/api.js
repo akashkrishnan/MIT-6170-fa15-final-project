@@ -454,7 +454,19 @@ function apiPageList( req, res ) {
 
   // Ensure user
   if ( req.user ) {
-    res.json( { err: 'Not implemented.' } );
+
+    // Enforce certain values
+    req.params.user_id = req.user._id;
+
+    // Get list of minilessons
+    Page.list( req.params, Utils.safeFn( function ( err, pages ) {
+      if ( err ) {
+        res.json( { err: err } );
+      } else {
+        res.json( pages );
+      }
+    } ) );
+
   } else {
     res.status( 400 ).json( { err: 'Bad Request: User must be authenticated to process request.' } );
   }
