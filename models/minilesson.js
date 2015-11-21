@@ -2,6 +2,8 @@
 
 var Config = require( '../config.js' );
 var Utils = require( './utils.js' );
+var User = require( './user.js' );
+var Course = require( './course.js' );
 var mongojs = require( 'mongojs' );
 
 var db = mongojs( Config.services.db.mongodb.uri, [ 'minilessons' ] );
@@ -26,8 +28,8 @@ module.exports = {
  * Gets a list of Minilesson objects.
  *
  * @param {object} data - data
+ * @param {string} data.user_id - User._id
  * @param {string} data.course_id - Course._id
- * @param {boolean} [data.states.published] -
  * @param {object} [data.projection] - projection
  * @param {boolean} [data.projection.states] -
  * @param {boolean} [data.projection.timestamps] -
@@ -38,9 +40,12 @@ module.exports = {
 function list( data, done ) {
   try {
 
-    var criteria = Utils.validateObject( data, {
-      course_id: { type: 'string', required: true },
-      'states.published': { type: 'boolean' }
+    var userCriteria = Utils.validateObject( data, {
+      user_id: { type: 'string', required: true }
+    } );
+
+    var listCriteria = Utils.validateObject( data, {
+      course_id: { type: 'string', required: true }
     } );
 
     var projection = Utils.validateObject( data, {
@@ -60,26 +65,84 @@ function list( data, done ) {
       }
     } ).sort;
 
-    db.minilessons.count( criteria, function ( err, count ) {
-      if ( err ) {
-        done( err, [], 0 );
-      } else {
-        db.minilessons
-          .find( criteria, projection )
-          .sort( sort )
-          .skip( data.offset || 0 )
-          .limit( data.limit || 0, function ( err, minilessons ) {
-            if ( err ) {
-              done( err, [], 0 );
-            } else {
+    var next = function () {
 
-              // Return list of courses
-              done( null, minilessons, count );
+      // Get from database
+      db.minilessons.count( listCriteria, function ( err, count ) {
+        if ( err ) {
+          done( err, [], 0 );
+        } else {
+          db.minilessons
+            .find( listCriteria, projection )
+            .sort( sort )
+            .skip( data.offset || 0 )
+            .limit( data.limit || 0, function ( err, minilessons ) {
+              if ( err ) {
+                done( err, [], 0 );
+              } else {
 
+                // Return list of courses
+                done( null, minilessons, count );
+
+              }
+            } );
+        }
+      } );
+
+    };
+
+    // Ensure valid user
+    User.get(
+      {
+        _id: userCriteria.user_id,
+        projection: {
+          timestamps: false
+        }
+      },
+      function ( err, user ) {
+        if ( err ) {
+          done( err, [], 0 );
+        } else {
+
+          // Ensure user is in the course
+          Course.get(
+            {
+              _id: listCriteria.course_id,
+              projection: {
+                students: false,
+                states: false,
+                timestamps: false
+              }
+            },
+            function ( err, course ) {
+              if ( err ) {
+                done( err, [], 0 );
+              } else {
+
+                // TODO: POSSIBLY MOVE THIS INTO THE COURSE MODEL
+                // Check type of user in course
+                if ( course.teachers.indexOf( user._id ) !== -1 ) {
+
+                  // Teachers can see all minilessons
+                  next();
+
+                } else if ( course.students.indexOf( user._id ) !== -1 ) {
+
+                  // Students can only see published minilessons
+                  listCriteria[ 'states.published' ] = true;
+                  next();
+
+                } else {
+                  done( new Error( 'User not associated with course.' ), [], 0 );
+                }
+
+              }
             }
-          } );
+          );
+
+        }
       }
-    } );
+    );
 
   } catch ( err ) {
     done( err, [], 0 );
