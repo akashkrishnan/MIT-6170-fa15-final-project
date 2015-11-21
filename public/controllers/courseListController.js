@@ -31,17 +31,9 @@
               console.log( course );
               toastr.info( 'Course has been added.' );
 
-              // TODO: REFRESH COURSE LISTS
-              flipper.course.list( {}, function ( err, courses ) {
-                if ( err ) {
-                  console.error( err );
-                  toastr.error( err );
-                } else {
-                  console.log( courses );
-                }
-              } );
-
-              // TODO: POSSIBLY REDIRECT TO COURSE PAGE?
+              // TODO: WE SHOULDN'T NEED TO REFRESH
+              // Refresh for now
+              location.reload();
 
               // Close the dialog --- this works because the dialog is a dialog-close-trigger
               courseAddDialog.click();
