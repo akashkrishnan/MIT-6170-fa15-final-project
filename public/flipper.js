@@ -210,6 +210,46 @@ var Flipper = function () {
 
   that.page = {
 
+    list: function ( data, done ) {
+      if ( data ) {
+        if ( data.minilesson_id && data.minilesson_id.trim() ) {
+          ajax( 'GET', '/api/minilessons/' + data.minilesson_id.trim() + '/pages', data, function ( data ) {
+            if ( data ) {
+              if ( data.err ) {
+                done( data.err, null );
+              } else {
+                done( null, data );
+              }
+            } else {
+              done( new Error( 'Unable to get a list of pages. Invalid server response.' ), null );
+            }
+          } );
+        } else {
+          done( new Error( 'A minilesson ID is required to get a list of pages.' ) );
+        }
+      }
+    },
+
+    get: function ( data, done ) {
+      if ( data ) {
+        if ( data.page_id && data.page_id.trim() ) {
+          ajax( 'GET', '/api/pages/' + data.page_id.trim(), data, function ( data ) {
+            if ( data ) {
+              if ( data.err ) {
+                done( data.err, null );
+              } else {
+                done( null, data );
+              }
+            } else {
+              done( new Error( 'Unable to get page. Invalid server response.' ), null );
+            }
+          } );
+        } else {
+          done( new Error( 'A page ID is required to get a page.' ) );
+        }
+      }
+    },
+
     add: function ( data, done ) {
       if ( data ) {
         if ( data.minilesson_id && data.minilesson_id.trim() ) {
@@ -239,6 +279,46 @@ var Flipper = function () {
   };
 
   that.mcq = {
+
+    list: function ( data, done ) {
+      if ( data ) {
+        if ( data.page_id && data.page_id.trim() ) {
+          ajax( 'GET', '/api/pages/' + data.page_id.trim() + '/mcqs', data, function ( data ) {
+            if ( data ) {
+              if ( data.err ) {
+                done( data.err, null );
+              } else {
+                done( null, data );
+              }
+            } else {
+              done( new Error( 'Unable to get a list of mcqs. Invalid server response.' ), null );
+            }
+          } );
+        } else {
+          done( new Error( 'A page ID is required to get a list of mcqs.' ) );
+        }
+      }
+    },
+
+    get: function ( data, done ) {
+      if ( data ) {
+        if ( data.mcq_id && data.mcq_id.trim() ) {
+          ajax( 'GET', '/api/mcqs/' + data.mcq_id.trim(), data, function ( data ) {
+            if ( data ) {
+              if ( data.err ) {
+                done( data.err, null );
+              } else {
+                done( null, data );
+              }
+            } else {
+              done( new Error( 'Unable to get mcq. Invalid server response.' ), null );
+            }
+          } );
+        } else {
+          done( new Error( 'A mcq ID is required to get a mcq.' ) );
+        }
+      }
+    },
 
     add: function ( data, done ) {
       if ( data ) {
@@ -285,7 +365,7 @@ var Flipper = function () {
             }
           } );
         } else {
-          done( new Error( 'A MCQ ID is required to add a submission.' ) );
+          done( new Error( 'A mcq ID is required to add a submission.' ) );
         }
       }
     }
