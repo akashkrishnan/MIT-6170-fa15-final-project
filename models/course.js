@@ -467,6 +467,20 @@ function getWithUser( data, done ) {
   }
 }
 
+
+/**
+ * @callback getCourseByNameCallback
+ * @param {Error} err - Error object
+ * @param {object} course - Course object
+ */
+
+/**
+ * Gets a Course object with the name.
+ *
+ * @param {object} data - data
+ * @param {*} data.courseName - Course.courseName
+ * @param {getCourseByName} done - callback
+ */
 function getCourseByName( data, done ) {
 
   try {
@@ -490,7 +504,20 @@ function getCourseByName( data, done ) {
 
 }
 
+/**
+ * @callback addCallback
+ * @param {Error} err - Error object
+ * @param {object} course - Course object
+ */
 
+/**
+ * Adds a course object.
+ *
+ * @param {object} data - data
+ * @param {*} data.courseName - Course.courseName
+ * @param {*} data.teacher_id - Course.teachers
+ * @param {add} done - callback
+ */
 function add( data, done ) {
   try {
     var criteria = Utils.validateObject( data, {
@@ -514,11 +541,11 @@ function add( data, done ) {
         );
       } else {
         try {
-          ///////////////////////////////
           db.courses.insert(
             {
               courseName: criteria.courseName,
               teachers: [ criteria.teacher_id ],
+              pendingStudents: [],
               students: [],
               states: {
                 active: true
@@ -540,8 +567,6 @@ function add( data, done ) {
         } catch ( err ) {
           done( new Error( 'Unable to add course. Please try again.' ), null );
         }
-
-        /////////////////////////////////////
       }
     } );
 
@@ -572,18 +597,23 @@ function addStudent( data, done ) {
         done( err, null );
       } else if ( _exists ) {
         try {
-          // Insert new student into class
-          db.courses.update(
-            { _id: course_id },
-            { $push: { students: criteria.student } },
-            function ( err ) {
-              if ( err ) {
+          // Remove student from pending 
+          db.courses.update ({'_id': course_id}, { $pull: { 'pendingStudents': criteria.student } }, 
+            function ( err, result ) {
+              if (err) {
                 done( err, null );
               } else {
-                getCourseByName( { _id: course_id }, done );
+                // Insert new student into class
+                db.courses.update( { '_id': course_id }, { $push: { 'students': criteria.student } },
+                  function ( err, result ) {
+                    if ( err ) {
+                      done( err, null );
+                    } else {
+                      getCourseByName( { _id: course_id }, done );
+                    }
+                } );
               }
-            }
-          );
+            });
         } catch ( err ) {
           done( new Error( 'Unable to add user to course. Please try again.' ), null );
         }
@@ -594,7 +624,6 @@ function addStudent( data, done ) {
         );
       }
     } );
-
   } catch ( err ) {
     done( err, null );
   }
