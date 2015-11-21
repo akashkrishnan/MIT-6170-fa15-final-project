@@ -223,6 +223,7 @@ function add( data, done ) {
 
     var insertData = Utils.validateObject( data, {
       page_id: { type: 'string', required: true },
+      question: { type: 'string', required: true },
       answers: { required: true },
       answer: { type: 'string', required: true }
     } );

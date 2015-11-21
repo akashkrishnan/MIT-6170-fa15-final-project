@@ -142,6 +142,7 @@
 
         var data = {
           page_id: page_id,
+          question: question.value,
           answers: answers,
           answer: answer.value
         };
