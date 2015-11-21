@@ -118,7 +118,7 @@
             <a href="/courses/<%= course._id %>/minilessons/<%= _minilesson._id %>"
                minilesson-item <%= _minilesson._id === minilesson._id ? 'active' : '' %>
                layout-vertical>
-              <div name><strong>The Foundations of Copyright Law</strong></div>
+              <div name><strong><%= _minilesson.title %></strong></div>
 
               <% if ( _minilesson.timestamps.due ) { %>
               <div due-date><%= _minilesson.timestamps.due %></div>
@@ -129,55 +129,6 @@
             </a>
 
             <% } ); %>
-
-            <a href="/courses/<%= course._id %>/minilessons/:minilesson_id"
-               minilesson-item
-               layout-vertical>
-              <div name><strong>The Foundations of Copyright Law</strong></div>
-              <div due-date>No due date</div>
-            </a>
-
-            <a href="/courses/<%= course._id %>/minilessons/:minilesson_id"
-               minilesson-item
-               layout-vertical>
-              <div name><strong>Fairness and Personality Theories</strong></div>
-              <div due-date>No due date</div>
-            </a>
-
-            <a href="/courses/<%= course._id %>/minilessons/:minilesson_id"
-               minilesson-item
-               layout-vertical>
-              <div name><strong>The Subject Matter of Copyright</strong></div>
-              <div due-date>No due date</div>
-            </a>
-
-            <a href="/courses/<%= course._id %>/minilessons/:minilesson_id"
-               minilesson-item
-               layout-vertical>
-              <div name><strong>Welfare Theory</strong></div>
-              <div due-date>No due date</div>
-            </a>
-
-            <a href="/courses/<%= course._id %>/minilessons/:minilesson_id"
-               minilesson-item
-               layout-vertical>
-              <div name><strong>Authorship</strong></div>
-              <div due-date>No due date</div>
-            </a>
-
-            <a href="/courses/<%= course._id %>/minilessons/:minilesson_id"
-               minilesson-item active
-               layout-vertical>
-              <div name><strong>Supplements to Copyright: Secondary Liability and Paracopyright</strong></div>
-              <div due-date>No due date</div>
-            </a>
-
-            <a href="/courses/<%= course._id %>/minilessons/:minilesson_id"
-               minilesson-item
-               layout-vertical>
-              <div name><strong>Remedies</strong></div>
-              <div due-date>No due date</div>
-            </a>
 
           </div>
 
@@ -223,7 +174,7 @@
 
         </div>
 
-        <% }; %>
+        <% } %>
 
       </div>
     </div>
@@ -239,8 +190,8 @@
         <div inputs layout-vertical>
 
           <div input layout-vertical>
-            <label>Minilesson Name</label>
-            <input type="text" name-input/>
+            <label>Minilesson Title</label>
+            <input type="text" title-input/>
           </div>
 
         </div>

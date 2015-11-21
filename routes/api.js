@@ -403,7 +403,23 @@ function apiMinilessonAdd( req, res ) {
 
   // Ensure user
   if ( req.user ) {
-    res.json( { err: 'Not implemented.' } );
+
+    // Add minilesson
+    Minilesson.add(
+      {
+        user_id: req.user._id,
+        course_id: req.params.course_id,
+        title: req.body.title
+      },
+      Utils.safeFn( function ( err, minilesson ) {
+        if ( err ) {
+          res.json( { err: err } );
+        } else {
+          res.json( minilesson );
+        }
+      } )
+    );
+
   } else {
     res.status( 400 ).json( { err: 'Bad Request: User must be authenticated to process request.' } );
   }

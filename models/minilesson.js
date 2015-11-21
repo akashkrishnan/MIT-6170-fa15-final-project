@@ -206,13 +206,15 @@ function get( data, done ) {
  * @param {string} data.user_id - User._id
  * @param {string} data.course_id - Course._id
  * @param {string} data.title - title of minilesson
- * @param {listCallback} done - callback
+ * @param {addCallback} done - callback
  */
 function add( data, done ) {
   try {
 
     var criteria = Utils.validateObject( data, {
-      name: {
+      user_id: { type: 'string', required: true },
+      course_id: { type: 'string', required: true },
+      title: {
         type: 'string',
         filter: function ( name ) {
           if ( name ) {
@@ -220,37 +222,70 @@ function add( data, done ) {
           }
         },
         required: true
-      },
-      state: {
-        type: 'string',
-        filter: function ( state ) {
-          if ( state ) {
-            return state.trim();
-          }
-        },
-        required: true
       }
     } );
 
-    db.minilessons.insert(
+    // Ensure valid user
+    User.get(
       {
-        name: criteria.name,
-        state: criteria.state,
-        pagesList: [],
-        timestamps: {
-          created: new Date(),
+        _id: criteria.user_id,
+        projection: {
+          timestamps: false
         }
       },
-      function ( err, minilesson ) {
-
+      function ( err ) {
         if ( err ) {
           done( err, null );
         } else {
-          // Get the new user object the proper way
-          get( { _id: minilesson._id }, done );
+
+          // Ensure user is teaching the course
+          Course.getWithUser(
+            {
+              _id: criteria.course_id,
+              user_id: criteria.user_id,
+              projection: {
+                teachers: false,
+                students: false,
+                states: false,
+                timestamps: false
+              }
+            },
+            function ( err, course ) {
+              if ( err ) {
+                done( err, null );
+              } else if ( course.teaching ) {
+
+                // Insert into database
+                db.minilessons.insert(
+                  {
+                    course_id: criteria.course_id,
+                    title: criteria.title,
+                    states: {
+                      published: false
+                    },
+                    timestamps: {
+                      created: new Date()
+                    }
+                  },
+                  function ( err, minilesson ) {
+                    if ( err ) {
+                      done( err, null );
+                    } else {
+
+                      // Get the new minilesson object the proper way
+                      get( { _id: minilesson._id }, done );
+
+                    }
+                  }
+                );
+
+              } else {
+                done( new Error( 'Only a teacher may add a minilesson to a course.' ), null );
+              }
+            }
+          );
 
         }
-
       }
     );
 

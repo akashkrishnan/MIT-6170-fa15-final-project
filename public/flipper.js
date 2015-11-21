@@ -142,8 +142,8 @@ var Flipper = function () {
 
     add: function ( data, done ) {
       if ( data ) {
-        if ( data.courseId && data.courseId.trim() ) {
-          ajax( 'POST', '/api/courses/' + data.courseId.trim() + '/minilessons', data, function ( data ) {
+        if ( data.course_id && data.course_id.trim() ) {
+          ajax( 'POST', '/api/courses/' + data.course_id.trim() + '/minilessons', data, function ( data ) {
             if ( data ) {
               if ( data.err ) {
                 done( data.err, null );
