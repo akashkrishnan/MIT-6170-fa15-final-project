@@ -10,6 +10,10 @@ var Utils = require( '../models/utils.js' );
 var Session = require( '../models/session.js' );
 var User = require( '../models/user.js' );
 var Course = require( '../models/course.js' );
+var Minilesson = require( '../models/minilesson.js' );
+var Page = require( '../models/page.js' );
+var Mcq = require( '../models/mcq.js' );
+var Submission = require( '../models/submission.js' );
 
 module.exports = function ( app ) {
 
@@ -23,20 +27,22 @@ module.exports = function ( app ) {
   app.post( '/api/courses', apiCourseAdd );
 
   app.get( '/api/courses/:course_id', apiCourseGet );
-  //app.get( '/api/courses/:course_id/minilessons', apiMinilessonList );
+  app.get( '/api/courses/:course_id/minilessons', apiMinilessonList );
   app.post( '/api/courses/:course_id/minilessons', apiMinilessonAdd );
 
-  //app.get( '/api/minilessons/:minilesson_id', apiMinilessonGet );
-  //app.get( '/api/minilessons/:minilesson_id/pages', apiPageList );
+  app.get( '/api/minilessons/:minilesson_id', apiMinilessonGet );
+  app.get( '/api/minilessons/:minilesson_id/pages', apiPageList );
   app.post( '/api/minilessons/:minilesson_id/pages', apiPageAdd );
 
-  //app.get( '/api/pages/:page_id', apiPageGet );
-  //app.get( '/api/pages/:page_id/mcqs', apiMcqList );
+  app.get( '/api/pages/:page_id', apiPageGet );
+  app.get( '/api/pages/:page_id/mcqs', apiMcqList );
   app.post( '/api/pages/:page_id/mcqs', apiMcqAdd );
 
-  //app.get( '/api/mcqs/:mcq_id', apiMcqGet );
-  //app.get( '/api/mcqs/:mcq_id/submissions', apiSubmissionList );
+  app.get( '/api/mcqs/:mcq_id', apiMcqGet );
+  app.get( '/api/mcqs/:mcq_id/submissions', apiSubmissionList );
   app.post( '/api/mcqs/:mcq_id/submissions', apiSubmissionAdd );
+
+  app.get( '/api/submissions/:submission_id', apiSubmissionGet );
 
 };
 
@@ -334,6 +340,53 @@ function apiCourseAdd( req, res ) {
 
 }
 
+
+/**
+ * Called to get a list of Minilesson objects associated with the specified course and the authenticated user.
+ *
+ * @param {object} req - req
+ * @param {object} res - res
+ */
+function apiMinilessonList( req, res ) {
+
+  // Ensure user
+  if ( req.user ) {
+
+    // Enforce certain values
+    req.params.user_id = req.user._id;
+
+    // Get list of minilessons
+    Minilesson.list( req.params, Utils.safeFn( function ( err, minilessons ) {
+      if ( err ) {
+        res.json( { err: err } );
+      } else {
+        res.json( minilessons );
+      }
+    } ) );
+
+  } else {
+    res.status( 400 ).json( { err: 'Bad Request: User must be authenticated to process request.' } );
+  }
+
+}
+
+/**
+ * Called to get the specified Minilesson object associated with the authenticated user.
+ *
+ * @param {object} req - req
+ * @param {object} res - res
+ */
+function apiMinilessonGet( req, res ) {
+
+  // Ensure user
+  if ( req.user ) {
+    res.json( { err: 'Not implemented.' } );
+  } else {
+    res.status( 400 ).json( { err: 'Bad Request: User must be authenticated to process request.' } );
+  }
+
+}
+
 /**
  * Called to when a user wants to add a new minilesson to a course.
  *
@@ -344,12 +397,41 @@ function apiMinilessonAdd( req, res ) {
 
   // Ensure user
   if ( req.user ) {
-
-    // Enforce certain values
-    req.body.teacher_id = req.user._id;
-
     res.json( { err: 'Not implemented.' } );
+  } else {
+    res.status( 400 ).json( { err: 'Bad Request: User must be authenticated to process request.' } );
+  }
 
+}
+
+/**
+ * Called to get a list of Page objects associated with the specified minilesson and the authenticated user.
+ *
+ * @param {object} req - req
+ * @param {object} res - res
+ */
+function apiPageList( req, res ) {
+
+  // Ensure user
+  if ( req.user ) {
+    res.json( { err: 'Not implemented.' } );
+  } else {
+    res.status( 400 ).json( { err: 'Bad Request: User must be authenticated to process request.' } );
+  }
+
+}
+
+/**
+ * Called to get the specified Page object associated with the authenticated user.
+ *
+ * @param {object} req - req
+ * @param {object} res - res
+ */
+function apiPageGet( req, res ) {
+
+  // Ensure user
+  if ( req.user ) {
+    res.json( { err: 'Not implemented.' } );
   } else {
     res.status( 400 ).json( { err: 'Bad Request: User must be authenticated to process request.' } );
   }
@@ -366,12 +448,41 @@ function apiPageAdd( req, res ) {
 
   // Ensure user
   if ( req.user ) {
-
-    // Enforce certain values
-    req.body.teacher_id = req.user._id;
-
     res.json( { err: 'Not implemented.' } );
+  } else {
+    res.status( 400 ).json( { err: 'Bad Request: User must be authenticated to process request.' } );
+  }
 
+}
+
+/**
+ * Called to get a list of Mcq objects associated with the specified page and the authenticated user.
+ *
+ * @param {object} req - req
+ * @param {object} res - res
+ */
+function apiMcqList( req, res ) {
+
+  // Ensure user
+  if ( req.user ) {
+    res.json( { err: 'Not implemented.' } );
+  } else {
+    res.status( 400 ).json( { err: 'Bad Request: User must be authenticated to process request.' } );
+  }
+
+}
+
+/**
+ * Called to get the specified Mcq object associated with the authenticated user.
+ *
+ * @param {object} req - req
+ * @param {object} res - res
+ */
+function apiMcqGet( req, res ) {
+
+  // Ensure user
+  if ( req.user ) {
+    res.json( { err: 'Not implemented.' } );
   } else {
     res.status( 400 ).json( { err: 'Bad Request: User must be authenticated to process request.' } );
   }
@@ -388,12 +499,41 @@ function apiMcqAdd( req, res ) {
 
   // Ensure user
   if ( req.user ) {
-
-    // Enforce certain values
-    req.body.teacher_id = req.user._id;
-
     res.json( { err: 'Not implemented.' } );
+  } else {
+    res.status( 400 ).json( { err: 'Bad Request: User must be authenticated to process request.' } );
+  }
 
+}
+
+/**
+ * Called to get a list of Submission objects associated with the specified mcq and the authenticated user.
+ *
+ * @param {object} req - req
+ * @param {object} res - res
+ */
+function apiSubmissionList( req, res ) {
+
+  // Ensure user
+  if ( req.user ) {
+    res.json( { err: 'Not implemented.' } );
+  } else {
+    res.status( 400 ).json( { err: 'Bad Request: User must be authenticated to process request.' } );
+  }
+
+}
+
+/**
+ * Called to get the specified Submission object associated with the authenticated user.
+ *
+ * @param {object} req - req
+ * @param {object} res - res
+ */
+function apiSubmissionGet( req, res ) {
+
+  // Ensure user
+  if ( req.user ) {
+    res.json( { err: 'Not implemented.' } );
   } else {
     res.status( 400 ).json( { err: 'Bad Request: User must be authenticated to process request.' } );
   }
@@ -410,12 +550,7 @@ function apiSubmissionAdd( req, res ) {
 
   // Ensure user
   if ( req.user ) {
-
-    // Enforce certain values
-    req.body.teacher_id = req.user._id;
-
     res.json( { err: 'Not implemented.' } );
-
   } else {
     res.status( 400 ).json( { err: 'Bad Request: User must be authenticated to process request.' } );
   }
