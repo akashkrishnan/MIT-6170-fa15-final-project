@@ -704,7 +704,7 @@ function addStudent( data, done ) {
                 done( err, null );
               } else {
                 // Insert new student into class
-                db.courses.update( { '_id': course_id }, { $push: { 'students': criteria.student } },
+                db.courses.update( { '_id': course_id }, { $addToSet: { 'students': criteria.student } },
                   function ( err, result ) {
                     if ( err ) {
                       done( err, null );
@@ -751,23 +751,41 @@ function addPendingStudent( data, done ) {
         },
         filter: 'trim',
       },
-      student: {
+      studentId: {
         type: 'string',
         required: true
       },
     } );
 
-    courseNameExists( { courseName: criteria.courseName, _id: mongoose.Types.ObjectId(criteria.courseId) }, function ( err, _exists, course_id ) {
+
+    var courseCriteria = {'courseName' : criteria.courseName, '_id' : criteria.courseId }
+
+    if ( courseCriteria._id ) {
+      delete courseCriteria.courseName;
+      courseCriteria._id = mongoose.Types.ObjectId(courseCriteria._id);
+    } else if ( courseCriteria.courseName ) {
+      delete courseCriteria._id;
+    } else {
+      return done( new Error( 'Invalid parameters.' ), false );
+    }
+
+    console.log("here");
+    console.log(courseCriteria);
+
+    courseNameExists( courseCriteria, function ( err, _exists, course_id ) {
       if ( err ) {
         done( err, null );
       } else if ( _exists ) {
+        console.log("here2");
         try {
           // Insert new student into class
-          db.courses.update( { '_id': course_id }, { $addToSet: { 'pendingStudents': criteria.student } },
+          db.courses.update( { '_id': course_id }, { $addToSet: { 'pendingStudents': criteria.studentId } },
             function ( err, result ) {
               if ( err ) {
                 done( err, null );
               } else {
+                console.log("made it");
+                console.log(criteria.student);
                 getCourseByName( { _id: course_id }, done );
               }
             }

@@ -127,6 +127,33 @@
           } );
           %>
 
+
+          <%
+          pendingCourses.forEach( function( course ) {
+          %>
+          <div course-item layout-horizontal layout-center>
+
+            <div layout-vertical>
+              <div name><strong><%= course.courseName %></strong></div>
+              <div authors>
+                <%
+                courseTeachers[ course ].forEach( function ( teacher ) {
+                %>
+                <span><%= teacher.name %></span>
+                <%
+                } );
+                %>
+              </div>
+            </div>
+            <div buttons layout-vertical layout-end>
+              <a button blue disabled><i>Pending...</i></a>
+            </div>
+
+          </div>
+          <%
+          } );
+          %>
+
         </div>
 
       </div>
@@ -196,12 +223,9 @@
                 %>
               </div>
             </div>
+            <a button blue join data-courseId='<%= course._id%>' >Join</a>
 
             <div flex></div>
-
-            <div buttons layout-vertical layout-end>
-              <a button small blue join>Join</a>
-            </div>
 
           </div>
           <%

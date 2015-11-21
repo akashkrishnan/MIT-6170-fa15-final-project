@@ -130,6 +130,22 @@ var Flipper = function () {
       }
     },
 
+    addPendingStudent: function ( data, done ) {
+      if ( data ) {
+          ajax( 'POST', '/api/courses/join', data, function ( data ) {
+            if ( data ) {
+              if ( data.err ) {
+                done( data.err, null );
+              } else {
+                done( null, data );
+              }
+            } else {
+              done( new Error( 'Unable to add course. Invalid server response.' ), null );
+            }
+          } );
+      }
+    },
+
     remove: function ( data, done ) {
       if ( data ) {
         done( new Error( 'Not implemented.' ) );

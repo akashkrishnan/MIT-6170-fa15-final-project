@@ -25,6 +25,8 @@ module.exports = function ( app ) {
 
   app.get( '/api/courses', apiCourseList );
   app.post( '/api/courses', apiCourseAdd );
+  app.post( '/api/courses/join', apiCourseJoin );
+
 
   app.get( '/api/courses/:course_id', apiCourseGet );
   app.get( '/api/courses/:course_id/minilessons', apiMinilessonList );
@@ -333,6 +335,35 @@ function apiCourseAdd( req, res ) {
 
     // Add course
     Course.add( req.body, Utils.safeFn( function ( err, course ) {
+      if ( err ) {
+        res.json( { err: err } );
+      } else {
+        res.json( course );
+      }
+    } ) );
+
+  } else {
+    res.status( 400 ).json( { err: 'Bad Request: User must be authenticated to process request.' } );
+  }
+
+}
+
+/**
+ * Called to when a user wants to join a new course.
+ *
+ * @param {object} req - req
+ * @param {object} res - res
+ */
+function apiCourseJoin( req, res ) {
+
+  // Ensure user
+  if ( req.user ) {
+
+    // Enforce certain values
+    req.body.studentId = req.user._id;
+
+    // Add course
+    Course.addPendingStudent( req.body, Utils.safeFn( function ( err, course ) {
       if ( err ) {
         res.json( { err: err } );
       } else {
