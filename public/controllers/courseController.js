@@ -56,4 +56,60 @@
     console.error( 'Missing #minilesson-add-dialog.' );
   }
 
+  /* -------------------------------------------------------------------------------------------------------------- */
+
+  var pageAddDialog = document.querySelector( '#page-add-dialog' );
+  if ( pageAddDialog ) {
+
+    var minilesson_id = pageAddDialog.getAttribute( 'minilesson-id' );
+
+    // Click listener for add-page create button click event
+    var createBtn = document.querySelector( '#page-add-dialog [create]' );
+    if ( createBtn ) {
+      createBtn.addEventListener( 'click', function () {
+
+        // Get minilesson name from form
+        var titleInput = document.querySelector( '#page-add-dialog [title-input]' );
+        var resourceInput = document.querySelector( '#page-add-dialog [resource-input]' );
+        if ( titleInput ) {
+
+          var data = {
+            minilesson_id: minilesson_id,
+            title: titleInput.value,
+            resource: resourceInput.value || ''
+          };
+
+          flipper.page.add( data, function ( err, page ) {
+            if ( err ) {
+              console.error( err );
+              toastr.error( err );
+            } else {
+
+              // TODO: DO SOMETHING WITH THE PAGE OBJECT?
+              console.log( page );
+              toastr.info( 'Page has been added.' );
+
+              // TODO: WE SHOULDN'T NEED TO REFRESH
+              // Refresh for now
+              location.reload();
+
+              // Close the dialog --- this works because the dialog is a dialog-close-trigger
+              pageAddDialog.click();
+
+            }
+          } );
+
+        } else {
+          console.error( 'Missing #page-add-dialog [title-input].' );
+        }
+
+      }, false );
+    } else {
+      console.error( 'Missing #page-add-dialog [create].' );
+    }
+
+  } else {
+    console.error( 'Missing #page-add-dialog.' );
+  }
+
 })();

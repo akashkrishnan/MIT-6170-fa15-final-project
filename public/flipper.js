@@ -212,8 +212,8 @@ var Flipper = function () {
 
     add: function ( data, done ) {
       if ( data ) {
-        if ( data.minilessonId && data.minilessonId.trim() ) {
-          ajax( 'POST', '/api/minilessons/' + data.minilessonId.trim() + '/pages', data, function ( data ) {
+        if ( data.minilesson_id && data.minilesson_id.trim() ) {
+          ajax( 'POST', '/api/minilessons/' + data.minilesson_id.trim() + '/pages', data, function ( data ) {
             if ( data ) {
               if ( data.err ) {
                 done( data.err, null );
@@ -242,8 +242,8 @@ var Flipper = function () {
 
     add: function ( data, done ) {
       if ( data ) {
-        if ( data.pageId && data.pageId.trim() ) {
-          ajax( 'POST', '/api/pages/' + data.pageId.trim() + '/mcqs', data, function ( data ) {
+        if ( data.page_id && data.page_id.trim() ) {
+          ajax( 'POST', '/api/pages/' + data.page_id.trim() + '/mcqs', data, function ( data ) {
             if ( data ) {
               if ( data.err ) {
                 done( data.err, null );
@@ -272,8 +272,8 @@ var Flipper = function () {
 
     add: function ( data, done ) {
       if ( data ) {
-        if ( data.mcqId && data.mcqId.trim() ) {
-          ajax( 'POST', '/api/mcqs/' + data.mcqId.trim() + '/submissions', data, function ( data ) {
+        if ( data.mcq_id && data.mcq_id.trim() ) {
+          ajax( 'POST', '/api/mcqs/' + data.mcq_id.trim() + '/submissions', data, function ( data ) {
             if ( data ) {
               if ( data.err ) {
                 done( data.err, null );
