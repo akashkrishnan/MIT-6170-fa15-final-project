@@ -219,7 +219,10 @@
                 <div question><strong><%= mcq.question %></strong></div>
 
                 <% mcq.answers.forEach( function ( answer, i ) { %>
-                <div choice><%= lookup[ i ] + '. ' + answer %></div>
+                <div choice>
+                  <input class="submit-radio-answer" type="radio" name="answer-options" value=<%=answer%>>
+                  <%=answer %>
+                </div>
                 <% } ); %>
 
               </div>
@@ -320,63 +323,50 @@
 
         <div inputs layout-vertical>
 
-          <div layout-horizontal>
+          
 
-            <div input flex layout-vertical>
-              <label>Question</label>
-              <input type="text" question-input/>
-            </div>
-
+          <div input flex layout-vertical>
+            <label>Question</label>
+            <input type="text" question-input/>
           </div>
 
-          <div layout-horizontal>
+          <div input flex layout-vertical>
 
-            <div input flex layout-vertical>
-              <label>Answer Choice A</label>
+            <div input layout-horizontal layout-center-center>
+              <input class="create-radio-answer" type="radio" name="answer-options" value="choiceA">
               <input type="text" choiceA-input/>
             </div>
 
-            <div input flex layout-vertical>
-              <label>Answer Choice B</label>
+            <div input layout-horizontal layout-center-center>
+              <input class="create-radio-answer" type="radio" name="answer-options" value="choiceB">
               <input type="text" choiceB-input/>
             </div>
 
-          </div>
-
-          <div layout-horizontal>
-
-            <div input flex layout-vertical>
-              <label>Answer Choice C</label>
+            <div input layout-horizontal layout-center-center>
+              <input class="create-radio-answer" type="radio" name="answer-options" value="choiceC">
               <input type="text" choiceC-input/>
             </div>
 
-            <div input flex layout-vertical>
-              <label>Answer Choice D</label>
+            <div input layout-horizontal layout-center-center>
+              <input class="create-radio-answer" type="radio" name="answer-options" value="choiceD">
               <input type="text" choiceD-input/>
             </div>
 
-          </div>
-
-          <div layout-horizontal>
-
-            <div input flex layout-vertical>
-              <label>Answer Choice E</label>
+            <div input layout-horizontal layout-center-center>
+              <input class="create-radio-answer" type="radio" name="answer-options" value="choiceE">
               <input type="text" choiceE-input/>
             </div>
 
-            <div input layout-vertical>
-              <label>Correct Answer Choice (A, B, C, D, E)</label>
-              <input type="text" answer-input/>
-            </div>
+          </div>
 
+          <div buttons layout-horizontal layout-end-justified>
+            <a button small dialog-close-trigger="mcq-add-dialog">Cancel</a>
+            <a button small blue create>Create</a>
           </div>
 
         </div>
 
-        <div buttons layout-horizontal layout-end-justified>
-          <a button small dialog-close-trigger="mcq-add-dialog">Cancel</a>
-          <a button small blue create>Create</a>
-        </div>
+        
 
       </div>
     </div>
