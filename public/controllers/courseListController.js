@@ -68,11 +68,11 @@
         // Get course name from form
         //var nameInput = document.querySelector( '#course-add-dialog [name-input]' );
         //var idInput = document.querySelector('#course-add-dialog [id-input]');
-        var clickedElement = event.target;
-        var courseClicked = clickedElement.dataset.courseid;
-        console.log("registered click");
+          var clickedElement = event.target;
+          var courseClicked = clickedElement.dataset.courseid;
+          console.log('registered click');
 
-        if (courseClicked) {
+          if (courseClicked) {
 
           var data = { courseId: courseClicked };
 
@@ -100,8 +100,8 @@
           console.error( 'Missing #course-join-dialog [courseClicked].' );
         }
 
-      }, false );
-    })
+        }, false );
+      });
     } else {
       console.error( 'Missing #course-join-dialog [join].' );
     }

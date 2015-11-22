@@ -21,7 +21,7 @@ module.exports = {
   add: add,
   sign: sign,
   active: active,
-  
+
 
   /* ---------------INTERNAL--------------- */
 

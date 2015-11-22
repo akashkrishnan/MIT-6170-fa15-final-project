@@ -132,7 +132,7 @@ var Flipper = function () {
 
     addPendingStudent: function ( data, done ) {
       if ( data ) {
-          ajax( 'POST', '/api/courses/join', data, function ( data ) {
+        ajax( 'POST', '/api/courses/join', data, function ( data ) {
             if ( data ) {
               if ( data.err ) {
                 done( data.err, null );

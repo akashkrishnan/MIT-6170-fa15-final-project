@@ -49,7 +49,7 @@ function index( req, res ) {
       },
       Utils.safeFn( function ( err, pendingCourses ) {
         if ( err ) {
-              res.json( { err: err } );
+          res.json( { err: err } );
         } else {
           // Get courses the user teaches
           Course.listForTeacher(
@@ -127,12 +127,12 @@ function index( req, res ) {
 
                     }
                   } )
-                )
+                );
               }
             } )
-          )
+          );
         }
-      } ) 
+      } )
     );
   } else {
     res.render( 'login', {
