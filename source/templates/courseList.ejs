@@ -127,7 +127,6 @@
           } );
           %>
 
-
           <%
           pendingCourses.forEach( function( course ) {
           %>
@@ -223,9 +222,12 @@
                 %>
               </div>
             </div>
-            <a button blue join data-courseId='<%= course._id%>' >Join</a>
 
             <div flex></div>
+
+            <div buttons layout-vertical layout-end>
+              <a button small blue join course-id="<%= course._id %>">Join</a>
+            </div>
 
           </div>
           <%
