@@ -670,6 +670,8 @@ function add( data, done ) {
             if ( err ) {
               done( err, null );
             } else if ( exists ) {
+              done( new Error( 'A course you teach with the specified name already exists.' ), null );
+            } else {
 
               // Insert into database
               db.courses.insert(
@@ -697,8 +699,6 @@ function add( data, done ) {
                 }
               );
 
-            } else {
-              done( new Error( 'A course you teach with the specified name already exists.' ), null );
             }
           }
         );
