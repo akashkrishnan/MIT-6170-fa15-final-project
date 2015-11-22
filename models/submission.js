@@ -59,6 +59,7 @@ function list( data, done ) {
          'sectionNum' in criteria ||
          'minilessonId' in criteria ||
          'pageObjId' in criteria ||
+         'mcqId' in criteria ||
          'studentId' in criteria ) {
 
       // Get Submission objects from database
