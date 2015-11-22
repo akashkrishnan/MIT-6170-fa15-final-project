@@ -11,6 +11,10 @@
 }
 
 ::-webkit-scrollbar-thumb:vertical {
+  background: rgba(0, 0, 0, 0.1);
+}
+
+::-webkit-scrollbar-thumb:hover {
   background: rgba(0, 0, 0, 0.5);
 }
 
