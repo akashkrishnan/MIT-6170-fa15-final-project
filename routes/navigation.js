@@ -22,6 +22,7 @@ module.exports = function ( app ) {
   app.get( '/config.json', config );
   app.get( '/register', register );
   app.get( '/logout', logout );
+  app.get('/pending', pending);
 
   app.get( '/courses/:course_id/', courseRedirect );
   app.get( '/courses/:course_id/minilessons/:minilesson_id?/:page_id?', course );
@@ -37,36 +38,38 @@ module.exports = function ( app ) {
 function index( req, res ) {
   if ( req.user ) {
 
-    // get courses where the user is pending
-    Course.listForPendingStudent(
+    // Get courses the user teaches
+    Course.listForTeacher(
       {
-        student_id: req.user._id,
+        teacher_id: req.user._id,
         projection: {
           students: false,
           timestamps: false,
           states: false
         }
       },
-      Utils.safeFn( function ( err, pendingCourses ) {
+      Utils.safeFn( function ( err, teacherCourses ) {
         if ( err ) {
-              res.json( { err: err } );
+          res.json( { err: err } );
         } else {
-          // Get courses the user teaches
-          Course.listForTeacher(
+
+          // Get courses the user takes
+          Course.listForStudent(
             {
-              teacher_id: req.user._id,
+              student_id: req.user._id,
               projection: {
                 students: false,
                 timestamps: false,
                 states: false
               }
             },
-            Utils.safeFn( function ( err, teacherCourses ) {
+            Utils.safeFn( function ( err, studentCourses ) {
               if ( err ) {
                 res.json( { err: err } );
               } else {
-                // Get courses the user takes
-                Course.listForStudent(
+
+                // Get courses where the user is pending
+                Course.listForPendingStudent(
                   {
                     student_id: req.user._id,
                     projection: {
@@ -75,65 +78,90 @@ function index( req, res ) {
                       states: false
                     }
                   },
-                  Utils.safeFn( function ( err, studentCourses ) {
+                  Utils.safeFn( function ( err, pendingCourses ) {
                     if ( err ) {
                       res.json( { err: err } );
                     } else {
 
-                      var allCourses = teacherCourses.concat( studentCourses );
-                      allCourses = allCourses.concat( pendingCourses );
-                      var courseTeachers = {};
+                      /**
+                       * Replaces teacher ids with user objects in courses.
+                       *
+                       * @param {Array.<Object>} courses - list of Course objects
+                       * @param {function()} done - callback
+                       */
+                      var processCourses = function ( courses, done ) {
 
-                      (function next_course( j, n_courses ) {
-                        var course = allCourses[ j ];
+                        // Loop through courses
+                        (function nextCourse( i, n ) {
+                          if ( i < n ) {
 
-                        if ( j < n_courses ) {
+                            var course = courses[ i ];
 
-                          var next_teacher = function ( i, course, n_teachers ) {
-                            if ( i < n_teachers ) {
-                              var teacherId = course.teachers[ i ];
-                              User.get( { _id: teacherId }, Utils.safeFn( function ( err, teacherObj ) {
-                                if ( err ) {
-                                  next_teacher( i + 1, n_teachers );
+                            if ( course.teachers ) {
+
+                              // Loop through teachers
+                              (function nextTeacher( j, m ) {
+                                if ( j < m ) {
+
+                                  // Get User object
+                                  User.get(
+                                    {
+                                      _id: course.teachers[ j ],
+                                      projection: {
+                                        timestamps: false
+                                      }
+                                    },
+                                    Utils.safeFn( function ( err, user ) {
+                                      course.teachers[ j ] = user || {};
+                                      nextTeacher( j + 1, m );
+                                    } )
+                                  );
+
                                 } else {
-                                  courseTeachers[ course ].push( teacherObj );
-                                  next_teacher( i + 1, n_teachers );
+                                  nextCourse( i + 1, n );
                                 }
-                              } ) );
+                              })( 0, course.teachers.length );
+
                             } else {
-                              next_course( j + 1, n_courses );
+                              nextCourse( i + 1, n );
                             }
-                          };
 
-                          if ( !(course in courseTeachers) ) {
-                            courseTeachers[ course ] = [];
-                            next_teacher( 0, course, course.teachers.length );
                           } else {
-                            next_course( j + 1, n_courses );
+                            done();
                           }
+                        })( 0, courses.length );
 
-                        } else {
-                          console.log(pendingCourses);
-                          res.render( 'courseList', {
-                            web: Config.web,
-                            self: req.user,
-                            teacherCourses: teacherCourses,
-                            pendingCourses: pendingCourses,
-                            studentCourses: studentCourses,
-                            courseTeachers: courseTeachers
+                      };
+
+                      processCourses( teacherCourses, function () {
+                        processCourses( studentCourses, function () {
+                          processCourses( pendingCourses, function () {
+
+                            // Return results to client
+                            res.render( 'courseList', {
+                              web: Config.web,
+                              self: req.user,
+                              teacherCourses: teacherCourses,
+                              studentCourses: studentCourses,
+                              pendingCourses: pendingCourses
+                            } );
+
                           } );
-                        }
-                      })( 0, allCourses.length );
+                        } );
+                      } );
 
                     }
                   } )
-                )
+                );
+
               }
             } )
-          )
+          );
+
         }
-      } ) 
+      } )
     );
+
   } else {
     res.render( 'login', {
       web: Config.web
@@ -204,6 +232,49 @@ function logout( req, res ) {
   }
 
 }
+
+
+/**
+ * Called when the user wants to view pending course requests.
+ *
+ * @param {object} req - req
+ * @param {object} res - res
+ */
+function pending( req, res ) {
+
+  // This route is restricted to authenticated users
+  if ( req.user ) {
+    // Get courses the user teaches
+    Course.listForTeacher(
+      {
+        teacher_id: req.user._id,
+        projection: {
+          students: false,
+          timestamps: false,
+          states: false
+        }
+      },
+      Utils.safeFn( function ( err, teacherCourses ) {
+        if ( err ) {
+          res.json( { err: err } );
+        } else { 
+          // get only courses for which there are pending students
+          teacherCourses = teacherCourses.filter( function (course) {
+            return (course.pendingStudents.length > 0);
+          });
+          res.render( 'pending', {
+                              web: Config.web,
+                              self: req.user,
+                              teacherCourses: teacherCourses
+                            } );
+          }
+      } ) );
+  } else {
+    res.redirect( '/' );
+  }
+
+}
+
 
 /**
  * Redirects invalid course route to a valid default route.

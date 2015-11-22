@@ -11,6 +11,10 @@
 }
 
 ::-webkit-scrollbar-thumb:vertical {
+  background: rgba(0, 0, 0, 0.1);
+}
+
+::-webkit-scrollbar-thumb:hover {
   background: rgba(0, 0, 0, 0.5);
 }
 
@@ -56,6 +60,8 @@ div[masthead] {
   height: 100%;
   padding-left: 16px;
   padding-right: 16px;
+  border-top: 4px solid rgba(0, 0, 0, 0);
+  border-bottom: 4px solid rgba(0, 0, 0, 0);
   cursor: pointer;
   color: white;
   font-size: 16px;
@@ -63,20 +69,13 @@ div[masthead] {
   text-transform: uppercase;
 }
 
-[masthead] [tab] [underline] {
-  position: absolute;
-  bottom: 0;
-  left: 0;
-  right: 0;
-  height: 4px;
-}
-
 [masthead] [tab]:hover {
   background-color: rgba(255, 255, 255, 0.1);
 }
 
-[masthead] [tab][active] [underline] {
-  background-color: rgb(114, 192, 44);
+[masthead] [tab][active] {
+  background-color: rgba(255, 255, 255, 0.1);
+  border-bottom: 4px solid rgb(114, 192, 44);
 }
 
 [no-select] {
@@ -122,10 +121,10 @@ body > [content] > [container] {
 }
 
 [button][small] {
-  line-height: 32px;
+  line-height: 28px;
   padding-left: 16px;
   padding-right: 16px;
-  font-size: 14px;
+  font-size: 12px;
 }
 
 [button][red] {

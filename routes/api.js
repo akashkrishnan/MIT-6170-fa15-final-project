@@ -25,10 +25,9 @@ module.exports = function ( app ) {
 
   app.get( '/api/courses', apiCourseList );
   app.post( '/api/courses', apiCourseAdd );
-  app.post( '/api/courses/join', apiCourseJoin );
-
 
   app.get( '/api/courses/:course_id', apiCourseGet );
+  app.post( '/api/courses/:course_id/join', apiCourseJoin );
   app.get( '/api/courses/:course_id/minilessons', apiMinilessonList );
   app.post( '/api/courses/:course_id/minilessons', apiMinilessonAdd );
 
@@ -362,7 +361,8 @@ function apiCourseJoin( req, res ) {
   if ( req.user ) {
 
     // Enforce certain values
-    req.body.studentId = req.user._id;
+    req.body._id = req.params.course_id;
+    req.body.student_id = req.user._id;
 
     // Add course
     Course.addPendingStudent( req.body, Utils.safeFn( function ( err, course ) {

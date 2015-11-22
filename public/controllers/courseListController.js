@@ -19,7 +19,7 @@
         var nameInput = document.querySelector( '#course-add-dialog [name-input]' );
         if ( nameInput ) {
 
-          var data = { courseName: nameInput.value };
+          var data = { name: nameInput.value };
 
           flipper.course.add( data, function ( err, course ) {
             if ( err ) {
@@ -54,54 +54,47 @@
     console.error( 'Missing #course-add-dialog.' );
   }
 
-
   var courseJoinDialog = document.querySelector( '#course-join-dialog' );
-
   if ( courseJoinDialog ) {
 
     // Click listener for join-course button click event
     var joinBtns = document.querySelectorAll( '#course-join-dialog [join]' );
     if ( joinBtns ) {
-      joinBtns = [].slice.call(joinBtns);
-      joinBtns.forEach(function (joinBtn) {
-        joinBtn.addEventListener( 'click', function (event) {
-        // Get course name from form
-        //var nameInput = document.querySelector( '#course-add-dialog [name-input]' );
-        //var idInput = document.querySelector('#course-add-dialog [id-input]');
-        var clickedElement = event.target;
-        var courseClicked = clickedElement.dataset.courseid;
-        console.log("registered click");
+      joinBtns = [].slice.call( joinBtns );
+      joinBtns.forEach( function ( joinBtn ) {
+        joinBtn.addEventListener( 'click', function ( event ) {
 
-        if (courseClicked) {
+          var course_id = event.target.getAttribute( 'course-id' );
+          if ( course_id ) {
 
-          var data = { courseId: courseClicked };
+            var data = { course_id: course_id };
 
-          flipper.course.addPendingStudent( data, function ( err, course ) {
-            if ( err ) {
-              console.error( err );
-              toastr.error( err );
-            } else {
+            flipper.course.addPendingStudent( data, function ( err, course ) {
+              if ( err ) {
+                console.error( err );
+                toastr.error( err );
+              } else {
 
-              // TODO: DO SOMETHING WITH THE COURSE OBJECT?
-              console.log( course );
-              toastr.info( 'Course has been added.' );
+                // TODO: DO SOMETHING WITH THE COURSE OBJECT?
+                console.log( course );
+                toastr.info( 'You have joined a course.' );
 
-              // TODO: WE SHOULDN'T NEED TO REFRESH
-              // Refresh for now
-              location.reload();
+                // TODO: WE SHOULDN'T NEED TO REFRESH
+                // Refresh for now
+                location.reload();
 
-              // Close the dialog --- this works because the dialog is a dialog-close-trigger
-              courseJoinDialog.click();
+                // Close the dialog --- this works because the dialog is a dialog-close-trigger
+                courseJoinDialog.click();
 
-            }
-          } );
+              }
+            } );
 
-        } else {
-          console.error( 'Missing #course-join-dialog [courseClicked].' );
-        }
+          } else {
+            console.error( 'Missing #course-join-dialog [course-id].' );
+          }
 
-      }, false );
-    })
+        }, false );
+      } );
     } else {
       console.error( 'Missing #course-join-dialog [join].' );
     }

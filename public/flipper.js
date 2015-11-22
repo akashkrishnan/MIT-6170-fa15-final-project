@@ -95,23 +95,27 @@ var Flipper = function () {
 
     get: function ( data, done ) {
       if ( data ) {
-        ajax( 'GET', '/api/courses/' + data._id, data, function ( data ) {
-          if ( data ) {
-            if ( data.err ) {
-              done( data.err, null );
+        if ( data.course_id && data.course_id.trim() ) {
+          ajax( 'GET', '/api/courses/' + data.course_id.trim(), data, function ( data ) {
+            if ( data ) {
+              if ( data.err ) {
+                done( data.err, null );
+              } else {
+                done( null, data );
+              }
             } else {
-              done( null, data );
+              done( new Error( 'Unable to get course. Invalid server response.' ), null );
             }
-          } else {
-            done( new Error( 'Unable to get course. Invalid server response.' ), null );
-          }
-        } );
+          } );
+        } else {
+          done( new Error( 'A course ID is required to get a course.' ) );
+        }
       }
     },
 
     add: function ( data, done ) {
-      if ( data && data.courseName ) {
-        if ( data.courseName.length > 100 ) {
+      if ( data && data.name ) {
+        if ( data.name.length > 100 ) {
           // TODO: USE CONFIG
           done( new Error( 'Name too long. Please shorten the name to at most 100 characters.' ) );
         } else {
@@ -132,7 +136,8 @@ var Flipper = function () {
 
     addPendingStudent: function ( data, done ) {
       if ( data ) {
-          ajax( 'POST', '/api/courses/join', data, function ( data ) {
+        if ( data.course_id && data.course_id.trim() ) {
+          ajax( 'POST', '/api/courses/' + data.course_id.trim() + '/join', data, function ( data ) {
             if ( data ) {
               if ( data.err ) {
                 done( data.err, null );
@@ -140,9 +145,12 @@ var Flipper = function () {
                 done( null, data );
               }
             } else {
-              done( new Error( 'Unable to add course. Invalid server response.' ), null );
+              done( new Error( 'Unable to join course. Invalid server response.' ), null );
             }
           } );
+        } else {
+          done( new Error( 'A course ID is required to get a course.' ) );
+        }
       }
     },
 

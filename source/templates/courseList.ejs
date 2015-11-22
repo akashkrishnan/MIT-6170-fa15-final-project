@@ -21,10 +21,11 @@
 
       <div name layout-horizontal layout-center layout-center-justified><strong><%= web.name %></strong></div>
 
-      <a href="/" tab layout-horizontal layout-center active>
-        <div>Home</div>
-        <div underline></div>
-      </a>
+      <div relative layout-vertical style="height: 100%">
+        <a href="/" tab layout-horizontal layout-center active>
+          <div>Home</div>
+        </a>
+      </div>
 
       <div flex></div>
 
@@ -33,14 +34,13 @@
         <div tab no-select dropdown-toggle-trigger="account-dropdown"
              flex layout-horizontal layout-center>
           <div><%= self.name %></div>
-          <div underline></div>
         </div>
 
         <div id="account-dropdown" dropdown align-right shadow elevation="2" layout-vertical>
 
-          <div item hoverable layout-horizontal layout-center>
+          <a href="/pending" item hoverable layout-horizontal layout-center>
             <div text>Pending Course Requests</div>
-          </div>
+          </a>
 
           <a href="/logout" item hoverable layout-horizontal layout-center>
             <div text>Logout</div>
@@ -76,7 +76,7 @@
               <div name><strong><%= course.courseName %></strong></div>
               <div authors>
                 <%
-                courseTeachers[ course ].forEach( function ( teacher ) {
+                course.teachers.forEach( function ( teacher ) {
                 %>
                 <span><%= teacher.name %></span>
                 <%
@@ -107,13 +107,13 @@
           <%
           studentCourses.forEach( function( course ) {
           %>
-          <div course-item layout-horizontal layout-center>
+          <a href="/courses/<%= course._id %>/minilessons" course-item layout-horizontal layout-center>
 
             <div layout-vertical>
               <div name><strong><%= course.courseName %></strong></div>
               <div authors>
                 <%
-                courseTeachers[ course ].forEach( function ( teacher ) {
+                course.teachers.forEach( function ( teacher ) {
                 %>
                 <span><%= teacher.name %></span>
                 <%
@@ -122,11 +122,10 @@
               </div>
             </div>
 
-          </div>
+          </a>
           <%
           } );
           %>
-
 
           <%
           pendingCourses.forEach( function( course ) {
@@ -137,7 +136,7 @@
               <div name><strong><%= course.courseName %></strong></div>
               <div authors>
                 <%
-                courseTeachers[ course ].forEach( function ( teacher ) {
+                course.teachers.forEach( function ( teacher ) {
                 %>
                 <span><%= teacher.name %></span>
                 <%
@@ -145,8 +144,11 @@
                 %>
               </div>
             </div>
+
+            <div flex></div>
+
             <div buttons layout-vertical layout-end>
-              <a button blue disabled><i>Pending...</i></a>
+              <a button small blue disabled>Pending</a>
             </div>
 
           </div>
@@ -215,7 +217,7 @@
               <div name><strong><%= course.courseName %></strong></div>
               <div authors>
                 <%
-                courseTeachers[ course ].forEach( function ( teacher ) {
+                course.teachers.forEach( function ( teacher ) {
                 %>
                 <span><%= teacher.name %></span>
                 <%
@@ -223,9 +225,12 @@
                 %>
               </div>
             </div>
-            <a button blue join data-courseId='<%= course._id%>' >Join</a>
 
             <div flex></div>
+
+            <div buttons layout-vertical layout-end>
+              <a button small blue join course-id="<%= course._id %>">Join</a>
+            </div>
 
           </div>
           <%
