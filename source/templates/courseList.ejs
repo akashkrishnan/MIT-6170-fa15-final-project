@@ -38,9 +38,9 @@
 
         <div id="account-dropdown" dropdown align-right shadow elevation="2" layout-vertical>
 
-          <div item hoverable layout-horizontal layout-center>
+          <a href="/pending" item hoverable layout-horizontal layout-center>
             <div text>Pending Course Requests</div>
-          </div>
+          </a>
 
           <a href="/logout" item hoverable layout-horizontal layout-center>
             <div text>Logout</div>
@@ -73,7 +73,7 @@
           <a href="/courses/<%= course._id %>/minilessons" course-item layout-horizontal layout-center>
 
             <div layout-vertical>
-              <div name><strong><%= course.name %></strong></div>
+              <div name><strong><%= course.courseName %></strong></div>
               <div authors>
                 <%
                 course.teachers.forEach( function ( teacher ) {
@@ -110,7 +110,7 @@
           <a href="/courses/<%= course._id %>/minilessons" course-item layout-horizontal layout-center>
 
             <div layout-vertical>
-              <div name><strong><%= course.name %></strong></div>
+              <div name><strong><%= course.courseName %></strong></div>
               <div authors>
                 <%
                 course.teachers.forEach( function ( teacher ) {
@@ -133,7 +133,7 @@
           <div course-item layout-horizontal layout-center>
 
             <div layout-vertical>
-              <div name><strong><%= course.name %></strong></div>
+              <div name><strong><%= course.courseName %></strong></div>
               <div authors>
                 <%
                 course.teachers.forEach( function ( teacher ) {
@@ -214,7 +214,7 @@
           <div course-item layout-horizontal layout-center>
 
             <div layout-vertical>
-              <div name><strong><%= course.name %></strong></div>
+              <div name><strong><%= course.courseName %></strong></div>
               <div authors>
                 <%
                 course.teachers.forEach( function ( teacher ) {
