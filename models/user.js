@@ -19,13 +19,13 @@ module.exports = {
   exists: exists,
   get: get,
   add: add,
-
+  sign: sign,
+  active: active,
+  
 
   /* ---------------INTERNAL--------------- */
 
-  validateCredentials: validateCredentials,
-  sign: sign,
-  active: active
+  validateCredentials: validateCredentials
 
 };
 

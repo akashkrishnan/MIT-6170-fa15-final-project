@@ -4,10 +4,8 @@ var Config = require( '../config.js' );
 var Utils = require( './utils.js' );
 var User = require( './user.js' );
 var mongojs = require( 'mongojs' );
-var crypto = require( 'crypto' );
 
 var db = mongojs( Config.services.db.mongodb.uri, [ 'courses' ] );
-var mongoose = require('mongoose');
 
 
 module.exports = {
@@ -18,13 +16,12 @@ module.exports = {
   listForTeacher: listForTeacher,
   listForStudent: listForStudent,
   listForPendingStudent: listForPendingStudent,
-  courseNameExists: courseNameExists,
+  exists: exists,
   get: get,
   getWithUser: getWithUser,
-  getCourseByName: getCourseByName,
   add: add,
-  addStudentToCourse: addStudent,
-  addPendingStudent: addPendingStudent
+  addPendingStudent: addPendingStudent,
+  addStudentToCourse: addStudent
 
 };
 
@@ -42,6 +39,7 @@ module.exports = {
  * @param {object} [data.projection] - projection
  * @param {boolean} [data.projection.teachers] -
  * @param {boolean} [data.projection.students] -
+ * @param {boolean} [data.projection.pendingStudents] -
  * @param {boolean} [data.projection.states] -
  * @param {boolean} [data.projection.timestamps] -
  * @param {number} [data.offset=0] - offset of first Course object in the page
@@ -70,7 +68,7 @@ function list( data, done ) {
     var sort = Utils.validateObject( data, {
       sort: {
         type: {},
-        default: { courseName: 1 }
+        default: { name: 1 }
       }
     } ).sort;
 
@@ -115,6 +113,7 @@ function list( data, done ) {
  * @param {object} [data.projection] - projection
  * @param {boolean} [data.projection.teachers] -
  * @param {boolean} [data.projection.students] -
+ * @param {boolean} [data.projection.pendingStudents] -
  * @param {boolean} [data.projection.states] -
  * @param {boolean} [data.projection.timestamps] -
  * @param {number} [data.offset=0] - offset of first Course object in the page
@@ -145,7 +144,7 @@ function listForTeacher( data, done ) {
     var sort = Utils.validateObject( data, {
       sort: {
         type: {},
-        default: { courseName: 1 }
+        default: { name: 1 }
       }
     } ).sort;
 
@@ -190,6 +189,7 @@ function listForTeacher( data, done ) {
  * @param {object} [data.projection] - projection
  * @param {boolean} [data.projection.teachers] -
  * @param {boolean} [data.projection.students] -
+ * @param {boolean} [data.projection.pendingStudents] -
  * @param {boolean} [data.projection.states] -
  * @param {boolean} [data.projection.timestamps] -
  * @param {number} [data.offset=0] - offset of first Course object in the page
@@ -220,7 +220,7 @@ function listForStudent( data, done ) {
     var sort = Utils.validateObject( data, {
       sort: {
         type: {},
-        default: { courseName: 1 }
+        default: { name: 1 }
       }
     } ).sort;
 
@@ -250,10 +250,8 @@ function listForStudent( data, done ) {
   }
 }
 
-
-
 /**
- * @callback listForPendingStudent
+ * @callback listForPendingStudentCallback
  * @param {Error} err - Error object
  * @param {Array.<object>} courses - list of Course objects in the current page
  * @param {number} count - total number of Course objects across all pages
@@ -267,11 +265,12 @@ function listForStudent( data, done ) {
  * @param {object} [data.projection] - projection
  * @param {boolean} [data.projection.teachers] -
  * @param {boolean} [data.projection.students] -
+ * @param {boolean} [data.projection.pendingStudents] -
  * @param {boolean} [data.projection.states] -
  * @param {boolean} [data.projection.timestamps] -
  * @param {number} [data.offset=0] - offset of first Course object in the page
  * @param {number} [data.limit=0] - number of Course objects in a page
- * @param {listforPendingStudent} done - callback
+ * @param {listForPendingStudentCallback} done - callback
  */
 function listForPendingStudent( data, done ) {
   try {
@@ -297,7 +296,7 @@ function listForPendingStudent( data, done ) {
     var sort = Utils.validateObject( data, {
       sort: {
         type: {},
-        default: { courseName: 1 }
+        default: { name: 1 }
       }
     } ).sort;
 
@@ -327,9 +326,57 @@ function listForPendingStudent( data, done ) {
   }
 }
 
+/**
+ * @callback existsCallback
+ * @param {Error} err - Error object
+ * @param {boolean} exists - whether or not course exists
+ */
 
 /**
- * @callback getCallback
+ * Checks if a Course object exists.
+ *
+ * @param {object} data - data
+ * @param {*} [data._id] - Course._id
+ * @param {string} [data.name] - course name
+ * @param {string} [data.teacher_id] - User._id of teacher
+ * @param {string} [data.student_id] - User._id of student
+ * @param {string} [data.pending_student_id] - User._id of pending student
+ * @param {existsCallback} done - callback
+ */
+function exists( data, done ) {
+  try {
+
+    var criteria = Utils.validateObject( data, {
+      _id: { filter: 'MongoId' },
+      name: { type: 'string' },
+      teacher_id: { name: 'teachers', type: 'string' },
+      student_id: { name: 'students', type: 'string' },
+      pending_student_id: { name: 'pendingStudents', type: 'string' }
+    } );
+
+    // Ensure there is at least one parameter
+    if ( criteria._id || criteria.name || criteria.teacher_id || criteria.student_id || criteria.pending_student_id ) {
+
+      // Get from database
+      db.courses.count( criteria, function ( err, count ) {
+        if ( err ) {
+          done( err, false );
+        } else {
+          done( null, Boolean( count ) );
+        }
+      } );
+
+    } else {
+      done( new Error( 'Invalid parameters.' ), false );
+    }
+
+  } catch ( err ) {
+    done( err, false );
+  }
+}
+
+/**
+ * @callback getCourseCallback
  * @param {Error} err - Error object
  * @param {object} course - Course object
  */
@@ -338,19 +385,28 @@ function listForPendingStudent( data, done ) {
  * Gets a Course object.
  *
  * @param {object} data - data
- * @param {*} data._id - Course._id
+ * @param {*} [data._id] - Course._id
+ * @param {string} [data.name] - name of course
+ * @param {string} [data.teacher_id] - User._id of teacher
+ * @param {string} [data.student_id] - User._id of student
+ * @param {string} [data.pending_student_id] - User._id of pending student
  * @param {object} [data.projection] - projection
  * @param {boolean} [data.projection.teachers] -
  * @param {boolean} [data.projection.students] -
+ * @param {boolean} [data.projection.pendingStudents] -
  * @param {boolean} [data.projection.states] -
  * @param {boolean} [data.projection.timestamps] -
- * @param {getCallback} done - callback
+ * @param {getCourseCallback} done - callback
  */
 function get( data, done ) {
   try {
 
     var criteria = Utils.validateObject( data, {
-      _id: { filter: 'MongoId', required: true }
+      _id: { filter: 'MongoId' },
+      name: { type: 'string' },
+      teacher_id: { name: 'teachers', type: 'string' },
+      student_id: { name: 'students', type: 'string' },
+      pending_student_id: { name: 'pendingStudents', type: 'string' }
     } );
 
     var projection = Utils.validateObject( data, {
@@ -367,75 +423,99 @@ function get( data, done ) {
       }
     } ).projection;
 
-    db.courses.findOne( criteria, projection, function ( err, course ) {
-      if ( err ) {
-        done( err, null );
-      } else if ( course.teachers ) {
+    // Ensure there is at least one parameter
+    if ( criteria._id || criteria.name || criteria.teacher_id || criteria.student_id || criteria.pending_student_id ) {
 
-        // Loop through teachers
-        (function nextTeacher( i, n ) {
-          if ( i < n ) {
+      // Get from database
+      db.courses.findOne( criteria, projection, function ( err, course ) {
+        if ( err ) {
+          done( err, null );
+        } else if ( course.teachers ) {
 
-            // Get teacher's User object
-            User.get(
-              {
-                _id: course.teachers[ i ],
-                projection: {
-                  timestamps: false
+          // Loop through teachers
+          (function nextTeacher( i, n ) {
+            if ( i < n ) {
+
+              // Get teacher's User object
+              User.get(
+                {
+                  _id: course.teachers[ i ],
+                  projection: {
+                    timestamps: false
+                  }
+                },
+                Utils.safeFn( function ( err, user ) {
+                  course.teachers[ i ] = user || {};
+                  nextTeacher( i + 1, n );
+                } )
+              );
+
+            } else if ( course.students ) {
+
+              // Loop through students
+              (function nextStudent( i, n ) {
+                if ( i < n ) {
+
+                  // Get student's User object
+                  User.get(
+                    {
+                      _id: course.students[ i ],
+                      projection: {
+                        timestamps: false
+                      }
+                    },
+                    Utils.safeFn( function ( err, user ) {
+                      course.students[ i ] = user || {};
+                      nextStudent( i + 1, n );
+                    } )
+                  );
+
+                } else if ( course.pendingStudents ) {
+
+                  // Loop through pending students
+                  (function nextPendingStudent( i, n ) {
+                    if ( i < n ) {
+
+                      // Get pending student's User object
+                      User.get(
+                        {
+                          _id: course.pendingStudents[ i ],
+                          projection: {
+                            timestamps: false
+                          }
+                        },
+                        Utils.safeFn( function ( err, user ) {
+                          course.pendingStudents[ i ] = user || {};
+                          nextPendingStudent( i + 1, n );
+                        } )
+                      );
+
+                    } else {
+                      done( null, course );
+                    }
+                  })( 0, course.teachers.length );
+
+                } else {
+                  done( null, course );
                 }
-              },
-              Utils.safeFn( function ( err, user ) {
-                course.teachers[ i ] = user || {};
-                nextTeacher( i + 1, n );
-              } )
-            );
+              })( 0, course.teachers.length );
 
-          } else {
-            done( null, course );
-          }
-        })( 0, course.teachers.length );
+            } else {
+              done( null, course );
+            }
+          })( 0, course.teachers.length );
 
-      } else {
-        done( null, course );
-      }
-    } );
+        } else {
+          done( null, course );
+        }
+      } );
+
+    } else {
+      done( new Error( 'Invalid parameters.' ), null );
+    }
 
   } catch ( err ) {
     done( err, null );
-  }
-}
-
-function courseNameExists( data, done ) {
-  try {
-
-    var criteria = Utils.validateObject( data, {
-      _id: { filter: 'MongoId' },
-      courseName: { type: 'string' }
-    } );
-
-    // Handle different input combinations
-    if ( criteria._id ) {
-      delete criteria.courseName;
-    } else if ( criteria.courseName ) {
-      delete criteria._id;
-    } else {
-      return done( new Error( 'Invalid parameters.' ), false );
-    }
-
-    db.courses.findOne( criteria, function ( err, course ) {
-      if ( err ) {
-        done( err, false );
-      } else {
-        var courseId = null;
-        if ( course ) {
-          courseId = course._id;
-        }
-        done( null, Boolean( course ), courseId );
-      }
-    } );
-
-  } catch ( err ) {
-    done( err, false );
   }
 }
 
@@ -454,6 +534,7 @@ function courseNameExists( data, done ) {
  * @param {object} [data.projection] - projection
  * @param {boolean} [data.projection.teachers] -
  * @param {boolean} [data.projection.students] -
+ * @param {boolean} [data.projection.pendingStudents] -
  * @param {boolean} [data.projection.states] -
  * @param {boolean} [data.projection.timestamps] -
  * @param {getWithUserCallback} done - callback
@@ -551,43 +632,6 @@ function getWithUser( data, done ) {
   }
 }
 
-
-/**
- * @callback getCourseByNameCallback
- * @param {Error} err - Error object
- * @param {object} course - Course object
- */
-
-/**
- * Gets a Course object with the name.
- *
- * @param {object} data - data
- * @param {*} data.courseName - Course.courseName
- * @param {getCourseByName} done - callback
- */
-function getCourseByName( data, done ) {
-
-  try {
-
-    var criteria = Utils.validateObject( data, {
-      courseName: { type: 'string' }
-    } );
-
-
-    db.courses.findOne( criteria, function ( err, course ) {
-      if ( err ) {
-        done( err, false );
-      } else {
-        done( null, course );
-      }
-    } );
-
-  } catch ( err ) {
-    done( err, false );
-  }
-
-}
-
 /**
  * @callback addCallback
  * @param {Error} err - Error object
@@ -595,62 +639,146 @@ function getCourseByName( data, done ) {
  */
 
 /**
- * Adds a course object.
+ * Adds a course.
  *
  * @param {object} data - data
- * @param {*} data.courseName - Course.courseName
- * @param {*} data.teacher_id - Course.teachers
- * @param {add} done - callback
+ * @param {string} data.name - name of course
+ * @param {string} data.teacher_id - User._id
+ * @param {addCallback} done - callback
  */
 function add( data, done ) {
   try {
+
     var criteria = Utils.validateObject( data, {
-      courseName: {
-        type: 'string',
-        filter: 'trim',
-        required: true
-      },
-      teacher_id: {
-        type: 'string',
-        required: true
+      name: { type: 'string', filter: 'trim', required: true },
+      teacher_id: { type: 'string', required: true }
+    } );
+
+    // Ensure valid teacher_id
+    User.get( { _id: criteria.teacher_id }, function ( err, user ) {
+      if ( err ) {
+        done( err, null );
+      } else {
+
+        // Ensure course with same name and teacher does not already exist
+        exists(
+          {
+            name: criteria.name,
+            teacher_id: criteria.teacher_id
+          },
+          function ( err, exists ) {
+            if ( err ) {
+              done( err, null );
+            } else if ( exists ) {
+
+              // Insert into database
+              db.courses.insert(
+                {
+                  name: criteria.name,
+                  teachers: [ user._id ],
+                  students: [],
+                  pendingStudents: [],
+                  states: {
+                    active: true
+                  },
+                  timestamps: {
+                    created: new Date()
+                  }
+                },
+                function ( err, course ) {
+                  if ( err ) {
+                    done( err, null );
+                  } else {
+
+                    // Get the new Course object the proper way
+                    getWithUser( { _id: course._id, user_id: user._id }, done );
+
+                  }
+                }
+              );
+
+            } else {
+              done( new Error( 'A course you teach with the specified name already exists.' ), null );
+            }
+          }
+        );
+
       }
     } );
 
-    courseNameExists( { courseName: criteria.courseName }, function ( err, _exists, course_id ) {
+  } catch ( err ) {
+    done( err, null );
+  }
+}
+
+/**
+ * @callback addPendingStudentCallback
+ * @param {Error} err - Error object
+ * @param {object} course - Course object before adding student
+ */
+
+/**
+ * Adds a student to a course as pending.
+ *
+ * @param {object} data - data
+ * @param {*} data._id - Course._id
+ * @param {string} data.student_id - User._id
+ * @param {addPendingStudentCallback} done - callback
+ */
+function addPendingStudent( data, done ) {
+  try {
+
+    var criteria = Utils.validateObject( data, {
+      _id: { filter: 'MongoId', required: true },
+      student_id: { type: 'string', required: true }
+    } );
+
+    // Ensure valid course
+    get( { _id: criteria._id }, function ( err, course ) {
       if ( err ) {
         done( err, null );
-      } else if ( _exists ) {
-        done( new Error( 'Course Name already exists.' ),
-          null
-        );
       } else {
-        try {
-          db.courses.insert(
-            {
-              courseName: criteria.courseName,
-              teachers: [ criteria.teacher_id ],
-              pendingStudents: [],
-              students: [],
-              states: {
-                active: true
-              },
-              timestamps: {
-                created: new Date()
-              }
-            },
-            function ( err, course ) {
 
+        // Ensure student_id is not already a student of the course
+        exists( { _id: criteria._id, student_id: criteria.student_id }, function ( err, exists ) {
+          if ( err ) {
+            done( err, null );
+          } else if ( exists ) {
+            done( new Error( 'User is already a student of the course.' ), null );
+          } else {
+
+            // Ensure student_id is not already a student of the course
+            exists( { _id: criteria._id, pending_student_id: criteria.student_id }, function ( err, exists ) {
               if ( err ) {
                 done( err, null );
+              } else if ( exists ) {
+                done( new Error( 'User is already pending admission to the course.' ), null );
               } else {
-                // Get the new user object the proper way
-                getCourseByName( { courseName: criteria.courseName }, done );
+
+                // Add student to pending students list. Using $addToSet just in case of duplicates.
+                db.courses.update(
+                  {
+                    _id: criteria._id
+                  },
+                  {
+                    $addToSet: { students: criteria.student_id }
+                  },
+                  {},
+                  function ( err ) {
+                    if ( err ) {
+                      done( err, null );
+                    } else {
+                      done( null, course );
+                    }
+                  }
+                );
+
               }
-            }
-          );
-        } catch ( err ) {
-          done( new Error( 'Unable to add course. Please try again.' ), null );
-        }
+            } );
+
+          }
+        } );
+
       }
     } );
 
@@ -662,142 +790,65 @@ function add( data, done ) {
 /**
  * @callback addStudentCallback
  * @param {Error} err - Error object
- * @param {object} course - Course object
+ * @param {object} course - Course object before adding student
  */
 
 /**
- * Adds a course object.
+ * Adds a student to a course.
  *
  * @param {object} data - data
- * @param {*} data.courseName - Course.courseName
- * @param {*} data.student - Course.students
- * @param {addStudent} done - callback
+ * @param {*} data._id - Course._id
+ * @param {string} data.teacher_id - User._id
+ * @param {string} data.student_id - User._id
+ * @param {addStudentCallback} done - callback
  */
 function addStudent( data, done ) {
   try {
 
     var criteria = Utils.validateObject( data, {
-      courseName: {
-        type: 'string',
-        filter: 'trim'
-      },
-      courseId: {
-        type: 'string',
-        filter: 'trim'
-      },
-      studentId: {
-        type: 'string',
-        filter: 'trim',
-        required: true
-      }
+      _id: { filter: 'MongoId', required: true },
+      teacher_id: { type: 'string', required: true },
+      student_id: { type: 'string', required: true }
     } );
 
-    courseNameExists( { courseName: criteria.courseName, _id: mongoose.Types.ObjectId(criteria.courseId) }, function ( err, _exists, course_id ) {
+    // Ensure teacher_id is a teacher of the course
+    getWithUser( { _id: criteria._id, user_id: criteria.teacher_id }, function ( err, course ) {
       if ( err ) {
         done( err, null );
-      } else if ( _exists ) {
-        try {
-          // Remove student from pending 
-          db.courses.update ({'_id': course_id}, { $pull: { 'pendingStudents': criteria.student } }, 
-            function ( err, result ) {
-              if (err) {
-                done( err, null );
-              } else {
-                // Insert new student into class
-                db.courses.update( { '_id': course_id }, { $addToSet: { 'students': criteria.student } },
-                  function ( err, result ) {
-                    if ( err ) {
-                      done( err, null );
-                    } else {
-                      get( { _id: course_id }, done );
-                    }
-                } );
+      } else if ( course.teaching ) {
+
+        // Ensure student_id is a pending student in the course
+        get( { _id: criteria._id, pending_student_id: criteria.student_id }, function ( err, course ) {
+          if ( err ) {
+            done( err, null );
+          } else {
+
+            // Add pending student to students list and remove student from pending students list. $addToSet is
+            // important because we don't want to have duplicates
+            db.courses.update(
+              {
+                _id: criteria._id,
+                pendingStudents: criteria.student_id
+              },
+              {
+                $addToSet: { students: criteria.student_id },
+                $pull: { pendingStudents: criteria.student_id }
+              },
+              {},
+              function ( err ) {
+                if ( err ) {
+                  done( err, null );
+                } else {
+                  done( null, course );
+                }
               }
-            });
-        } catch ( err ) {
-          done( new Error( 'Unable to add user to course. Please try again.' ), null );
-        }
-      } else {
-        done(
-          new Error( 'Course does not exist.' ),
-          null
-        );
-      }
-    } );
-  } catch ( err ) {
-    done( err, null );
-  }
-}
+            );
 
-
-function addPendingStudent( data, done ) {
-  try {
-    var criteria = Utils.validateObject( data, {
-      courseName: {
-        type: 'string',
-        filter: function ( name ) {
-          if ( name ) {
-            return name.trim();
           }
-        },
-        filter: 'trim'
-      },
-      courseId: {
-        type: 'string',
-        filter: function ( name ) {
-          if ( name ) {
-            return name.trim();
-          }
-        },
-        filter: 'trim',
-      },
-      studentId: {
-        type: 'string',
-        required: true
-      },
-    } );
+        } );
 
-
-    var courseCriteria = {'courseName' : criteria.courseName, '_id' : criteria.courseId }
-
-    if ( courseCriteria._id ) {
-      delete courseCriteria.courseName;
-      courseCriteria._id = mongoose.Types.ObjectId(courseCriteria._id);
-    } else if ( courseCriteria.courseName ) {
-      delete courseCriteria._id;
-    } else {
-      return done( new Error( 'Invalid parameters.' ), false );
-    }
-
-    console.log("here");
-    console.log(courseCriteria);
-
-    courseNameExists( courseCriteria, function ( err, _exists, course_id ) {
-      if ( err ) {
-        done( err, null );
-      } else if ( _exists ) {
-        console.log("here2");
-        try {
-          // Insert new student into class
-          db.courses.update( { '_id': course_id }, { $addToSet: { 'pendingStudents': criteria.studentId } },
-            function ( err, result ) {
-              if ( err ) {
-                done( err, null );
-              } else {
-                console.log("made it");
-                console.log(criteria.student);
-                getCourseByName( { _id: course_id }, done );
-              }
-            }
-          );
-        } catch ( err ) {
-          done( new Error( 'Unable to add pending user to course. Please try again.' ), null );
-        }
       } else {
-        done(
-          new Error( 'Course does not exist.' ),
-          null
-        );
+        done( new Error( 'Only a teacher of the course can add a student.' ), null );
       }
     } );
 

@@ -41,7 +41,6 @@
     "eslint-config-google": "^0.3.0",
     "express": "^4.13.3",
     "mocha": "^2.3.4",
-    "mongojs": "^1.4.1",
-    "mongoose": "*"
+    "mongojs": "^1.4.1"
   }
 }
