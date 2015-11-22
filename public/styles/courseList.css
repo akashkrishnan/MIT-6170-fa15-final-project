@@ -13,10 +13,23 @@
   background-color: #4285F4;
 }
 
+[course-list] [subheader] {
+  height: 36px;
+  background-color: white;
+  border-bottom: 1px solid rgba(0, 0, 0, 0.3);
+}
+
 [course-list] [header] [title] {
   padding-left: 16px;
   padding-right: 16px;
   font-size: 18px;
+  text-transform: uppercase;
+}
+
+[course-list] [subheader] [title] {
+  padding-left: 16px;
+  padding-right: 16px;
+  font-size: 16px;
   text-transform: uppercase;
 }
 
