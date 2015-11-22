@@ -43,6 +43,8 @@ module.exports = function ( app ) {
   app.get( '/api/mcqs/:mcq_id/submissions', apiSubmissionList );
   app.post( '/api/mcqs/:mcq_id/submissions', apiSubmissionAdd );
 
+  app.get('/api/mcqs/:mcq_id/grades', apiMCQGrades);
+
   app.get( '/api/submissions/:submission_id', apiSubmissionGet );
 
 };
@@ -714,4 +716,72 @@ function apiSubmissionAdd( req, res ) {
     res.status( 400 ).json( { err: 'Bad Request: User must be authenticated to process request.' } );
   }
 
+}
+
+/**
+ * Called to when a user wants to view all grades of an MCQ.
+ *
+ * @param {object} req - req
+ * @param {object} res - res
+ */
+function apiMCQGrades( req, res ) {
+
+  // Ensure user
+  if ( req.user ) {
+
+    Submission.list({ mcqId: req.body.mcqId },
+        function(err, submissions){
+          if ( err ) {
+            res.json( { err: err } );
+          } else {
+            /**
+             * Replaces student ids with user objects in submissions.
+             *
+             * @param {Array.<Object>} submissions - list of Submission objects
+             * @param {function()} done - callback
+             */
+            var processSubmissions = function ( submissions, done ) {
+
+              // Loop through courses
+              (function nextSubmission( i, n ) {
+                if ( i < n ) {
+
+                  var submission = submissions[ i ];
+
+                  if ( submission.studentId ) {
+
+                    User.get(
+                        {
+                          _id: submission.studentId,
+                          projection: {
+                            timestamps: false
+                          }
+                        },
+                        Utils.safeFn( function ( err, user ) {
+                          submission.studentId = user || {};
+                        })
+                    )
+                  } else {
+                    nextSubmission( i + 1, n );
+                  }
+
+                } else {
+                  done();
+                }
+              })( 0, submissions.length );
+
+            };
+
+            processSubmissions( submissions, function () {
+              // Return results to client
+              res.json( {
+                submissions: submissions,
+              } );
+            } );
+          }
+        }
+    )
+  } else {
+    res.status( 400 ).json({ err: 'Bad Request: User must be authenticated to process request.' } );
+  }
 }
