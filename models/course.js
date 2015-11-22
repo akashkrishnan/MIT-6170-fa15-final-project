@@ -739,19 +739,21 @@ function addPendingStudent( data, done ) {
         done( err, null );
       } else {
 
+        // TODO: ENSURE STUDENT_ID IS NOT A TEACHER OF THE COURSE
+
         // Ensure student_id is not already a student of the course
-        exists( { _id: criteria._id, student_id: criteria.student_id }, function ( err, exists ) {
+        exists( { _id: criteria._id, student_id: criteria.student_id }, function ( err, _exists ) {
           if ( err ) {
             done( err, null );
-          } else if ( exists ) {
+          } else if ( _exists ) {
             done( new Error( 'User is already a student of the course.' ), null );
           } else {
 
-            // Ensure student_id is not already a student of the course
-            exists( { _id: criteria._id, pending_student_id: criteria.student_id }, function ( err, exists ) {
+            // Ensure student_id is not already a pending student of the course
+            exists( { _id: criteria._id, pending_student_id: criteria.student_id }, function ( err, _exists ) {
               if ( err ) {
                 done( err, null );
-              } else if ( exists ) {
+              } else if ( _exists ) {
                 done( new Error( 'User is already pending admission to the course.' ), null );
               } else {
 
@@ -761,7 +763,7 @@ function addPendingStudent( data, done ) {
                     _id: criteria._id
                   },
                   {
-                    $addToSet: { students: criteria.student_id }
+                    $addToSet: { pendingStudents: criteria.student_id }
                   },
                   {},
                   function ( err ) {

@@ -359,10 +359,11 @@ function apiCourseJoin( req, res ) {
   if ( req.user ) {
 
     // Enforce certain values
-    req.params._id = req.params.course_id;
+    req.body._id = req.params.course_id;
+    req.body.student_id = req.user._id;
 
     // Add course
-    Course.addPendingStudent( req.params, Utils.safeFn( function ( err, course ) {
+    Course.addPendingStudent( req.body, Utils.safeFn( function ( err, course ) {
       if ( err ) {
         res.json( { err: err } );
       } else {
