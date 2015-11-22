@@ -3,7 +3,7 @@
  */
 
 [course-list] {
-  margin: 10px;
+  margin: 10px 5px auto;
   width: 500px;
 }
 
@@ -38,7 +38,7 @@
   text-decoration: none !important;
 }
 
-[course-list] [course-item]:last-of-type {
+[course-list] [course-item]:last-child {
   border-bottom: none;
 }
 
