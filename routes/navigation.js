@@ -22,6 +22,7 @@ module.exports = function ( app ) {
   app.get( '/config.json', config );
   app.get( '/register', register );
   app.get( '/logout', logout );
+  app.get('/pending', pending);
 
   app.get( '/courses/:course_id/', courseRedirect );
   app.get( '/courses/:course_id/minilessons/:minilesson_id?/:page_id?', course );
@@ -231,6 +232,49 @@ function logout( req, res ) {
   }
 
 }
+
+
+/**
+ * Called when the user wants to view pending course requests.
+ *
+ * @param {object} req - req
+ * @param {object} res - res
+ */
+function pending( req, res ) {
+
+  // This route is restricted to authenticated users
+  if ( req.user ) {
+    // Get courses the user teaches
+    Course.listForTeacher(
+      {
+        teacher_id: req.user._id,
+        projection: {
+          students: false,
+          timestamps: false,
+          states: false
+        }
+      },
+      Utils.safeFn( function ( err, teacherCourses ) {
+        if ( err ) {
+          res.json( { err: err } );
+        } else { 
+          // get only courses for which there are pending students
+          teacherCourses = teacherCourses.filter( function (course) {
+            return (course.pendingStudents.length > 0);
+          });
+          res.render( 'pending', {
+                              web: Config.web,
+                              self: req.user,
+                              teacherCourses: teacherCourses
+                            } );
+          }
+      } ) );
+  } else {
+    res.redirect( '/' );
+  }
+
+}
+
 
 /**
  * Redirects invalid course route to a valid default route.
