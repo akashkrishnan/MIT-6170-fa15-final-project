@@ -21,10 +21,11 @@
 
       <div name layout-horizontal layout-center layout-center-justified><strong><%= web.name %></strong></div>
 
-      <a href="/" tab layout-horizontal layout-center active>
-        <div>Home</div>
-        <div underline></div>
-      </a>
+      <div relative layout-vertical style="height: 100%">
+        <a href="/" tab layout-horizontal layout-center active>
+          <div>Home</div>
+        </a>
+      </div>
 
       <div flex></div>
 
@@ -33,7 +34,6 @@
         <div tab no-select dropdown-toggle-trigger="account-dropdown"
              flex layout-horizontal layout-center>
           <div><%= self.name %></div>
-          <div underline></div>
         </div>
 
         <div id="account-dropdown" dropdown align-right shadow elevation="2" layout-vertical>
