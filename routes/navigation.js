@@ -262,12 +262,60 @@ function pending( req, res ) {
           teacherCourses = teacherCourses.filter( function (course) {
             return (course.pendingStudents.length > 0);
           });
-          res.render( 'pending', {
-                              web: Config.web,
-                              self: req.user,
-                              teacherCourses: teacherCourses
-                            } );
-          }
+
+          var processCourses = function ( courses, done ) {
+
+                        // Loop through courses
+                        (function nextCourse( i, n ) {
+                          if ( i < n ) {
+
+                            var course = courses[ i ];
+
+                            if ( course.pendingStudents ) {
+
+                              // Loop through teachers
+                              (function nextStudent( j, m ) {
+                                if ( j < m ) {
+
+                                  // Get User object
+                                  User.get(
+                                    {
+                                      _id: course.pendingStudents[ j ],
+                                      projection: {
+                                        timestamps: false
+                                      }
+                                    },
+                                    Utils.safeFn( function ( err, user ) {
+                                      course.pendingStudents[ j ] = user || {};
+                                      nextStudent( j + 1, m );
+                                    } )
+                                  );
+
+                                } else {
+                                  nextCourse( i + 1, n );
+                                }
+                              })( 0, course.pendingStudents.length );
+
+                            } else {
+                              nextCourse( i + 1, n );
+                            }
+
+                          } else {
+                            done();
+                          }
+                        })( 0, courses.length );
+
+                      };
+
+          processCourses( teacherCourses, function () {
+            res.render( 'pending', {
+                                web: Config.web,
+                                self: req.user,
+                                teacherCourses: teacherCourses
+                              } );
+
+          } );
+        }
       } ) );
   } else {
     res.redirect( '/' );

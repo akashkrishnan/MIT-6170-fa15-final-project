@@ -15,8 +15,9 @@
 
 [course-list] [subheader] {
   height: 36px;
-  background-color: white;
-  border-bottom: 1px solid rgba(0, 0, 0, 0.3);
+  background-color: rgba(50,50,50,.2);
+  
+
 }
 
 [course-list] [header] [title] {
