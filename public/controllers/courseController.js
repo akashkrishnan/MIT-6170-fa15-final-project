@@ -123,8 +123,7 @@
     var createBtn = document.querySelector( '#mcq-add-dialog [create]' );
     if ( createBtn ) {
       createBtn.addEventListener( 'click', function () {
-
-        var lookup = { A: 0, B: 1, C: 2, D: 3, E: 4 };
+        //var lookup = { A: 0, B: 1, C: 2, D: 3, E: 4 };
         var answers = [];
 
         // Get minilesson name from form
@@ -134,17 +133,33 @@
         var c = document.querySelector( '#mcq-add-dialog [choiceC-input]' );
         var d = document.querySelector( '#mcq-add-dialog [choiceD-input]' );
         var e = document.querySelector( '#mcq-add-dialog [choiceE-input]' );
-        var answer = document.querySelector( '#mcq-add-dialog [answer-input]' );
 
-        [ a, b, c, d, e ].forEach( function ( choice ) {
-          answers.push( choice.value );
+        var radio_answer = document.getElementsByClassName("create-radio-answer");
+
+        console.log(radio_answer[0]);
+
+        var answerIndex;
+        for (var i = 0; i < radio_answer.length; i++) {
+            if (radio_answer[i].checked) {
+                answerIndex = i; 
+            }
+        }
+debugger
+        var answerObjs = [ a, b, c, d, e ];
+        answerObjs.forEach( function ( choice ) {
+          if (choice.value.length!==0) {
+            answers.push( choice.value );
+          }
         } );
 
+        var answer = answers[answerIndex];
+      debugger
         var data = {
           page_id: page_id,
           question: question.value,
           answers: answers,
-          answer: answer.value
+          answer: answer // a string that holds the text of the correct answer...change to an index?
+          // depends on whether getting by classname returns in order
         };
 
         flipper.mcq.add( data, function ( err, mcq ) {
