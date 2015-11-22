@@ -110,8 +110,8 @@ var Flipper = function () {
     },
 
     add: function ( data, done ) {
-      if ( data && data.courseName ) {
-        if ( data.courseName.length > 100 ) {
+      if ( data && data.name ) {
+        if ( data.name.length > 100 ) {
           // TODO: USE CONFIG
           done( new Error( 'Name too long. Please shorten the name to at most 100 characters.' ) );
         } else {
@@ -133,16 +133,16 @@ var Flipper = function () {
     addPendingStudent: function ( data, done ) {
       if ( data ) {
         ajax( 'POST', '/api/courses/join', data, function ( data ) {
-            if ( data ) {
-              if ( data.err ) {
-                done( data.err, null );
-              } else {
-                done( null, data );
-              }
+          if ( data ) {
+            if ( data.err ) {
+              done( data.err, null );
             } else {
-              done( new Error( 'Unable to add course. Invalid server response.' ), null );
+              done( null, data );
             }
-          } );
+          } else {
+            done( new Error( 'Unable to join course. Invalid server response.' ), null );
+          }
+        } );
       }
     },
 

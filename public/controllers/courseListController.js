@@ -19,7 +19,7 @@
         var nameInput = document.querySelector( '#course-add-dialog [name-input]' );
         if ( nameInput ) {
 
-          var data = { courseName: nameInput.value };
+          var data = { name: nameInput.value };
 
           flipper.course.add( data, function ( err, course ) {
             if ( err ) {

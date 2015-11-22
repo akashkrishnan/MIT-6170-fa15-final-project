@@ -7,7 +7,7 @@
 
   <head>
     <meta charset="UTF-8">
-    <title><%= course.courseName %></title>
+    <title><%= course.name %></title>
     <link rel="stylesheet" type="text/css" href="https://fonts.googleapis.com/css?family=Roboto">
     <link rel="stylesheet" type="text/css" href="/toastr/toastr.min.css">
     <link rel="stylesheet" type="text/css" href="/styles/global.css">
@@ -35,7 +35,7 @@
         <div tab no-select dropdown-toggle-trigger="course-dropdown"
              flex layout-horizontal layout-center
              active>
-          <div><%= course.courseName %></div>
+          <div><%= course.name %></div>
           <div underline></div>
         </div>
 
@@ -45,7 +45,7 @@
           teacherCourses.forEach( function( course ) {
           %>
           <a href="/courses/<%= course._id %>/minilessons" item hoverable layout-horizontal layout-center>
-            <div text><%= course.courseName %></div>
+            <div text><%= course.name %></div>
           </a>
           <%
           } );
@@ -55,7 +55,7 @@
           studentCourses.forEach( function( course ) {
           %>
           <a href="/courses/<%= course._id %>/minilessons" item hoverable layout-horizontal layout-center>
-            <div text><%= course.courseName %></div>
+            <div text><%= course.name %></div>
           </a>
           <%
           } );

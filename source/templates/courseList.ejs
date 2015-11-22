@@ -73,10 +73,10 @@
           <a href="/courses/<%= course._id %>/minilessons" course-item layout-horizontal layout-center>
 
             <div layout-vertical>
-              <div name><strong><%= course.courseName %></strong></div>
+              <div name><strong><%= course.name %></strong></div>
               <div authors>
                 <%
-                courseTeachers[ course ].forEach( function ( teacher ) {
+                course.teachers.forEach( function ( teacher ) {
                 %>
                 <span><%= teacher.name %></span>
                 <%
@@ -110,10 +110,10 @@
           <div course-item layout-horizontal layout-center>
 
             <div layout-vertical>
-              <div name><strong><%= course.courseName %></strong></div>
+              <div name><strong><%= course.name %></strong></div>
               <div authors>
                 <%
-                courseTeachers[ course ].forEach( function ( teacher ) {
+                course.teachers.forEach( function ( teacher ) {
                 %>
                 <span><%= teacher.name %></span>
                 <%
@@ -133,10 +133,10 @@
           <div course-item layout-horizontal layout-center>
 
             <div layout-vertical>
-              <div name><strong><%= course.courseName %></strong></div>
+              <div name><strong><%= course.name %></strong></div>
               <div authors>
                 <%
-                courseTeachers[ course ].forEach( function ( teacher ) {
+                course.teachers.forEach( function ( teacher ) {
                 %>
                 <span><%= teacher.name %></span>
                 <%
@@ -144,6 +144,7 @@
                 %>
               </div>
             </div>
+
             <div buttons layout-vertical layout-end>
               <a button blue disabled><i>Pending...</i></a>
             </div>
@@ -211,10 +212,10 @@
           <div course-item layout-horizontal layout-center>
 
             <div layout-vertical>
-              <div name><strong><%= course.courseName %></strong></div>
+              <div name><strong><%= course.name %></strong></div>
               <div authors>
                 <%
-                courseTeachers[ course ].forEach( function ( teacher ) {
+                course.teachers.forEach( function ( teacher ) {
                 %>
                 <span><%= teacher.name %></span>
                 <%
