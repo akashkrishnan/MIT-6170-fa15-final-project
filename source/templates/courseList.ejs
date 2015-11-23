@@ -194,7 +194,7 @@
 
         <div inputs layout-horizontal>
 
-          <div input flex layout-vertical>
+          <!-- <div input flex layout-vertical>
             <label>Course Name</label>
             <input type="text" name-input/>
           </div>
@@ -202,11 +202,22 @@
           <div input flex layout-vertical>
             <label>Course ID</label>
             <input type="text" id-input/>
-          </div>
+          </div> -->
 
         </div>
 
         <div course-list>
+
+          <% if (allCourses.length == 0) { %>
+            <div id="course-join-item" course-item layout-horizontal layout-center>
+
+            <div layout-vertical>
+              <div name><strong>Currently no available courses.</strong></div>
+            </div>
+
+            <div flex></div>
+          </div>
+          <% } %>
 
           <%
           allCourses.forEach( function( course ) {

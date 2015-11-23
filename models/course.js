@@ -792,42 +792,68 @@ function addPendingStudent( data, done ) {
 
 
 /**
-*
-*
-**/
+ * @callback removePendingStudentCallback
+ * @param {Error} err - Error object
+ * @param {object} course - Course object before removing student
+ */
+
+/**
+ * Removes a pending student from the pending list.
+ *
+ * @param {object} data - data
+ * @param {*} data._id - Course._id
+ * @param {string} data.teacher_id - User._id
+ * @param {string} data.student_id - User._id
+ * @param {removePendingStudentCallBack} done - callback
+ */
 function removePendingStudent( data, done ) {
   try {
 
     var criteria = Utils.validateObject( data, {
       _id: { filter: 'MongoId', required: true },
+      teacher_id: { type: 'string', required: true },
       student_id: { type: 'string', required: true }
     } );
 
-    // Ensure valid course
-    get( { _id: criteria._id }, function ( err, course ) {
-
+    // Ensure teacher_id is a teacher of the course
+    getWithUser( { _id: criteria._id, user_id: criteria.teacher_id }, function ( err, course ) {
       if ( err ) {
         done( err, null );
-      } else {
-        db.courses.update(
-          {
-            _id: criteria._id,
-          },
-          {
-            $pull: { pendingStudents: criteria.student_id }
-          },
-          {},
-          function ( err ) {
-            if ( err ) {
-              done( err, null );
-            } else {
-              done( null, course );
-            }
-          }
-        );
-      }
+      } else if ( course.teaching ) {
 
+        // Ensure student_id is a pending student in the course
+        get( { _id: criteria._id, pending_student_id: criteria.student_id }, function ( err, course ) {
+          if ( err ) {
+            done( err, null );
+          } else {
+
+            // remove student from pending students list. 
+            db.courses.update(
+              {
+                _id: criteria._id,
+                pendingStudents: criteria.student_id
+              },
+              {
+                $pull: { pendingStudents: criteria.student_id }
+              },
+              {},
+              function ( err ) {
+                if ( err ) {
+                  done( err, null );
+                } else {
+                  done( null, course );
+                }
+              }
+            );
+
+          }
+        } );
+
+      } else {
+        done( new Error( 'Only a teacher of the course can add a student.' ), null );
+      }
     } );
+
   } catch ( err ) {
     done( err, null );
   }

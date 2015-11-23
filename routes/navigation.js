@@ -142,6 +142,24 @@ function index( req, res ) {
                               processCourses( studentCourses, function () {
                                 processCourses( pendingCourses, function () {
 
+                                  // remove courses the user has already joined, or is teaching
+                                  function arrayObjectIndexOf( myArray, searchTerm, property ) {
+                                    var elIndex = -1;
+                                    myArray.forEach( function ( element, index ) {
+                                      if (String(element[property]).trim()==String(searchTerm).trim()) elIndex = index;
+                                    });
+                                    console.log(elIndex);
+                                    return elIndex;
+                                  }
+
+                                  allCourses = allCourses.filter( function( el ) {
+                                    return arrayObjectIndexOf( teacherCourses, el._id, '_id' ) < 0;
+                                  });
+
+                                  allCourses = allCourses.filter( function( el ) {
+                                    return arrayObjectIndexOf( studentCourses, el._id, '_id' ) < 0;
+                                  });
+
                                   // Return results to client
                                   res.render( 'courseList', {
                                     web: Config.web,
