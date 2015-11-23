@@ -78,7 +78,7 @@
             title: titleInput.value,
             resource: resourceInput.value || ''
           };
-          debugger;
+
           flipper.page.add( data, function ( err, page ) {
             if ( err ) {
               console.error( err );
@@ -134,25 +134,25 @@
         var d = document.querySelector( '#mcq-add-dialog [choiceD-input]' );
         var e = document.querySelector( '#mcq-add-dialog [choiceE-input]' );
 
-        var radio_answer = document.getElementsByClassName("create-radio-answer");
+        var radio_answer = document.getElementsByClassName( "create-radio-answer" );
 
-        console.log(radio_answer[0]);
+        console.log( radio_answer[ 0 ] );
 
         var answerIndex;
-        for (var i = 0; i < radio_answer.length; i++) {
-            if (radio_answer[i].checked) {
-                answerIndex = i; 
-            }
+        for ( var i = 0; i < radio_answer.length; i++ ) {
+          if ( radio_answer[ i ].checked ) {
+            answerIndex = i;
+          }
         }
 
         var answerObjs = [ a, b, c, d, e ];
         answerObjs.forEach( function ( choice ) {
-          if (choice.value.length!==0) {
+          if ( choice.value.length !== 0 ) {
             answers.push( choice.value );
           }
         } );
 
-        var answer = answers[answerIndex];
+        var answer = answers[ answerIndex ];
         var data = {
           page_id: page_id,
           question: question.value,
