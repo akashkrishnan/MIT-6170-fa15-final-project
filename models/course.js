@@ -29,7 +29,7 @@ module.exports = {
 
   /* ---------------INTERNAL--------------- */
 
-  expandTeachers: expandTeachers
+  expandCourseUsers: expandCourseUsers
 
 };
 
@@ -92,7 +92,7 @@ function list( data, done ) {
             if ( err ) {
               done( err, [], 0 );
             } else {
-              expandTeachers( courses, function () {
+              expandCourseUsers( courses, function () {
 
                 // Return list of courses
                 done( null, courses, count );
@@ -170,7 +170,7 @@ function listForTeacher( data, done ) {
             if ( err ) {
               done( err, [], 0 );
             } else {
-              expandTeachers( courses, function () {
+              expandCourseUsers( courses, function () {
 
                 // Return list of courses
                 done( null, courses, count );
@@ -248,7 +248,7 @@ function listForStudent( data, done ) {
             if ( err ) {
               done( err, [], 0 );
             } else {
-              expandTeachers( courses, function () {
+              expandCourseUsers( courses, function () {
 
                 // Return list of courses
                 done( null, courses, count );
@@ -326,7 +326,7 @@ function listForPendingStudent( data, done ) {
             if ( err ) {
               done( err, [], 0 );
             } else {
-              expandTeachers( courses, function () {
+              expandCourseUsers( courses, function () {
 
                 // Return list of courses
                 done( null, courses, count );
@@ -418,7 +418,7 @@ function listOpen( data, done ) {
                 if ( err ) {
                   done( err, [], 0 );
                 } else {
-                  expandTeachers( courses, function () {
+                  expandCourseUsers( courses, function () {
 
                     // Return list of courses
                     done( null, courses, count );
@@ -1039,55 +1039,79 @@ function acceptStudent( data, done ) {
 }
 
 /**
- * @callback expandTeachersCallback
+ * @callback expandCourseUsersCallback
  */
 
 /**
- * Replaces teacher ids with user objects in courses.
+ * Replaces user ids with user objects in courses.
  *
  * @param {Array.<Object>} courses - list of Course objects
- * @param {expandTeachersCallback} done - callback
+ * @param {expandCourseUsersCallback} done - callback
  */
-function expandTeachers( courses, done ) {
+function expandCourseUsers( courses, done ) {
+  if ( courses ) {
 
-  // Loop through courses
-  (function nextCourse( i, n ) {
-    if ( i < n ) {
+    // Loop through courses
+    (function nextCourse( i, n ) {
+      if ( i < n ) {
 
-      var course = courses[ i ];
+        var course = courses[ i ];
 
-      if ( course.teachers ) {
-
-        // Loop through teachers
-        (function nextTeacher( j, m ) {
-          if ( j < m ) {
-
-            // Get User object
-            User.get(
-              {
-                _id: course.teachers[ j ],
-                projection: {
-                  timestamps: false
-                }
-              },
-              Utils.safeFn( function ( err, user ) {
-                course.teachers[ j ] = user || {};
-                nextTeacher( j + 1, m );
-              } )
-            );
-
-          } else {
-            nextCourse( i + 1, n );
-          }
-        })( 0, course.teachers.length );
+        expandUsers( course.teachers, function () {
+          expandUsers( course.students, function () {
+            expandUsers( course.pendingStudents, function () {
+              nextCourse( i + 1, n );
+            } );
+          } );
+        } );
 
       } else {
-        nextCourse( i + 1, n );
+        done();
       }
+    })( 0, courses.length );
 
-    } else {
-      done();
-    }
-  })( 0, courses.length );
+  } else {
+    done();
+  }
+}
 
+/**
+ * @callback expandUsersCallback
+ */
+
+/**
+ * Replaces user ids with user objects in courses.
+ *
+ * @param {Array.<string>} list - list of User._id
+ * @param {expandUsersCallback} done - callback
+ */
+function expandUsers( list, done ) {
+  if ( list ) {
+
+    // Loop through user ids
+    (function next( i, n ) {
+      if ( i < n ) {
+
+        // Get User object
+        User.get(
+          {
+            _id: list[ i ],
+            projection: {
+              timestamps: false
+            }
+          },
+          Utils.safeFn( function ( err, user ) {
+            list[ i ] = user || {};
+            next( i + 1, n );
+          } )
+        );
+
+      } else {
+        done();
+      }
+    })( 0, list.length );
+
+  } else {
+    done();
+  }
 }
