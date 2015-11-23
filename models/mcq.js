@@ -103,11 +103,46 @@ function list( data, done ) {
       function ( err, page, course ) {
         if ( err ) {
           done( err, [], 0 );
-        } else if ( course.teaching ) {
-          find( listCriteria, projection, done );
         } else {
 
-          // We need to check if student has answered the questions
+          // Get mcqs
+          find( listCriteria, projection, function ( err, mcqs, count ) {
+            if ( err ) {
+              done( err, [], 0 );
+            } else if ( course.teaching ) {
+              done( null, mcqs, count );
+            } else {
+
+              // We need to check if student has answered the questions
+
+              var Submission = require( './submission.js' );
+
+              // Loop through mcqs
+              (function next( i, n ) {
+                if ( i < n ) {
+
+                  var mcq = mcqs[ i ];
+
+                  // Get submission associated with mcq and user_id
+                  // TODO: IMPL AND USE EXIST METHOD
+                  Submission.list(
+                    {
+                      user_id: userCriteria.user_id,
+                      mcq_id: mcq._id.toString()
+                    },
+                    function ( err, submissions, count ) {
+                      mcq.submitted = Boolean( !err && count );
+                      next( i + 1, n );
+                    }
+                  );
+
+                } else {
+                  done( null, mcqs, count );
+                }
+              })( 0, mcqs.length );
+
+            }
+          } );
 
         }
       }

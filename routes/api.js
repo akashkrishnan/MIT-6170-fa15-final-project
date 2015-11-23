@@ -44,7 +44,6 @@ module.exports = function ( app ) {
   app.get( '/api/mcqs/:mcq_id', apiMcqGet );
   app.get( '/api/mcqs/:mcq_id/submissions', apiSubmissionList );
   app.post( '/api/mcqs/:mcq_id/submissions', apiSubmissionAdd );
-
   app.get( '/api/mcqs/:mcq_id/grades', apiMCQGrades );
 
   app.get( '/api/submissions/:submission_id', apiSubmissionGet );
