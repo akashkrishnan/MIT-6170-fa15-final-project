@@ -7,13 +7,13 @@ var mongojs = require( 'mongojs' );
 
 var db = mongojs( Config.services.db.mongodb.uri, [ 'minilessons' ] );
 
+// TODO: INDEXES
+
 module.exports = {
   list: list,
   get: get,
   add: add,
-  remove: remove,
-  addPage: addPage,
-  removePage: removePage
+  remove: remove
 };
 
 /**
@@ -307,128 +307,23 @@ function add( data, done ) {
 }
 
 /**
- * @callback removeCallback
+ * @callback removeMinilessonCallback
  * @param {Error} err - Error object
- * @param {object} minilesson - removed Minilesson object
+ * @param {object} minilesson - Minilesson object before removal
  */
 
 /**
  * Removes a minilesson from the database.
  *
- * @param {object} data -
- * @param {string} data._id - minilesson._id
- * @param {removeCallback} done - callback
+ * @param {object} data - data
+ * @param {*} data._id - Minilesson._id
+ * @param {removeMinilessonCallback} done - callback
  */
 function remove( data, done ) {
   try {
 
-    var criteria = Utils.validateObject( data, {
-      _id: { type: 'string', required: true }
-    } );
+    done( new Error( 'Not implemented.' ), null );
 
-    // Ensure valid minilesson
-    get( criteria, function ( err, minilesson ) {
-      if ( err ) {
-        done( err, null );
-      } else {
-
-        // Remove from database
-        db.minilessons.remove( criteria, true, function ( err ) {
-          if ( err ) {
-            done( err, null );
-          } else {
-            done( null, minilesson );
-          }
-        } );
-
-      }
-    } );
-
-  } catch ( err ) {
-    done( err, null );
-  }
-}
-
-/**
- * @callback addPageCallback
- * @param {Error} err - Error object
- * @param {object} minilesson - Minilesson object
- */
-
-/**
- * Adds a page to minilesson.
- *
- * @param {object} data - data
- * @param {string} data._id - Minilesson._id
- * @param {string} data.page_id - Page._id
- * @param {addCallback} done - callback
- */
-function addPage( data, done ) {
-  try {
-    var criteria = Utils.validateObject( data, {
-      _id: { type: 'string', required: true },
-      page_id: { type: 'string', required: true }
-    } );
-    get( { _id: criteria._id }, function ( err, _minilesson ) {
-      if ( err ) {
-        done( err, null );
-      } else {
-        db.minilessons.update( { _id: _minilesson._id },
-          { $addToSet: { pagesList: criteria.page_id } },
-          { upsert: true },
-          function ( err ) {
-            if ( err ) {
-              done( err, null );
-            } else {
-              // Get the new user object the proper way
-              get( { _id: _minilesson._id }, done );
-            }
-          } );
-      }
-    } );
-  } catch ( err ) {
-    done( err, null );
-  }
-}
-
-/**
- * @callback addPageCallback
- * @param {Error} err - Error object
- * @param {object} minilesson - Minilesson object
- */
-
-/**
- * Removes a page to minilesson.
- *
- * @param {object} data - data
- * @param {string} data._id - Minilesson._id
- * @param {string} data.page_id - Page._id
- * @param {addCallback} done - callback
- */
-function removePage( data, done ) {
-  try {
-    var criteria = Utils.validateObject( data, {
-      _id: { type: 'string', required: true },
-      page_id: { type: 'string', required: true }
-    } );
-
-    get( criteria, function ( err, minilesson ) {
-      if ( err ) {
-        done( err, null );
-      } else {
-        db.minilessons.update( minilesson,
-          { $pull: { pagesList: criteria.page_id } },
-          { upsert: true },
-          function ( err ) {
-            if ( err ) {
-              done( err, null );
-            } else {
-              // Get the new user object the proper way
-              get( { _id: minilesson._id }, done );
-            }
-          } );
-      }
-    } );
   } catch ( err ) {
     done( err, null );
   }

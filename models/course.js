@@ -13,14 +13,19 @@ module.exports = {
 
   /* ---------------EXTERNAL--------------- */
 
+  // TODO: THIS SHOULD ALL BE MERGED INTO A SINGLE FUNCTION
   list: list,
   listForTeacher: listForTeacher,
   listForStudent: listForStudent,
   listForPendingStudent: listForPendingStudent,
   listOpen: listOpen,
+
   exists: exists,
+
+  // TODO: THESE TWO SHOULD BE MERGED INTO A SINGLE FUNCTION
   get: get,
   getWithUser: getWithUser,
+
   add: add,
   join: join,
   acceptStudent: acceptStudent,
