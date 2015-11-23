@@ -541,83 +541,14 @@ function get( data, done ) {
       db.courses.findOne( criteria, projection, function ( err, course ) {
         if ( err ) {
           done( err, null );
-        } else if ( course.teachers ) {
-
-          // Loop through teachers
-          (function nextTeacher( i, n ) {
-            if ( i < n ) {
-
-              // Get teacher's User object
-              User.get(
-                {
-                  _id: course.teachers[ i ],
-                  projection: {
-                    timestamps: false
-                  }
-                },
-                Utils.safeFn( function ( err, user ) {
-                  course.teachers[ i ] = user || {};
-                  nextTeacher( i + 1, n );
-                } )
-              );
-
-            } else if ( course.students ) {
-
-              // Loop through students
-              (function nextStudent( i, n ) {
-                if ( i < n ) {
-
-                  // Get student's User object
-                  User.get(
-                    {
-                      _id: course.students[ i ],
-                      projection: {
-                        timestamps: false
-                      }
-                    },
-                    Utils.safeFn( function ( err, user ) {
-                      course.students[ i ] = user || {};
-                      nextStudent( i + 1, n );
-                    } )
-                  );
-
-                } else if ( course.pendingStudents ) {
-
-                  // Loop through pending students
-                  (function nextPendingStudent( i, n ) {
-                    if ( i < n ) {
-
-                      // Get pending student's User object
-                      User.get(
-                        {
-                          _id: course.pendingStudents[ i ],
-                          projection: {
-                            timestamps: false
-                          }
-                        },
-                        Utils.safeFn( function ( err, user ) {
-                          course.pendingStudents[ i ] = user || {};
-                          nextPendingStudent( i + 1, n );
-                        } )
-                      );
-
-                    } else {
-                      done( null, course );
-                    }
-                  })( 0, course.teachers.length );
-
-                } else {
-                  done( null, course );
-                }
-              })( 0, course.teachers.length );
-
-            } else {
-              done( null, course );
-            }
-          })( 0, course.teachers.length );
-
         } else {
-          done( null, course );
+          expandUsers( course.teachers, function () {
+            expandUsers( course.students, function () {
+              expandUsers( course.pendingStudents, function () {
+                done( null, course );
+              } );
+            } );
+          } );
         }
       } );
 
