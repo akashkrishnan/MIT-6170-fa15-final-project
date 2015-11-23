@@ -277,7 +277,7 @@ function add( data, done ) {
               course_id: criteria.course_id,
               title: criteria.title,
               states: {
-                published: false
+                published: true
               },
               timestamps: {
                 created: new Date()
