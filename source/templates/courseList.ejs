@@ -34,6 +34,7 @@
         <div tab no-select dropdown-toggle-trigger="account-dropdown"
              flex layout-horizontal layout-center>
           <div><%= self.name %></div>
+          <div arrow-down></div>
         </div>
 
         <div id="account-dropdown" dropdown align-right shadow elevation="2" layout-vertical>
@@ -209,7 +210,7 @@
         <div course-list>
 
           <% if (allCourses.length == 0) { %>
-            <div id="course-join-item" course-item layout-horizontal layout-center>
+          <div id="course-join-item" course-item layout-horizontal layout-center>
 
             <div layout-vertical>
               <div name><strong>Currently no available courses.</strong></div>

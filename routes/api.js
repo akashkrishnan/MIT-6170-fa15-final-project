@@ -352,7 +352,7 @@ function apiCourseAdd( req, res ) {
 }
 
 /**
- * Called to when a user wants to join a new course.
+ * Called to when a student wants to join a new course.
  *
  * @param {object} req - req
  * @param {object} res - res
@@ -367,7 +367,7 @@ function apiCourseJoin( req, res ) {
     req.body.student_id = req.user._id;
 
     // Add course
-    Course.addPendingStudent( req.body, Utils.safeFn( function ( err, course ) {
+    Course.join( req.body, Utils.safeFn( function ( err, course ) {
       if ( err ) {
         res.json( { err: err } );
       } else {
@@ -383,57 +383,61 @@ function apiCourseJoin( req, res ) {
 
 
 /**
- * Called to when a user wants to approve a student to a course.
+ * Called to when a teacher wants to approve a student to a course.
  *
  * @param {object} req - req
  * @param {object} res - res
  */
 function apiCourseApprove( req, res ) {
+
   // Ensure user
   if ( req.user ) {
-    var data = {};
-    data._id = req.body.course_id;
-    data.student_id = req.body.student_id;
-    data.teacher_id = req.user._id;
 
-    console.log(data);
-    Course.addStudentToCourse( data, Utils.safeFn( function (err, course) {
+    // Ensure certain values
+    req.body._id = req.params.course_id;
+    req.body.teacher_id = req.user._id;
+
+    Course.acceptStudent( req.body, Utils.safeFn( function ( err, course ) {
       if ( err ) {
         res.json( { err: err } );
       } else {
-        res.json( course );        
+        res.json( course );
       }
     } ) );
+
   } else {
     res.status( 400 ).json( { err: 'Bad Request: User must be authenticated to process request.' } );
   }
+
 }
 
 /**
- * Called to when a user wants to decline a student request to a course.
+ * Called to when a teacher wants to decline a student request to a course.
  *
  * @param {object} req - req
  * @param {object} res - res
  */
 function apiCourseDecline( req, res ) {
+
   // Ensure user
   if ( req.user ) {
-    var data = {};
-    data._id = req.body.course_id;
-    data.student_id = req.body.student_id;
-    data.teacher_id = req.user._id;
 
-    console.log(data);
-    Course.removePendingStudent( data, Utils.safeFn( function (err, course) {
+    // Ensure certain values
+    req.body._id = req.params.course_id;
+    req.body.teacher_id = req.user._id;
+
+    Course.declineStudent( req.body, Utils.safeFn( function ( err, course ) {
       if ( err ) {
         res.json( { err: err } );
       } else {
-        res.json( course );        
+        res.json( course );
       }
     } ) );
+
   } else {
     res.status( 400 ).json( { err: 'Bad Request: User must be authenticated to process request.' } );
   }
+
 }
 
 /**
@@ -783,61 +787,61 @@ function apiSubmissionAdd( req, res ) {
 function apiMCQGrades( req, res ) {
   // Ensure user
   if ( req.user ) {
-    Submission.list({ mcqId: req.params.mcq_id },
-        function(err, submissions){
-          if ( err ) {
-            res.json( { err: err } );
-          } else {
-            /**
-             * Replaces student ids with user objects in submissions.
-             *
-             * @param {Array.<Object>} submissions - list of Submission objects
-             * @param {function()} done - callback
-             */
-            var gradesData = {};
-            var processSubmissions = function ( submissions, done ) {
+    Submission.list( { mcqId: req.params.mcq_id },
+      function ( err, submissions ) {
+        if ( err ) {
+          res.json( { err: err } );
+        } else {
+          /**
+           * Replaces student ids with user objects in submissions.
+           *
+           * @param {Array.<Object>} submissions - list of Submission objects
+           * @param {function()} done - callback
+           */
+          var gradesData = {};
+          var processSubmissions = function ( submissions, done ) {
 
-              // Loop through courses
-              (function nextSubmission( i, n ) {
-                if ( i < n ) {
+            // Loop through courses
+            (function nextSubmission( i, n ) {
+              if ( i < n ) {
 
-                  var submission = submissions[ i ];
+                var submission = submissions[ i ];
 
-                  if ( submission.studentId ) {
+                if ( submission.studentId ) {
 
-                    User.get(
-                        {
-                          _id: submission.studentId,
-                          projection: {
-                            timestamps: false
-                          }
-                        },
-                        Utils.safeFn( function ( err, user ) {
-                          //submission.studentId = user || {};
-                          gradesData[user.name] = submission.score
-                        })
-                    )
-                  } else {
-                    nextSubmission( i + 1, n );
-                  }
-
+                  User.get(
+                    {
+                      _id: submission.studentId,
+                      projection: {
+                        timestamps: false
+                      }
+                    },
+                    Utils.safeFn( function ( err, user ) {
+                      //submission.studentId = user || {};
+                      gradesData[ user.name ] = submission.score
+                    } )
+                  )
                 } else {
-                  done();
+                  nextSubmission( i + 1, n );
                 }
-              })( 0, submissions.length );
 
-            };
+              } else {
+                done();
+              }
+            })( 0, submissions.length );
 
-            processSubmissions( submissions, function () {
-              // Return results to client
-              res.json( {
-                grades: gradesData
-              } );
+          };
+
+          processSubmissions( submissions, function () {
+            // Return results to client
+            res.json( {
+              grades: gradesData
             } );
-          }
+          } );
         }
+      }
     )
   } else {
-    res.status( 400 ).json({ err: 'Bad Request: User must be authenticated to process request.' } );
+    res.status( 400 ).json( { err: 'Bad Request: User must be authenticated to process request.' } );
   }
 }

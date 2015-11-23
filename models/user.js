@@ -11,6 +11,8 @@ var crypto = require( 'crypto' );
 
 var db = mongojs( Config.services.db.mongodb.uri, [ 'users' ] );
 
+// TODO: INDEXES
+
 module.exports = {
 
   /* ---------------EXTERNAL--------------- */
@@ -30,7 +32,7 @@ module.exports = {
 };
 
 /**
- * @callback listCallback
+ * @callback listUsersCallback
  * @param {Error} err - Error object
  * @param {Array.<object>} users - list of User objects in the current page
  * @param {number} count - total number of User objects across all pages
@@ -44,7 +46,7 @@ module.exports = {
  * @param {boolean} [data.projection.timestamps] -
  * @param {number} [data.offset=0] - offset of first User object in the page
  * @param {number} [data.limit=0] - number of User objects in a page
- * @param {listCallback} done - callback
+ * @param {listUsersCallback} done - callback
  */
 function list( data, done ) {
   try {
@@ -101,7 +103,7 @@ function list( data, done ) {
 }
 
 /**
- * @callback existsCallback
+ * @callback userExistsCallback
  * @param {Error} err - Error object
  * @param {boolean} user - true if user exists; false otherwise
  */
@@ -112,7 +114,7 @@ function list( data, done ) {
  * @param {object} data - data
  * @param {*} [data._id] - User._id
  * @param {string} [data.username] - User.username
- * @param {existsCallback} done - callback
+ * @param {userExistsCallback} done - callback
  * @return {undefined} -
  */
 function exists( data, done ) {
@@ -146,7 +148,7 @@ function exists( data, done ) {
 }
 
 /**
- * @callback getCallback
+ * @callback getUserCallback
  * @param {Error} err - Error object
  * @param {object} user - User object
  */
@@ -160,7 +162,7 @@ function exists( data, done ) {
  * @param {string} [data.password] - User.password
  * @param {object} [data.projection] - projection
  * @param {boolean} [data.projection.timestamps] -
- * @param {getCallback} done - callback
+ * @param {getUserCallback} done - callback
  */
 function get( data, done ) {
   try {
@@ -286,7 +288,7 @@ function get( data, done ) {
 }
 
 /**
- * @callback addCallback
+ * @callback addUserCallback
  * @param {Error} err - Error object
  * @param {object} user - newly created User object
  */
@@ -298,7 +300,7 @@ function get( data, done ) {
  * @param {string} data.name - User.name
  * @param {string} data.username - User.username
  * @param {string} data.password - User.password
- * @param {addCallback} done - callback
+ * @param {addUserCallback} done - callback
  */
 function add( data, done ) {
   try {
@@ -388,6 +390,112 @@ function add( data, done ) {
 }
 
 /**
+ * @callback signUserCallback
+ * @param {Error} err - Error object
+ * @param {object} user - User object after sign
+ */
+
+/**
+ * Signs a user by updating the timestamps.last_sign, timestamps.sign, timestamps.active properties accordingly.
+ *
+ * @param {object} data - data
+ * @param {signUserCallback} done - callback
+ */
+function sign( data, done ) {
+  try {
+
+    var criteria = Utils.validateObject( data, {
+      _id: { filter: 'MongoId', required: true }
+    } );
+
+    // Ensure user exists; get timestamps.signed from User Object
+    get( criteria, function ( err, user ) {
+      if ( err ) {
+        done( err, null );
+      } else {
+
+        // Sign user
+        db.users.update(
+          criteria,
+          {
+            $set: {
+              'timestamps.last_signed': user.timestamps.signed
+            },
+            $currentDate: {
+              'timestamps.signed': true,
+              'timestamps.active': true
+            }
+          },
+          {},
+          function ( err ) {
+            if ( err ) {
+              done( err, null );
+            } else {
+              get( user, done );
+            }
+          }
+        );
+
+      }
+    } );
+
+  } catch ( err ) {
+    done( err, null );
+  }
+}
+
+/**
+ * @callback activeUserCallback
+ * @param {Error} err - Error object
+ * @param {object} user - User object after sign
+ */
+
+/**
+ * Updates user's timestamps.active date.
+ *
+ * @param {object} data - data
+ * @param {activeUserCallback} done - callback
+ */
+function active( data, done ) {
+  try {
+
+    var criteria = Utils.validateObject( data, {
+      _id: { filter: 'MongoId', required: true }
+    } );
+
+    // Ensure user exists
+    get( criteria, function ( err, user ) {
+      if ( err ) {
+        done( err, null );
+      } else {
+
+        // Update active date
+        db.users.update(
+          criteria,
+          {
+            $currentDate: {
+              'timestamps.active': true
+            }
+          },
+          {},
+          function ( err ) {
+            if ( err ) {
+              done( err, null );
+            } else {
+              get( user, done );
+            }
+          }
+        );
+
+      }
+    } );
+
+  } catch ( err ) {
+    done( err, null );
+  }
+}
+
+/**
  * @callback validateCredentialsCallback
  * @param {Error} err - Error object
  */
@@ -445,111 +553,5 @@ function validateCredentials( name, username, password, done ) {
 
   } catch ( err ) {
     done( err );
-  }
-}
-
-/**
- * @callback signCallback
- * @param {Error} err - Error object
- * @param {object} user - User object after sign
- */
-
-/**
- * Signs a user by updating the timestamps.last_sign, timestamps.sign, timestamps.active properties accordingly.
- *
- * @param {object} data - data
- * @param {signCallback} done - callback
- */
-function sign( data, done ) {
-  try {
-
-    var criteria = Utils.validateObject( data, {
-      _id: { filter: 'MongoId', required: true }
-    } );
-
-    // Ensure user exists; get timestamps.signed from User Object
-    get( criteria, function ( err, user ) {
-      if ( err ) {
-        done( err, null );
-      } else {
-
-        // Sign user
-        db.users.update(
-          criteria,
-          {
-            $set: {
-              'timestamps.last_signed': user.timestamps.signed
-            },
-            $currentDate: {
-              'timestamps.signed': true,
-              'timestamps.active': true
-            }
-          },
-          {},
-          function ( err ) {
-            if ( err ) {
-              done( err, null );
-            } else {
-              get( user, done );
-            }
-          }
-        );
-
-      }
-    } );
-
-  } catch ( err ) {
-    done( err, null );
-  }
-}
-
-/**
- * @callback activeCallback
- * @param {Error} err - Error object
- * @param {object} user - User object after sign
- */
-
-/**
- * Updates user's timestamps.active date.
- *
- * @param {object} data - data
- * @param {activeCallback} done - callback
- */
-function active( data, done ) {
-  try {
-
-    var criteria = Utils.validateObject( data, {
-      _id: { filter: 'MongoId', required: true }
-    } );
-
-    // Ensure user exists
-    get( criteria, function ( err, user ) {
-      if ( err ) {
-        done( err, null );
-      } else {
-
-        // Update active date
-        db.users.update(
-          criteria,
-          {
-            $currentDate: {
-              'timestamps.active': true
-            }
-          },
-          {},
-          function ( err ) {
-            if ( err ) {
-              done( err, null );
-            } else {
-              get( user, done );
-            }
-          }
-        );
-
-      }
-    } );
-
-  } catch ( err ) {
-    done( err, null );
   }
 }
