@@ -136,8 +136,8 @@
   padding-right: 16px;
 }
 
-[mcq-item] [buttons] [button] {
-  margin: 16px 0 16px 16px;
+[mcq-item] [buttons] [button][small]:first-child {
+  margin-left: 0;
 }
 
 [mcq-item] [buttons] [button][small] {
