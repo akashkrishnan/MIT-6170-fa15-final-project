@@ -47,5 +47,5 @@ Flipper
 ### Features Implemented
 - 
 
-### Features Not Implemented (but will be implemented for the final)
+### Features Pending
 - 
