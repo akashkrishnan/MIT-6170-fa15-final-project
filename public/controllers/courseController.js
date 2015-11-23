@@ -123,10 +123,9 @@
     var createBtn = document.querySelector( '#mcq-add-dialog [create]' );
     if ( createBtn ) {
       createBtn.addEventListener( 'click', function () {
-        //var lookup = { A: 0, B: 1, C: 2, D: 3, E: 4 };
+
         var answers = [];
 
-        // Get minilesson name from form
         var question = document.querySelector( '#mcq-add-dialog [question-input]' );
         var a = document.querySelector( '#mcq-add-dialog [choiceA-input]' );
         var b = document.querySelector( '#mcq-add-dialog [choiceB-input]' );
@@ -145,12 +144,13 @@
 
         var answerObjs = [ a, b, c, d, e ];
         answerObjs.forEach( function ( choice ) {
-          if ( choice.value.length !== 0 ) {
+          if ( choice.value && choice.value.trim() ) {
             answers.push( choice.value );
           }
         } );
 
         var answer = answers[ answerIndex ];
+
         var data = {
           page_id: page_id,
           question: question.value,
@@ -186,6 +186,59 @@
 
   } else {
     console.error( 'Missing #mcq-add-dialog.' );
+  }
+
+  /* -------------------------------------------------------------------------------------------------------------- */
+
+  var submitMcqBtns = document.querySelectorAll( '[mcq-item] [buttons] [submit]' );
+
+  if ( submitMcqBtns ) {
+    submitMcqBtns = [].slice.call( submitMcqBtns );
+    submitMcqBtns.forEach( function ( submitMcqBtn ) {
+      submitMcqBtn.addEventListener( 'click', function ( e ) {
+
+        var mcqItem = submitMcqBtn.parentNode.parentNode;
+        var mcq_id = mcqItem.getAttribute( 'mcq-id' );
+        var answer = mcqItem.querySelector( 'input[type="radio"][name="student-answer-options"]:checked' );
+
+        if ( mcq_id ) {
+          if ( answer ) {
+
+            var data = {
+              mcq_id: mcq_id,
+              answer: answer.value
+            };
+
+            console.log( data );
+
+            flipper.submission.add( data, function ( err, submission ) {
+              if ( err ) {
+                console.error( err );
+                toastr.error( err );
+              } else {
+
+                // TODO: DO SOMETHING WITH THE SUBMISSION OBJECT?
+                console.log( submission );
+                toastr.info( 'Answer has been submitted.' );
+
+                // TODO: WE SHOULDN'T NEED TO REFRESH
+                // Refresh for now
+                location.reload();
+
+              }
+            } );
+
+          } else {
+            toastr.error( 'Please select an answer.' );
+          }
+        } else {
+          console.error( 'Missing [mcq-id] or answer.' );
+        }
+
+      }, false );
+    } );
+  } else {
+    console.error( 'Missing [mcq-item] [buttons] [submit].' );
   }
 
 })();

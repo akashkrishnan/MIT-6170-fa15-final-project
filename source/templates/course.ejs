@@ -230,7 +230,7 @@
           <div mcq-list layout-horizontal layout-around-justified layout-start layout-wrap>
 
             <% mcqs.forEach( function ( mcq ) { %>
-            <div mcq-item shadow elevation="1" flex layout-vertical data-mcq-id="<%= mcq._id %>">
+            <div mcq-item shadow elevation="1" flex layout-vertical mcq-id="<%= mcq._id %>">
 
               <div question><strong><%= mcq.question %></strong></div>
 
@@ -239,7 +239,7 @@
                 <% mcq.answers.forEach( function ( answer ) { %>
                 <div choice layout-horizontal>
 
-                  <input class="submit-radio-answer" type="radio" name="answer-options" value="<%= answer %>">
+                  <input class="submit-radio-answer" type="radio" name="student-answer-options" value="<%= answer %>">
 
                   <div flex><%= answer %></div>
 
