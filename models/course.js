@@ -21,7 +21,8 @@ module.exports = {
   getWithUser: getWithUser,
   add: add,
   addPendingStudent: addPendingStudent,
-  addStudentToCourse: addStudent
+  addStudentToCourse: addStudent,
+  removePendingStudent: removePendingStudent
 
 };
 
@@ -788,6 +789,50 @@ function addPendingStudent( data, done ) {
     done( err, null );
   }
 }
+
+
+/**
+*
+*
+**/
+function removePendingStudent( data, done ) {
+  try {
+
+    var criteria = Utils.validateObject( data, {
+      _id: { filter: 'MongoId', required: true },
+      student_id: { type: 'string', required: true }
+    } );
+
+    // Ensure valid course
+    get( { _id: criteria._id }, function ( err, course ) {
+
+      if ( err ) {
+        done( err, null );
+      } else {
+        db.courses.update(
+          {
+            _id: criteria._id,
+          },
+          {
+            $pull: { pendingStudents: criteria.student_id }
+          },
+          {},
+          function ( err ) {
+            if ( err ) {
+              done( err, null );
+            } else {
+              done( null, course );
+            }
+          }
+        );
+      }
+
+    } );
+  } catch ( err ) {
+    done( err, null );
+  }
+}
+
 
 /**
  * @callback addStudentCallback

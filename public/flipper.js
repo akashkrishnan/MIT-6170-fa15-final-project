@@ -154,6 +154,26 @@ var Flipper = function () {
       }
     },
 
+    removePendingStudent: function ( data, done ) {
+      if ( data ) {
+        if ( data.course_id && data.course_id.trim() && data.student_id && data.student_id.trim()) {
+          ajax( 'POST', '/api/courses/' + data.course_id.trim() + '/decline', data, function ( data ) {
+            if ( data ) {
+              if ( data.err ) {
+                done( data.err, null );
+              } else {
+                done( null, data );
+              }
+            } else {
+              done( new Error( 'Unable to decline student. Invalid server response.' ), null );
+            }
+          } );
+        } else {
+          done( new Error( 'A course ID & student ID are required to decline a student.') );
+        }
+      }
+    },
+
     addStudent: function ( data, done ) {
       if ( data ) {
         if ( data.course_id && data.course_id.trim() && data.student_id && data.student_id.trim() ) {
