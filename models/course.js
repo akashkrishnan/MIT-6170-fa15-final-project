@@ -7,6 +7,7 @@ var mongojs = require( 'mongojs' );
 
 var db = mongojs( Config.services.db.mongodb.uri, [ 'courses' ] );
 
+// TODO: INDEXES
 
 module.exports = {
 
@@ -16,13 +17,14 @@ module.exports = {
   listForTeacher: listForTeacher,
   listForStudent: listForStudent,
   listForPendingStudent: listForPendingStudent,
+  listOpen: listOpen,
   exists: exists,
   get: get,
   getWithUser: getWithUser,
   add: add,
-  addPendingStudent: addPendingStudent,
-  addStudentToCourse: addStudent,
-  removePendingStudent: removePendingStudent
+  join: join,
+  acceptStudent: acceptStudent,
+  declineStudent: declineStudent
 
 };
 
@@ -319,6 +321,99 @@ function listForPendingStudent( data, done ) {
 
             }
           } );
+      }
+    } );
+
+  } catch ( err ) {
+    done( err, [], 0 );
+  }
+}
+
+/**
+ * @callback listForJoinCallback
+ * @param {Error} err - Error object
+ * @param {Array.<object>} courses - list of Course objects in the current page
+ * @param {number} count - total number of Course objects across all pages
+ */
+
+/**
+ * Gets a list of Course objects that are not associated with the specified user. Hence, these are the courses the
+ * user can join.
+ *
+ * @param {object} data - data
+ * @param {string} data.user_id - User._id
+ * @param {object} [data.projection] - projection
+ * @param {boolean} [data.projection.teachers] -
+ * @param {boolean} [data.projection.students] -
+ * @param {boolean} [data.projection.pendingStudents] -
+ * @param {boolean} [data.projection.states] -
+ * @param {boolean} [data.projection.timestamps] -
+ * @param {number} [data.offset=0] - offset of first Course object in the page
+ * @param {number} [data.limit=0] - number of Course objects in a page
+ * @param {listForJoinCallback} done - callback
+ */
+function listOpen( data, done ) {
+  try {
+
+    var userCriteria = Utils.validateObject( data, {
+      user_id: { name: '_id', type: 'string', required: true }
+    } );
+
+    var criteria = {
+      teachers: { $nin: [ userCriteria._id ] },
+      students: { $nin: [ userCriteria._id ] },
+      pendingStudents: { $nin: [ userCriteria._id ] }
+    };
+
+    var projection = Utils.validateObject( data, {
+      projection: {
+        type: {
+          teachers: { type: 'boolean' },
+          students: { type: 'boolean' },
+          pendingStudents: { type: 'boolean' },
+          states: { type: 'boolean' },
+          timestamps: { type: 'boolean' }
+        },
+        filter: 'projection',
+        default: {}
+      }
+    } ).projection;
+
+    var sort = Utils.validateObject( data, {
+      sort: {
+        type: {},
+        default: { name: 1 }
+      }
+    } ).sort;
+
+    // Ensure valid user_id
+    User.get( userCriteria, function ( err ) {
+      if ( err ) {
+        done( err, [], 0 );
+      } else {
+
+        // Get from database
+        db.courses.count( criteria, function ( err, count ) {
+          if ( err ) {
+            done( err, [], 0 );
+          } else {
+            db.courses
+              .find( criteria, projection )
+              .sort( sort )
+              .skip( data.offset || 0 )
+              .limit( data.limit || 0, function ( err, courses ) {
+                if ( err ) {
+                  done( err, [], 0 );
+                } else {
+
+                  // Return list of courses
+                  done( null, courses, count );
+
+                }
+              } );
+          }
+        } );
+
       }
     } );
 
@@ -713,7 +808,7 @@ function add( data, done ) {
 }
 
 /**
- * @callback addPendingStudentCallback
+ * @callback joinCallback
  * @param {Error} err - Error object
  * @param {object} course - Course object before adding student
  */
@@ -724,9 +819,9 @@ function add( data, done ) {
  * @param {object} data - data
  * @param {*} data._id - Course._id
  * @param {string} data.student_id - User._id
- * @param {addPendingStudentCallback} done - callback
+ * @param {joinCallback} done - callback
  */
-function addPendingStudent( data, done ) {
+function join( data, done ) {
   try {
 
     var criteria = Utils.validateObject( data, {
@@ -790,9 +885,8 @@ function addPendingStudent( data, done ) {
   }
 }
 
-
 /**
- * @callback removePendingStudentCallback
+ * @callback declineStudentCallBack
  * @param {Error} err - Error object
  * @param {object} course - Course object before removing student
  */
@@ -804,9 +898,9 @@ function addPendingStudent( data, done ) {
  * @param {*} data._id - Course._id
  * @param {string} data.teacher_id - User._id
  * @param {string} data.student_id - User._id
- * @param {removePendingStudentCallBack} done - callback
+ * @param {declineStudentCallBack} done - callback
  */
-function removePendingStudent( data, done ) {
+function declineStudent( data, done ) {
   try {
 
     var criteria = Utils.validateObject( data, {
@@ -827,7 +921,7 @@ function removePendingStudent( data, done ) {
             done( err, null );
           } else {
 
-            // remove student from pending students list. 
+            // remove student from pending students list.
             db.courses.update(
               {
                 _id: criteria._id,
@@ -859,9 +953,8 @@ function removePendingStudent( data, done ) {
   }
 }
 
-
 /**
- * @callback addStudentCallback
+ * @callback acceptStudentCallback
  * @param {Error} err - Error object
  * @param {object} course - Course object before adding student
  */
@@ -873,9 +966,9 @@ function removePendingStudent( data, done ) {
  * @param {*} data._id - Course._id
  * @param {string} data.teacher_id - User._id
  * @param {string} data.student_id - User._id
- * @param {addStudentCallback} done - callback
+ * @param {acceptStudentCallback} done - callback
  */
-function addStudent( data, done ) {
+function acceptStudent( data, done ) {
   try {
 
     var criteria = Utils.validateObject( data, {

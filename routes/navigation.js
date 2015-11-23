@@ -22,7 +22,7 @@ module.exports = function ( app ) {
   app.get( '/config.json', config );
   app.get( '/register', register );
   app.get( '/logout', logout );
-  app.get('/pending', pending);
+  app.get( '/pending', pending );
 
   app.get( '/courses/:course_id/', courseRedirect );
   app.get( '/courses/:course_id/minilessons/:minilesson_id?/:page_id?', course );
@@ -37,6 +37,8 @@ module.exports = function ( app ) {
  */
 function index( req, res ) {
   if ( req.user ) {
+
+    // TODO: MAKE METHOD IN COURSE MODEL TO GET LISTS OF COURSES FOR USER AS TEACHER, STUDENT, PENDING, AND OPEN
 
     // Get courses the user teaches
     Course.listForTeacher(
@@ -82,105 +84,95 @@ function index( req, res ) {
                     if ( err ) {
                       res.json( { err: err } );
                     } else {
-                      Course.list( {}, Utils.safeFn( function ( err, allCourses ) {
-                        console.log(allCourses);
-                        if ( err ) {
-                          res.json( { err: err } );
-                        } else {
-                          /**
-                           * Replaces teacher ids with user objects in courses.
-                           *
-                           * @param {Array.<Object>} courses - list of Course objects
-                           * @param {function()} done - callback
-                           */
-                          var processCourses = function ( courses, done ) {
 
-                            // Loop through courses
-                            (function nextCourse( i, n ) {
-                              if ( i < n ) {
+                      // Get courses that are open to join
+                      Course.listOpen(
+                        {
+                          user_id: req.user._id,
+                          projection: {
+                            students: false,
+                            timestamps: false,
+                            states: false
+                          }
+                        },
+                        Utils.safeFn( function ( err, openCourses ) {
+                          if ( err ) {
+                            res.json( { err: err } );
+                          } else {
 
-                                var course = courses[ i ];
+                            /**
+                             * Replaces teacher ids with user objects in courses.
+                             *
+                             * @param {Array.<Object>} courses - list of Course objects
+                             * @param {function()} done - callback
+                             */
+                            var processCourses = function ( courses, done ) {
 
-                                if ( course.teachers ) {
+                              // Loop through courses
+                              (function nextCourse( i, n ) {
+                                if ( i < n ) {
 
-                                  // Loop through teachers
-                                  (function nextTeacher( j, m ) {
-                                    if ( j < m ) {
+                                  var course = courses[ i ];
 
-                                      // Get User object
-                                      User.get(
-                                        {
-                                          _id: course.teachers[ j ],
-                                          projection: {
-                                            timestamps: false
-                                          }
-                                        },
-                                        Utils.safeFn( function ( err, user ) {
-                                          course.teachers[ j ] = user || {};
-                                          nextTeacher( j + 1, m );
-                                        } )
-                                      );
+                                  if ( course.teachers ) {
 
-                                    } else {
-                                      nextCourse( i + 1, n );
-                                    }
-                                  })( 0, course.teachers.length );
+                                    // Loop through teachers
+                                    (function nextTeacher( j, m ) {
+                                      if ( j < m ) {
 
-                                } else {
-                                  nextCourse( i + 1, n );
-                                }
+                                        // Get User object
+                                        User.get(
+                                          {
+                                            _id: course.teachers[ j ],
+                                            projection: {
+                                              timestamps: false
+                                            }
+                                          },
+                                          Utils.safeFn( function ( err, user ) {
+                                            course.teachers[ j ] = user || {};
+                                            nextTeacher( j + 1, m );
+                                          } )
+                                        );
 
-                              } else {
-                                done();
-                              }
-                            })( 0, courses.length );
+                                      } else {
+                                        nextCourse( i + 1, n );
+                                      }
+                                    })( 0, course.teachers.length );
 
-                          };
-
-                          processCourses( allCourses, function() {
-                            processCourses( teacherCourses, function () {
-                              processCourses( studentCourses, function () {
-                                processCourses( pendingCourses, function () {
-
-                                  // remove courses the user has already joined, or is teaching
-                                  function arrayObjectIndexOf( myArray, searchTerm, property ) {
-                                    var elIndex = -1;
-                                    myArray.forEach( function ( element, index ) {
-                                      if (String(element[property]).trim()==String(searchTerm).trim()) elIndex = index;
-                                    });
-                                    console.log(elIndex);
-                                    return elIndex;
+                                  } else {
+                                    nextCourse( i + 1, n );
                                   }
 
-                                  allCourses = allCourses.filter( function( el ) {
-                                    return arrayObjectIndexOf( teacherCourses, el._id, '_id' ) < 0;
-                                  });
+                                } else {
+                                  done();
+                                }
+                              })( 0, courses.length );
 
-                                  allCourses = allCourses.filter( function( el ) {
-                                    return arrayObjectIndexOf( studentCourses, el._id, '_id' ) < 0;
-                                  });
+                            };
 
-                                  // Return results to client
-                                  res.render( 'courseList', {
-                                    web: Config.web,
-                                    self: req.user,
-                                    allCourses: allCourses,
-                                    teacherCourses: teacherCourses,
-                                    studentCourses: studentCourses,
-                                    pendingCourses: pendingCourses
+                            processCourses( openCourses, function () {
+                              processCourses( teacherCourses, function () {
+                                processCourses( studentCourses, function () {
+                                  processCourses( pendingCourses, function () {
+
+                                    // Return results to client
+                                    res.render( 'courseList', {
+                                      web: Config.web,
+                                      self: req.user,
+                                      allCourses: openCourses,
+                                      teacherCourses: teacherCourses,
+                                      studentCourses: studentCourses,
+                                      pendingCourses: pendingCourses
+                                    } );
+
                                   } );
-
                                 } );
                               } );
                             } );
-                          } );
 
-
-
-                        }
-                      })
-                    );
-                                       
+                          }
+                        } )
+                      );
 
                     }
                   } )
@@ -289,62 +281,62 @@ function pending( req, res ) {
       Utils.safeFn( function ( err, teacherCourses ) {
         if ( err ) {
           res.json( { err: err } );
-        } else { 
+        } else {
           // get only courses for which there are pending students
-          teacherCourses = teacherCourses.filter( function (course) {
+          teacherCourses = teacherCourses.filter( function ( course ) {
             return (course.pendingStudents.length > 0);
-          });
+          } );
 
           var processCourses = function ( courses, done ) {
 
-                        // Loop through courses
-                        (function nextCourse( i, n ) {
-                          if ( i < n ) {
+            // Loop through courses
+            (function nextCourse( i, n ) {
+              if ( i < n ) {
 
-                            var course = courses[ i ];
+                var course = courses[ i ];
 
-                            if ( course.pendingStudents ) {
+                if ( course.pendingStudents ) {
 
-                              // Loop through teachers
-                              (function nextStudent( j, m ) {
-                                if ( j < m ) {
+                  // Loop through teachers
+                  (function nextStudent( j, m ) {
+                    if ( j < m ) {
 
-                                  // Get User object
-                                  User.get(
-                                    {
-                                      _id: course.pendingStudents[ j ],
-                                      projection: {
-                                        timestamps: false
-                                      }
-                                    },
-                                    Utils.safeFn( function ( err, user ) {
-                                      course.pendingStudents[ j ] = user || {};
-                                      nextStudent( j + 1, m );
-                                    } )
-                                  );
-
-                                } else {
-                                  nextCourse( i + 1, n );
-                                }
-                              })( 0, course.pendingStudents.length );
-
-                            } else {
-                              nextCourse( i + 1, n );
-                            }
-
-                          } else {
-                            done();
+                      // Get User object
+                      User.get(
+                        {
+                          _id: course.pendingStudents[ j ],
+                          projection: {
+                            timestamps: false
                           }
-                        })( 0, courses.length );
+                        },
+                        Utils.safeFn( function ( err, user ) {
+                          course.pendingStudents[ j ] = user || {};
+                          nextStudent( j + 1, m );
+                        } )
+                      );
 
-                      };
+                    } else {
+                      nextCourse( i + 1, n );
+                    }
+                  })( 0, course.pendingStudents.length );
+
+                } else {
+                  nextCourse( i + 1, n );
+                }
+
+              } else {
+                done();
+              }
+            })( 0, courses.length );
+
+          };
 
           processCourses( teacherCourses, function () {
             res.render( 'pending', {
-                                web: Config.web,
-                                self: req.user,
-                                teacherCourses: teacherCourses
-                              } );
+              web: Config.web,
+              self: req.user,
+              teacherCourses: teacherCourses
+            } );
 
           } );
         }
