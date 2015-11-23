@@ -246,45 +246,56 @@ function add( data, done ) {
       answer: { type: 'string', required: true }
     } );
 
-    // Ensure user is associated with mcq
-    Mcq.get(
-      {
-        _id: criteria.mcq_id,
-        user_id: criteria.user_id,
-        projection: {
-          timestamps: false
-        }
-      },
-      function ( err, mcq, course ) {
-        if ( err ) {
-          done( err, null );
-        } else if ( mcq.answers.indexOf( insertData.answer ) === -1 ) {
+    // Ensure submission doesn't already exist
+    db.submissions.count( criteria, function ( err, count ) {
+      if ( err ) {
+        done( err, null );
+      } else if ( count ) {
+        done( new Error( 'You can only submit once.' ), null );
+      } else {
 
-        } else if ( course.teaching ) {
-
-          // Teachers cannot answers mcqs associated with the courses they teach
-          done( new Error( 'Only students can answer an mcq.' ), null );
-
-        } else {
-
-          insertData.score = insertData.answer === mcq.answer ? 1 : 0;
-          insertData.timestamps = { created: new Date() };
-
-          // Insert into database
-          db.submissions.insert( insertData, function ( err, submission ) {
+        // Ensure user is associated with mcq
+        Mcq.get(
+          {
+            _id: criteria.mcq_id,
+            user_id: criteria.user_id,
+            projection: {
+              timestamps: false
+            }
+          },
+          function ( err, mcq, course ) {
             if ( err ) {
               done( err, null );
+            } else if ( mcq.answers.indexOf( insertData.answer ) === -1 ) {
+
+            } else if ( course.teaching ) {
+
+              // Teachers cannot answers mcqs associated with the courses they teach
+              done( new Error( 'Only students can answer an mcq.' ), null );
+
             } else {
 
-              // Get the new submission object the proper way
-              get( { _id: submission._id }, done );
+              insertData.score = insertData.answer === mcq.answer ? 1 : 0;
+              insertData.timestamps = { created: new Date() };
+
+              // Insert into database
+              db.submissions.insert( insertData, function ( err, submission ) {
+                if ( err ) {
+                  done( err, null );
+                } else {
+
+                  // Get the new submission object the proper way
+                  get( { _id: submission._id }, done );
+
+                }
+              } );
 
             }
-          } );
+          }
+        );
 
-        }
       }
-    );
+    } );
 
   } catch ( err ) {
     done( err, null );
