@@ -24,7 +24,12 @@ module.exports = {
   add: add,
   join: join,
   acceptStudent: acceptStudent,
-  declineStudent: declineStudent
+  declineStudent: declineStudent,
+
+
+  /* ---------------INTERNAL--------------- */
+
+  expandTeachers: expandTeachers
 
 };
 
@@ -87,10 +92,12 @@ function list( data, done ) {
             if ( err ) {
               done( err, [], 0 );
             } else {
+              expandTeachers( courses, function () {
 
-              // Return list of courses
-              done( null, courses, count );
+                // Return list of courses
+                done( null, courses, count );
 
+              } );
             }
           } );
       }
@@ -163,10 +170,12 @@ function listForTeacher( data, done ) {
             if ( err ) {
               done( err, [], 0 );
             } else {
+              expandTeachers( courses, function () {
 
-              // Return list of courses
-              done( null, courses, count );
+                // Return list of courses
+                done( null, courses, count );
 
+              } );
             }
           } );
       }
@@ -239,10 +248,12 @@ function listForStudent( data, done ) {
             if ( err ) {
               done( err, [], 0 );
             } else {
+              expandTeachers( courses, function () {
 
-              // Return list of courses
-              done( null, courses, count );
+                // Return list of courses
+                done( null, courses, count );
 
+              } );
             }
           } );
       }
@@ -315,10 +326,12 @@ function listForPendingStudent( data, done ) {
             if ( err ) {
               done( err, [], 0 );
             } else {
+              expandTeachers( courses, function () {
 
-              // Return list of courses
-              done( null, courses, count );
+                // Return list of courses
+                done( null, courses, count );
 
+              } );
             }
           } );
       }
@@ -405,10 +418,12 @@ function listOpen( data, done ) {
                 if ( err ) {
                   done( err, [], 0 );
                 } else {
+                  expandTeachers( courses, function () {
 
-                  // Return list of courses
-                  done( null, courses, count );
+                    // Return list of courses
+                    done( null, courses, count );
 
+                  } );
                 }
               } );
           }
@@ -1021,4 +1036,58 @@ function acceptStudent( data, done ) {
   } catch ( err ) {
     done( err, null );
   }
+}
+
+/**
+ * @callback expandTeachersCallback
+ */
+
+/**
+ * Replaces teacher ids with user objects in courses.
+ *
+ * @param {Array.<Object>} courses - list of Course objects
+ * @param {expandTeachersCallback} done - callback
+ */
+function expandTeachers( courses, done ) {
+
+  // Loop through courses
+  (function nextCourse( i, n ) {
+    if ( i < n ) {
+
+      var course = courses[ i ];
+
+      if ( course.teachers ) {
+
+        // Loop through teachers
+        (function nextTeacher( j, m ) {
+          if ( j < m ) {
+
+            // Get User object
+            User.get(
+              {
+                _id: course.teachers[ j ],
+                projection: {
+                  timestamps: false
+                }
+              },
+              Utils.safeFn( function ( err, user ) {
+                course.teachers[ j ] = user || {};
+                nextTeacher( j + 1, m );
+              } )
+            );
+
+          } else {
+            nextCourse( i + 1, n );
+          }
+        })( 0, course.teachers.length );
+
+      } else {
+        nextCourse( i + 1, n );
+      }
+
+    } else {
+      done();
+    }
+  })( 0, courses.length );
+
 }

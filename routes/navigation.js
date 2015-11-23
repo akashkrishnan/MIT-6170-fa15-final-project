@@ -100,74 +100,14 @@ function index( req, res ) {
                             res.json( { err: err } );
                           } else {
 
-                            /**
-                             * Replaces teacher ids with user objects in courses.
-                             *
-                             * @param {Array.<Object>} courses - list of Course objects
-                             * @param {function()} done - callback
-                             */
-                            var processCourses = function ( courses, done ) {
-
-                              // Loop through courses
-                              (function nextCourse( i, n ) {
-                                if ( i < n ) {
-
-                                  var course = courses[ i ];
-
-                                  if ( course.teachers ) {
-
-                                    // Loop through teachers
-                                    (function nextTeacher( j, m ) {
-                                      if ( j < m ) {
-
-                                        // Get User object
-                                        User.get(
-                                          {
-                                            _id: course.teachers[ j ],
-                                            projection: {
-                                              timestamps: false
-                                            }
-                                          },
-                                          Utils.safeFn( function ( err, user ) {
-                                            course.teachers[ j ] = user || {};
-                                            nextTeacher( j + 1, m );
-                                          } )
-                                        );
-
-                                      } else {
-                                        nextCourse( i + 1, n );
-                                      }
-                                    })( 0, course.teachers.length );
-
-                                  } else {
-                                    nextCourse( i + 1, n );
-                                  }
-
-                                } else {
-                                  done();
-                                }
-                              })( 0, courses.length );
-
-                            };
-
-                            processCourses( openCourses, function () {
-                              processCourses( teacherCourses, function () {
-                                processCourses( studentCourses, function () {
-                                  processCourses( pendingCourses, function () {
-
-                                    // Return results to client
-                                    res.render( 'courseList', {
-                                      web: Config.web,
-                                      self: req.user,
-                                      allCourses: openCourses,
-                                      teacherCourses: teacherCourses,
-                                      studentCourses: studentCourses,
-                                      pendingCourses: pendingCourses
-                                    } );
-
-                                  } );
-                                } );
-                              } );
+                            // Return results to client
+                            res.render( 'courseList', {
+                              web: Config.web,
+                              self: req.user,
+                              allCourses: openCourses,
+                              teacherCourses: teacherCourses,
+                              studentCourses: studentCourses,
+                              pendingCourses: pendingCourses
                             } );
 
                           }
