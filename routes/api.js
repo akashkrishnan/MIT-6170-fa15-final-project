@@ -749,6 +749,8 @@ function apiSubmissionList( req, res ) {
         res.json( { err: err } );
       } else {
 
+        console.log( submissions );
+
         /**
          * Replaces student ids with user objects in submissions.
          *
@@ -774,6 +776,7 @@ function apiSubmissionList( req, res ) {
                   },
                   Utils.safeFn( function ( err, user ) {
                     submission.user = user || {};
+                    nextSubmission( i + 1, n );
                   } )
                 );
 

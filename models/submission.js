@@ -103,7 +103,7 @@ function list( data, done ) {
           timestamps: false
         }
       },
-      function ( err, course ) {
+      function ( err, mcq, course ) {
         if ( err ) {
           done( err, [], 0 );
         } else if ( course.teaching ) {
