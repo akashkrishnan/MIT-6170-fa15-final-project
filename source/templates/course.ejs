@@ -192,7 +192,7 @@
           </div>
           <% } %>
 
-          <div mcq-list shadow elevation="1" flex layout-vertical>
+          <div mcq-list shadow elevation="1" layout-vertical>
 
             <div header no-select layout-horizontal layout-center>
 
@@ -219,14 +219,14 @@
 
                 <div question><strong><%= mcq.question %></strong></div>
 
-                <% mcq.answers.forEach( function ( answer, i ) { %>
+                <% mcq.answers.forEach( function ( answer ) { %>
                 <div choice>
-                  <input class="submit-radio-answer" type="radio" name="answer-options" value=<%= answer %>>
+                  <input class="submit-radio-answer" type="radio" name="answer-options" value="<%= answer %>">
                   <%= answer %>
                 </div>
                 <% } ); %>
 
-                <% if (course.teaching) { %>
+                <% if ( course.teaching ) { %>
                 <a href="#" class="downloadGrades">Download Grades</a>
                 <% } %>
 
@@ -235,7 +235,7 @@
 
             </div>
             <% } else { %>
-            <div content flex layout-horizontal layout-center-center>
+            <div content flex layout-horizontal layout-center-center style="padding: 16px;">
               There are no multiple choice questions for this page.
             </div>
             <% } %>
