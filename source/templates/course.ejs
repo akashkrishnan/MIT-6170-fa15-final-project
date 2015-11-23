@@ -192,7 +192,7 @@
           </div>
           <% } %>
 
-          <div mcq-list shadow elevation="1" layout-vertical>
+          <div shadow elevation="1" layout-vertical>
 
             <div header no-select layout-horizontal layout-center>
 
@@ -211,30 +211,7 @@
 
             <% var lookup = [ 'A', 'B', 'C', 'D', 'E' ]; %>
 
-            <% if ( mcqs && mcqs.length ) { %>
-            <div content layout-horizontal layout-around-justified layout-wrap>
-
-              <% mcqs.forEach( function ( mcq ) { %>
-              <div mcq-item flex layout-vertical data-mcq-id="<%= mcq._id %>">
-
-                <div question><strong><%= mcq.question %></strong></div>
-
-                <% mcq.answers.forEach( function ( answer ) { %>
-                <div choice>
-                  <input class="submit-radio-answer" type="radio" name="answer-options" value="<%= answer %>">
-                  <%= answer %>
-                </div>
-                <% } ); %>
-
-                <% if ( course.teaching ) { %>
-                <a href="#" class="downloadGrades">Download Grades</a>
-                <% } %>
-
-              </div>
-              <% } ); %>
-
-            </div>
-            <% } else { %>
+            <% if ( !mcqs || !mcqs.length ) { %>
             <div content flex layout-horizontal layout-center-center style="padding: 16px;">
               There are no multiple choice questions for this page.
             </div>
@@ -249,6 +226,37 @@
           </div>
 
           <% } %>
+
+          <div mcq-list layout-horizontal layout-around-justified layout-wrap>
+
+            <% mcqs.forEach( function ( mcq ) { %>
+            <div mcq-item shadow elevation="1" flex layout-vertical data-mcq-id="<%= mcq._id %>">
+
+              <div question><strong><%= mcq.question %></strong></div>
+
+              <div choices>
+
+                <% mcq.answers.forEach( function ( answer ) { %>
+                <div choice>
+                  <input class="submit-radio-answer" type="radio" name="answer-options" value="<%= answer %>">
+                  <%= answer %>
+                </div>
+                <% } ); %>
+
+              </div>
+
+              <div buttons layout-horizontal layout-end-justified>
+                <% if ( course.teaching ) { %>
+                <div button small blue download class="downloadGrades">Download Grades</div>
+                <% } else { %>
+                <div button small blue submit>Submit</div>
+                <% } %>
+              </div>
+
+            </div>
+            <% } ); %>
+
+          </div>
 
         </div>
 
