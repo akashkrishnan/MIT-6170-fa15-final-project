@@ -1,6 +1,8 @@
 Flipper
 =======
 
+## General
+
 ### Public Access
 - http://flipper.aakay.net
 
@@ -28,3 +30,11 @@ Flipper
 ### Troubleshooting
 - If you get the `EADDRINUSE` error stating that the port the server is trying to listen on is in use, then change the `port` number in the `config` section of `package.json`.
 - If you get the `EACCESS` error, then make sure you are using `sudo` or are authenticated as root via `sudo su -`.
+
+## MVP Discussion
+
+### Features Implemented
+- 
+
+### Features Not Implemented (but will be implemented for the final)
+- 
