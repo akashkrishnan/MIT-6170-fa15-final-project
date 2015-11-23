@@ -10,7 +10,7 @@ var User = require( './user.js' );
 var Course = require( './course.js' );
 var Minilesson = require( './minilesson.js' );
 var Page = require( './page.js' );
-var MCQ = require( './MCQ.js' );
+var MCQ = require( './mcq.js' );
 var mongojs = require( 'mongojs' );
 
 var db = mongojs( Config.services.db.mongodb.uri, [ 'submissions' ] );
