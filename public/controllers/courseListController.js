@@ -54,6 +54,8 @@
     console.error( 'Missing #course-add-dialog.' );
   }
 
+  /* -------------------------------------------------------------------------------------------------------------- */
+
   var courseJoinDialog = document.querySelector( '#course-join-dialog' );
   if ( courseJoinDialog ) {
 

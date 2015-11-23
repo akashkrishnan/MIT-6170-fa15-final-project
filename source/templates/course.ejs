@@ -252,6 +252,8 @@
                 <% if ( course.teaching ) { %>
                 <div button small blue download class="downloadGrades">Download Grades</div>
                 <div button small red disabled edit>Edit</div>
+                <% } else if ( mcq.submitted ) { %>
+                <div button small blue disabled>Submitted</div>
                 <% } else { %>
                 <div button small blue submit>Submit</div>
                 <% } %>
