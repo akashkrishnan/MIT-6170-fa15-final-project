@@ -5,18 +5,35 @@ Flipper
 
 2) Instructions on deploying locally
 
-	### Setup
+	## General
+
+	### Supported Browsers
+	- Google Chrome
+	- Mozilla Firefox
+	- Microsoft Edge (minor bugs)
+	- Apple Safari
+	- Opera
+
+	### Incompatible Browsers
+	- Internet Explorer
+
+	### Public Access
+	- http://flipper.aakay.net
+
+	### Local Setup
 	1. Ensure `mongodb` is running: `sudo mongod`
-	2. Install the node modules and the project: `sudo npm install --save --unsafe-perm`
+	2. Install the node modules: `sudo npm install --save --unsafe-perm`
 	3. Reset the database: `npm run init`
 	4. Start the server: `sudo npm start`
+	5. See section on troubleshooting if you run into any errors.
 
 	### Linting (ESLint)
-	1. `npm run lint`
-
+	- `npm run lint`
+	- (These aren't supposed to pass right now.)
 
 	### Testing (Mocha)
-	1. `npm test`
+	- `npm test`
+	- (These aren't supposed to pass right now.)
 
 	### Running
 	1. Ensure `mongodb` is running: `sudo mongod`
