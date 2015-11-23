@@ -13,7 +13,6 @@
                 toastr.error( err );
             } else {
                 var gradesCSV = 'Name,Grade\n';
-
                 var names = Object.keys(grades);
 
                 names.forEach( function( name ) {

@@ -424,7 +424,7 @@ var Flipper = function () {
               if ( data.err ) {
                 done( data.err, null );
               } else {
-                done( null, data );
+                done( null, data.grades );
               }
             } else {
               done( new Error( 'No submissions for this MCQ yet.' ), null );
