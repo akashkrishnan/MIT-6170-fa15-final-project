@@ -267,7 +267,7 @@ function add( data, done ) {
 
         } else {
 
-          insertData.score = criteria.answeer === mcq.answer ? 1 : 0;
+          insertData.score = criteria.answer === mcq.answer ? 1 : 0;
           insertData.timestamps = { created: new Date() };
 
           // Insert into database
