@@ -21,6 +21,7 @@ Flipper
 2. Install the node modules: `sudo npm install --save --unsafe-perm`
 3. Reset the database: `npm run init`
 4. Start the server: `sudo npm start`
+5. See section on troubleshooting if your run into any errors.
 
 ### Linting (ESLint)
 - `npm run lint`
