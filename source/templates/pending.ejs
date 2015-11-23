@@ -3,7 +3,7 @@
 
   <head>
     <meta charset="UTF-8">
-    <title><%= web.name %></title>
+    <title><%= web.name %> / Pending Student Requests</title>
     <link rel="stylesheet" type="text/css" href="https://fonts.googleapis.com/css?family=Roboto">
     <link rel="stylesheet" type="text/css" href="/toastr/toastr.min.css">
     <link rel="stylesheet" type="text/css" href="/styles/global.css">
@@ -22,8 +22,14 @@
       <div name layout-horizontal layout-center layout-center-justified><strong><%= web.name %></strong></div>
 
       <div relative layout-vertical style="height: 100%">
-        <a href="/" tab layout-horizontal layout-center active>
+        <a href="/" tab layout-horizontal layout-center>
           <div>Home</div>
+        </a>
+      </div>
+
+      <div relative layout-vertical style="height: 100%">
+        <a href="/" tab layout-horizontal layout-center active>
+          <div>Pending Student Requests</div>
         </a>
       </div>
 
@@ -34,12 +40,13 @@
         <div tab no-select dropdown-toggle-trigger="account-dropdown"
              flex layout-horizontal layout-center>
           <div><%= self.name %></div>
+          <div arrow-down></div>
         </div>
 
         <div id="account-dropdown" dropdown align-right shadow elevation="2" layout-vertical>
 
           <a href="/pending" item hoverable layout-horizontal layout-center>
-            <div text><strong>Pending Course Requests</strong></div>
+            <div text>Pending Student Requests</div>
           </a>
 
           <a href="/logout" item hoverable layout-horizontal layout-center>
@@ -60,8 +67,7 @@
           <div header no-select layout-horizontal layout-center>
             <div title>Pending Student Requests</div>
             <div flex></div>
-            <div toolbar-button hoverable 
-                 layout-horizontal layout-center>
+            <div toolbar-button hoverable layout-horizontal layout-center>
               Approve All
             </div>
           </div>
@@ -70,34 +76,33 @@
           teacherCourses.forEach( function( course ) {
           %>
 
-
-            <div subheader no-select layout-horizontal layout-center>
-            <div title> <strong> <%= course.name %> </strong> </div>
+          <div subheader no-select layout-horizontal layout-center>
+            <div title><strong><%= course.name %></strong></div>
             <div flex></div>
-          	</div>  
-            <%
-            course.pendingStudents.forEach( function ( student ) {
-            %>
+          </div>
 
+          <%
+          course.pendingStudents.forEach( function ( student ) {
+          %>
 
-            <div course-item layout-horizontal layout-center>
-            	<div layout-vertical>
-            		<span> <%= student.name %> </span>
-            	</div>
-            	<div flex></div>
+          <div course-item layout-horizontal layout-center>
 
+            <div layout-vertical>
+              <span> <%= student.name %> </span>
+            </div>
+            <div flex></div>
 
             <div buttons layout-horizontal layout-end>
-              <a button small blue approve student-id="<%= student._id %>" course-id="<%= course._id %>">Approve</a> 
               <a button small red decline student-id="<%= student._id %>" course-id="<%= course._id %>">Decline</a>
+              <a button small blue approve student-id="<%= student._id %>" course-id="<%= course._id %>">Approve</a>
             </div>
 
-            </div>
+          </div>
 
-            <%
-            } );
-            %>
-            
+          <%
+          } );
+          %>
+
           <%
           } );
           %>

@@ -15,8 +15,7 @@
 
 [course-list] [subheader] {
   height: 36px;
-  background-color: rgba(50,50,50,.2);
-  
+  background-color: rgba(50, 50, 50, .2);
 
 }
 
@@ -77,6 +76,14 @@
 [course-item] [buttons] {
   height: 100%;
   margin-left: 16px;
+}
+
+[course-item] [buttons] [button] {
+  margin-right: 16px;
+}
+
+[course-item] [buttons] [button]:last-child {
+  margin-right: 0;
 }
 
 #course-add-dialog [form] {
