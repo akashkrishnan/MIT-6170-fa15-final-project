@@ -219,10 +219,7 @@ function get( data, done ) {
             if ( err ) {
               done( err, null, null );
             } else {
-
-              // Teachers can see all mcqs
               done( null, mcq, course );
-
             }
           }
         );

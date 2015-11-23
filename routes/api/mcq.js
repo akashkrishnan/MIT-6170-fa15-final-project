@@ -1,0 +1,242 @@
+/**
+ * Created by akashkrishnan on 23-Nov-15.
+ */
+
+'use strict';
+
+var Utils = require( '../../models/utils.js' );
+var User = require( '../../models/user.js' );
+var Mcq = require( '../../models/mcq.js' );
+var Submission = require( '../../models/submission.js' );
+
+module.exports = function ( app ) {
+
+  app.get( '/api/mcqs/:mcq_id', apiMcqGet );
+  app.get( '/api/mcqs/:mcq_id/submissions', apiSubmissionList );
+  app.post( '/api/mcqs/:mcq_id/submissions', apiSubmissionAdd );
+  app.get( '/api/mcqs/:mcq_id/grades', apiMcqGrades );
+
+};
+
+/**
+ * Called to get the specified Mcq object associated with the authenticated user.
+ *
+ * @param {object} req - req
+ * @param {object} res - res
+ */
+function apiMcqGet( req, res ) {
+
+  // Ensure user
+  if ( req.user ) {
+
+    // Get mcq
+    Mcq.get(
+      {
+        _id: req.params.mcq_id,
+        user_id: req.user._id,
+        projection: {
+          timestamps: false
+        }
+      },
+      Utils.safeFn( function ( err, mcq ) {
+        if ( err ) {
+          res.json( { err: err } );
+        } else {
+          res.json( mcq );
+        }
+      } )
+    );
+
+  } else {
+    res.status( 400 ).json( { err: 'Bad Request: User must be authenticated to process request.' } );
+  }
+
+}
+
+/**
+ * Called to get a list of Submission objects associated with the specified mcq and the authenticated user.
+ *
+ * @param {object} req - req
+ * @param {object} res - res
+ */
+function apiSubmissionList( req, res ) {
+
+  // Ensure user
+  if ( req.user ) {
+
+    // Enforce certain values
+    req.body.user_id = req.user._id;
+    req.body.mcq_id = req.params.mcq_id;
+    req.body.projection = { timestamps: false };
+
+    // Get list of submissions
+    Submission.list( req.body, Utils.safeFn( function ( err, submissions ) {
+      if ( err ) {
+        res.json( { err: err } );
+      } else {
+
+        /**
+         * Replaces student ids with user objects in submissions.
+         *
+         * @param {Array.<Object>} submissions - list of Submission objects
+         * @param {function()} done - callback
+         */
+        var processSubmissions = function ( submissions, done ) {
+
+          // Loop through courses
+          ( function nextSubmission( i, n ) {
+            if ( i < n ) {
+
+              var submission = submissions[ i ];
+
+              if ( submission.user_id ) {
+
+                User.get(
+                  {
+                    _id: submission.user_id,
+                    projection: {
+                      timestamps: false
+                    }
+                  },
+                  Utils.safeFn( function ( err, user ) {
+                    submission.user = user || {};
+                    nextSubmission( i + 1, n );
+                  } )
+                );
+
+              } else {
+                nextSubmission( i + 1, n );
+              }
+
+            } else {
+              done();
+            }
+          } )( 0, submissions.length );
+
+        };
+
+        processSubmissions( submissions, function () {
+
+          // Return results to client
+          res.json( submissions );
+
+        } );
+
+      }
+    } ) );
+
+  } else {
+    res.status( 400 ).json( { err: 'Bad Request: User must be authenticated to process request.' } );
+  }
+
+}
+
+/**
+ * Called to when a user wants to add a submission to an MCQ.
+ *
+ * @param {object} req - req
+ * @param {object} res - res
+ */
+function apiSubmissionAdd( req, res ) {
+
+  // Ensure user
+  if ( req.user ) {
+
+    // Enforce some invariants
+    req.body.user_id = req.user._id;
+    req.body.mcq_id = req.params.mcq_id;
+
+    // Add submission
+    Submission.add( req.body, Utils.safeFn( function ( err, submission ) {
+      if ( err ) {
+        res.json( { err: err } );
+      } else {
+        res.json( submission );
+      }
+    } ) );
+
+  } else {
+    res.status( 400 ).json( { err: 'Bad Request: User must be authenticated to process request.' } );
+  }
+
+}
+
+/**
+ * Called to when a user wants to view all grades of an MCQ.
+ *
+ * @param {object} req - req
+ * @param {object} res - res
+ */
+function apiMcqGrades( req, res ) {
+
+  // Ensure user
+  if ( req.user ) {
+
+    // Enforce some invariants
+    req.body.user_id = req.user._id;
+    req.body.mcq_id = req.params.mcq_id;
+
+    Submission.list( req.body, function ( err, submissions ) {
+      if ( err ) {
+        res.json( { err: err } );
+      } else {
+
+        var gradesData = {};
+
+        /**
+         * Replaces student ids with user objects in submissions.
+         *
+         * @param {Array.<Object>} submissions - list of Submission objects
+         * @param {function()} done - callback
+         */
+        var processSubmissions = function ( submissions, done ) {
+
+          // Loop through courses
+          ( function nextSubmission( i, n ) {
+            if ( i < n ) {
+
+              var submission = submissions[ i ];
+
+              if ( submission.user_id ) {
+
+                User.get(
+                  {
+                    _id: submission.user_id,
+                    projection: {
+                      timestamps: false
+                    }
+                  },
+                  Utils.safeFn( function ( err, user ) {
+                    gradesData[ user.name ] = submission.score;
+                    nextSubmission( i + 1, n );
+                  } )
+                );
+
+              } else {
+                nextSubmission( i + 1, n );
+              }
+
+            } else {
+              done();
+            }
+          } )( 0, submissions.length );
+
+        };
+
+        processSubmissions( submissions, function () {
+
+          // Return results to client
+          res.json( {
+            grades: gradesData
+          } );
+
+        } );
+
+      }
+    } );
+
+  } else {
+    res.status( 400 ).json( { err: 'Bad Request: User must be authenticated to process request.' } );
+  }
+
+}

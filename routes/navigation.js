@@ -8,7 +8,6 @@
 var Config = require( '../config.js' );
 var Utils = require( '../models/utils.js' );
 var Session = require( '../models/session.js' );
-var User = require( '../models/user.js' );
 var Course = require( '../models/course.js' );
 var Minilesson = require( '../models/minilesson.js' );
 var Page = require( '../models/page.js' );
@@ -16,7 +15,6 @@ var Mcq = require( '../models/mcq.js' );
 
 module.exports = function ( app ) {
 
-  // Navigation
   app.get( '/', index );
 
   app.get( '/config.json', config );
@@ -31,6 +29,8 @@ module.exports = function ( app ) {
 
 /**
  * Called when the user wants to view the index.
+ *
+ * TODO: FIX THIS CALLBACK CHAIN PLEASE SOMETIME SOON
  *
  * @param {object} req - req
  * @param {object} res - res
@@ -245,7 +245,6 @@ function pending( req, res, next ) {
 
 }
 
-
 /**
  * Redirects invalid course route to a valid default route.
  *
@@ -263,6 +262,8 @@ function courseRedirect( req, res, next ) {
 
 /**
  * Called when the user wants to view a course.
+ *
+ * TODO: FIX THIS CALLBACK CHAIN PLEASE SOMETIME SOON
  *
  * @param {object} req - req
  * @param {object} res - res
