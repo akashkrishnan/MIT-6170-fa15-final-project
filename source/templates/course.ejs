@@ -37,6 +37,7 @@
              flex layout-horizontal layout-center
              active>
           <div><%= course.name %></div>
+          <div arrow-down></div>
         </div>
 
         <div id="course-dropdown" dropdown align-left shadow elevation="2" layout-vertical>
@@ -72,6 +73,7 @@
         <div tab no-select dropdown-toggle-trigger="account-dropdown"
              flex layout-horizontal layout-center>
           <div><%= self.name %></div>
+          <div arrow-down></div>
         </div>
 
         <div id="account-dropdown" dropdown align-right shadow elevation="2" layout-vertical>
@@ -145,7 +147,7 @@
             <a href="/courses/<%= course._id %>/minilessons/<%= minilesson._id %>/<%= _page._id %>"
                page-item no-select <%= page._id && _page._id.toString() === page._id.toString() ? 'active' : '' %>
                flex layout-horizontal layout-center-center>
-               <%=_page.title%>
+              <%= _page.title %>
             </a>
 
             <% } ); %>
@@ -220,8 +222,8 @@
 
                 <% mcq.answers.forEach( function ( answer, i ) { %>
                 <div choice>
-                  <input class="submit-radio-answer" type="radio" name="answer-options" value=<%=answer%>>
-                  <%=answer %>
+                  <input class="submit-radio-answer" type="radio" name="answer-options" value=<%= answer %>>
+                  <%= answer %>
                 </div>
                 <% } ); %>
 
@@ -327,7 +329,6 @@
 
         <div inputs layout-vertical>
 
-          
 
           <div input flex layout-vertical>
             <label>Question</label>
@@ -370,7 +371,6 @@
 
         </div>
 
-        
 
       </div>
     </div>
