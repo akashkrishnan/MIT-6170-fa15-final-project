@@ -1,52 +1,48 @@
 Flipper
 =======
 
-1) http://flipper.aakay.net/
+## General
 
-2) Instructions on deploying locally
+### Supported Browsers
+- Google Chrome
+- Mozilla Firefox
+- Microsoft Edge (minor bugs)
+- Apple Safari
+- Opera
 
-	## General
+### Incompatible Browsers
+- Internet Explorer
 
-	### Supported Browsers
-	- Google Chrome
-	- Mozilla Firefox
-	- Microsoft Edge (minor bugs)
-	- Apple Safari
-	- Opera
+### Public Access
+- http://flipper.aakay.net
 
-	### Incompatible Browsers
-	- Internet Explorer
+### Local Setup
+1. Ensure `mongodb` is running: `sudo mongod`
+2. Install the node modules: `sudo npm install --save --unsafe-perm`
+3. Reset the database: `npm run init`
+4. Start the server: `sudo npm start`
+5. See section on troubleshooting if you run into any errors.
 
-	### Public Access
-	- http://flipper.aakay.net
+### Linting (ESLint)
+- `npm run lint`
+- (These aren't supposed to pass right now.)
 
-	### Local Setup
-	1. Ensure `mongodb` is running: `sudo mongod`
-	2. Install the node modules: `sudo npm install --save --unsafe-perm`
-	3. Reset the database: `npm run init`
-	4. Start the server: `sudo npm start`
-	5. See section on troubleshooting if you run into any errors.
+### Testing (Mocha)
+- `npm test`
+- (These aren't supposed to pass right now.)
 
-	### Linting (ESLint)
-	- `npm run lint`
-	- (These aren't supposed to pass right now.)
+### Running
+1. Ensure `mongodb` is running: `sudo mongod`
+2. Start the server: `sudo npm start`
 
-	### Testing (Mocha)
-	- `npm test`
-	- (These aren't supposed to pass right now.)
+### Resetting
+1. `npm run init`
 
-	### Running
-	1. Ensure `mongodb` is running: `sudo mongod`
-	2. Start the server: `sudo npm start`
+### Troubleshooting
+- If you get the `EADDRINUSE` error stating that the port the server is trying to listen on is in use, then change the `port` number in the `config` section of `package.json`.
+- If you get the `EACCESS` error, then make sure you are using `sudo` or are authenticated as root via `sudo su -`.
 
-	### Resetting
-	1. `npm run init`
-
-	### Troubleshooting
-	- If you get the `EADDRINUSE` error stating that the port the server is trying to listen on is in use, then change the `port` number in the `config` section of `package.json`.
-	- If you get the `EACCESS` error, then make sure you are using `sudo` or are authenticated as root via `sudo su -`.
-
-3) Discussion about MVP features (and what we left out)
+## Discussion about MVP features (and what we left out)
 
 	Identification of minimum viable product for first release 
 		Our MVP will contain: 
@@ -77,19 +73,21 @@ Flipper
 		Editing/deleting minilessons, pages or questions 
 		Embedded videos 
 
-4) Discussion about how to use MVP
-	- Using MVP as a teacher
-		- register and login account1
-		- create a class, minilesson and page (include a resource)
-		- add MCQs to the page 
-		- logout
-	- Using MVP as a student
-		- register and login account2
-		- join a class
-		- logout
-		- login with teacher account1
-		- accept pending student from account2
-		- logit
-		- login with teacher account2
-		- submit an answer to the mcq
-		- create classes/pages/minilessons in this account (user can be both a teacher and student)
+## Discussion about how to use MVP
+
+### Using MVP as a teacher
+1. register and login account1
+2. create a class, minilesson and page (include a resource)
+3. add MCQs to the page 
+4. logout
+
+### Using MVP as a student
+1. register and login account2
+2. join a class
+3. logout
+4. login with teacher account1
+5. accept pending student from account2
+6. logout
+7. login with teacher account2
+8. submit an answer to the mcq
+9. create classes/pages/minilessons in this account (user can be both a teacher and student)
