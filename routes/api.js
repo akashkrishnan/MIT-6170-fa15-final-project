@@ -749,8 +749,6 @@ function apiSubmissionList( req, res ) {
         res.json( { err: err } );
       } else {
 
-        console.log( submissions );
-
         /**
          * Replaces student ids with user objects in submissions.
          *
@@ -919,6 +917,7 @@ function apiMCQGrades( req, res ) {
                   },
                   Utils.safeFn( function ( err, user ) {
                     gradesData[ user.name ] = submission.score;
+                    nextSubmission( i + 1, n );
                   } )
                 );
 
