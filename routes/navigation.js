@@ -203,11 +203,13 @@ function logout( req, res ) {
  *
  * @param {object} req - req
  * @param {object} res - res
+ * @param {function} next - callback
  */
-function pending( req, res ) {
+function pending( req, res, next ) {
 
   // This route is restricted to authenticated users
   if ( req.user ) {
+
     // Get courses the user teaches
     Course.listForTeacher(
       {
@@ -222,67 +224,23 @@ function pending( req, res ) {
         if ( err ) {
           res.json( { err: err } );
         } else {
+
           // get only courses for which there are pending students
           teacherCourses = teacherCourses.filter( function ( course ) {
-            return (course.pendingStudents.length > 0);
+            return course.pendingStudents.length > 0;
           } );
 
-          var processCourses = function ( courses, done ) {
-
-            // Loop through courses
-            (function nextCourse( i, n ) {
-              if ( i < n ) {
-
-                var course = courses[ i ];
-
-                if ( course.pendingStudents ) {
-
-                  // Loop through teachers
-                  (function nextStudent( j, m ) {
-                    if ( j < m ) {
-
-                      // Get User object
-                      User.get(
-                        {
-                          _id: course.pendingStudents[ j ],
-                          projection: {
-                            timestamps: false
-                          }
-                        },
-                        Utils.safeFn( function ( err, user ) {
-                          course.pendingStudents[ j ] = user || {};
-                          nextStudent( j + 1, m );
-                        } )
-                      );
-
-                    } else {
-                      nextCourse( i + 1, n );
-                    }
-                  })( 0, course.pendingStudents.length );
-
-                } else {
-                  nextCourse( i + 1, n );
-                }
-
-              } else {
-                done();
-              }
-            })( 0, courses.length );
-
-          };
-
-          processCourses( teacherCourses, function () {
-            res.render( 'pending', {
-              web: Config.web,
-              self: req.user,
-              teacherCourses: teacherCourses
-            } );
-
+          res.render( 'pending', {
+            web: Config.web,
+            self: req.user,
+            teacherCourses: teacherCourses
           } );
+
         }
       } ) );
+
   } else {
-    res.redirect( '/' );
+    next();
   }
 
 }
