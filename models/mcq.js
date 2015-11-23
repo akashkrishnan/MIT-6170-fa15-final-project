@@ -74,13 +74,13 @@ function list( data, done ) {
             .find( query, projection )
             .sort( sort )
             .skip( data.offset || 0 )
-            .limit( data.limit || 0, function ( err, pages ) {
+            .limit( data.limit || 0, function ( err, mcqs ) {
               if ( err ) {
                 done( err, [], 0 );
               } else {
 
-                // Return list of pages
-                done( null, pages, count );
+                // Return list of mcqs
+                done( null, mcqs, count );
 
               }
             } );

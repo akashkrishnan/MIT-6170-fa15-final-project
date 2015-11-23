@@ -737,7 +737,67 @@ function apiSubmissionList( req, res ) {
 
   // Ensure user
   if ( req.user ) {
-    res.json( { err: 'Not implemented.' } );
+
+    // Enforce certain values
+    req.body.user_id = req.user._id;
+    req.body.mcq_id = req.params.mcq_id;
+    req.body.projection = { timestamps: false };
+
+    // Get list of minilessons
+    Mcq.list( req.body, Utils.safeFn( function ( err, submissions ) {
+      if ( err ) {
+        res.json( { err: err } );
+      } else {
+
+        /**
+         * Replaces student ids with user objects in submissions.
+         *
+         * @param {Array.<Object>} submissions - list of Submission objects
+         * @param {function()} done - callback
+         */
+        var processSubmissions = function ( submissions, done ) {
+
+          // Loop through courses
+          (function nextSubmission( i, n ) {
+            if ( i < n ) {
+
+              var submission = submissions[ i ];
+
+              if ( submission.user_id ) {
+
+                User.get(
+                  {
+                    _id: submission.user_id,
+                    projection: {
+                      timestamps: false
+                    }
+                  },
+                  Utils.safeFn( function ( err, user ) {
+                    submission.user = user || {};
+                  } )
+                );
+
+              } else {
+                nextSubmission( i + 1, n );
+              }
+
+            } else {
+              done();
+            }
+          })( 0, submissions.length );
+
+        };
+
+        processSubmissions( submissions, function () {
+
+          // Return results to client
+          res.json( submissions );
+
+        } );
+
+      }
+    } ) );
+
   } else {
     res.status( 400 ).json( { err: 'Bad Request: User must be authenticated to process request.' } );
   }
@@ -754,7 +814,25 @@ function apiSubmissionGet( req, res ) {
 
   // Ensure user
   if ( req.user ) {
-    res.json( { err: 'Not implemented.' } );
+
+    // Get mcq
+    Submission.get(
+      {
+        _id: req.params.submission_id,
+        user_id: req.user._id,
+        projection: {
+          timestamps: false
+        }
+      },
+      Utils.safeFn( function ( err, submission ) {
+        if ( err ) {
+          res.json( { err: err } );
+        } else {
+          res.json( submission );
+        }
+      } )
+    );
+
   } else {
     res.status( 400 ).json( { err: 'Bad Request: User must be authenticated to process request.' } );
   }
@@ -771,7 +849,20 @@ function apiSubmissionAdd( req, res ) {
 
   // Ensure user
   if ( req.user ) {
-    res.json( { err: 'Not implemented.' } );
+
+    // Enforce some invariants
+    req.body.user_id = req.user._id;
+    req.body.mcq_id = req.params.mcq_id;
+
+    // Add submission
+    Submission.add( req.body, Utils.safeFn( function ( err, submission ) {
+      if ( err ) {
+        res.json( { err: err } );
+      } else {
+        res.json( submission );
+      }
+    } ) );
+
   } else {
     res.status( 400 ).json( { err: 'Bad Request: User must be authenticated to process request.' } );
   }
@@ -785,63 +876,74 @@ function apiSubmissionAdd( req, res ) {
  * @param {object} res - res
  */
 function apiMCQGrades( req, res ) {
+
   // Ensure user
   if ( req.user ) {
-    Submission.list( { mcqId: req.params.mcq_id },
-      function ( err, submissions ) {
-        if ( err ) {
-          res.json( { err: err } );
-        } else {
-          /**
-           * Replaces student ids with user objects in submissions.
-           *
-           * @param {Array.<Object>} submissions - list of Submission objects
-           * @param {function()} done - callback
-           */
-          var gradesData = {};
-          var processSubmissions = function ( submissions, done ) {
 
-            // Loop through courses
-            (function nextSubmission( i, n ) {
-              if ( i < n ) {
+    // Enforce some invariants
+    req.body.user_id = req.user._id;
+    req.body.mcq_id = req.params.mcq_id;
 
-                var submission = submissions[ i ];
+    Submission.list( req.body, function ( err, submissions ) {
+      if ( err ) {
+        res.json( { err: err } );
+      } else {
 
-                if ( submission.studentId ) {
+        var gradesData = {};
 
-                  User.get(
-                    {
-                      _id: submission.studentId,
-                      projection: {
-                        timestamps: false
-                      }
-                    },
-                    Utils.safeFn( function ( err, user ) {
-                      //submission.studentId = user || {};
-                      gradesData[ user.name ] = submission.score
-                    } )
-                  )
-                } else {
-                  nextSubmission( i + 1, n );
-                }
+        /**
+         * Replaces student ids with user objects in submissions.
+         *
+         * @param {Array.<Object>} submissions - list of Submission objects
+         * @param {function()} done - callback
+         */
+        var processSubmissions = function ( submissions, done ) {
+
+          // Loop through courses
+          (function nextSubmission( i, n ) {
+            if ( i < n ) {
+
+              var submission = submissions[ i ];
+
+              if ( submission.user_id ) {
+
+                User.get(
+                  {
+                    _id: submission.user_id,
+                    projection: {
+                      timestamps: false
+                    }
+                  },
+                  Utils.safeFn( function ( err, user ) {
+                    gradesData[ user.name ] = submission.score;
+                  } )
+                );
 
               } else {
-                done();
+                nextSubmission( i + 1, n );
               }
-            })( 0, submissions.length );
 
-          };
+            } else {
+              done();
+            }
+          })( 0, submissions.length );
 
-          processSubmissions( submissions, function () {
-            // Return results to client
-            res.json( {
-              grades: gradesData
-            } );
+        };
+
+        processSubmissions( submissions, function () {
+
+          // Return results to client
+          res.json( {
+            grades: gradesData
           } );
-        }
+
+        } );
+
       }
-    )
+    } );
+
   } else {
     res.status( 400 ).json( { err: 'Bad Request: User must be authenticated to process request.' } );
   }
+
 }

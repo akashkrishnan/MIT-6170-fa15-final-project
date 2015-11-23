@@ -6,11 +6,7 @@
 
 var Config = require( '../config.js' );
 var Utils = require( './utils.js' );
-var User = require( './user.js' );
-var Course = require( './course.js' );
-var Minilesson = require( './minilesson.js' );
-var Page = require( './page.js' );
-var MCQ = require( './mcq.js' );
+var Mcq = require( './mcq.js' );
 var mongojs = require( 'mongojs' );
 
 var db = mongojs( Config.services.db.mongodb.uri, [ 'submissions' ] );
@@ -26,54 +22,104 @@ module.exports = {
 };
 
 /**
- * @callback listCallback
+ * @callback listSubmissionsCallback
  * @param {Error} err - Error object
- * @param {Array.<object>} submissions - list of Submission objects
- * @param {number} count - total number of Submission objects
+ * @param {Array.<object>} submissions - list of Submission objects in the current page
+ * @param {number} count - total number of Submission objects across all pages
  */
 
 /**
  * Gets a list of Submission objects.
  *
  * @param {object} data - data
- * @param {string} [data.studentId] - User._id
- * @param {string} [data.courseId] - Course._id
- * @param {string} [data.minilessonId] - Minilesson._id
- * @param {string} [data.pageId] - Page._id
- * @param {string} [data.mcqId] - MCQ._id
- * @param {listCallback} done - callback
+ * @param {string} data.user_id - User._id
+ * @param {string} data.mcq_id - Mcq._id
+ * @param {object} [data.projection] - projection
+ * @param {boolean} [data.projection.timestamps] -
+ * @param {number} [data.offset=0] - offset of first Mcq object in the page
+ * @param {number} [data.limit=0] - number of Mcq objects in a page
+ * @param {listSubmissionsCallback} done - callback
  */
 function list( data, done ) {
   try {
 
-    var criteria = Utils.validateObject( data, {
-      studentId: { type: 'string' },
-      courseId: { type: 'string' },
-      minilessonId: { type: 'string' },
-      pageId: { type: 'string' },
-      mcqId: { type: 'string' }
+    var userCriteria = Utils.validateObject( data, {
+      user_id: { type: 'string', required: true }
     } );
 
-    // Ensure at least one parameter is available
-    if ( 'courseId' in criteria ||
-         'sectionNum' in criteria ||
-         'minilessonId' in criteria ||
-         'pageObjId' in criteria ||
-         'mcqId' in criteria ||
-         'studentId' in criteria ) {
+    var listCriteria = Utils.validateObject( data, {
+      mcq_id: { type: 'string', required: true }
+    } );
 
-      // Get Submission objects from database
-      db.submissions.find( criteria, function ( err, submissions ) {
+    var projection = Utils.validateObject( data, {
+      projection: {
+        type: {
+          timestamps: { type: 'boolean' }
+        },
+        filter: 'projection',
+        default: {}
+      }
+    } ).projection;
+
+    var sort = Utils.validateObject( data, {
+      sort: {
+        type: {},
+        default: { 'timestamps.created': 1 }
+      }
+    } ).sort;
+
+    var find = function ( query, projection ) {
+
+      // Get from database
+      db.submissions.count( query, function ( err, count ) {
         if ( err ) {
           done( err, [], 0 );
         } else {
-          done( null, submissions, submissions.length );
+          db.submission
+            .find( query, projection )
+            .sort( sort )
+            .skip( data.offset || 0 )
+            .limit( data.limit || 0, function ( err, submissions ) {
+              if ( err ) {
+                done( err, [], 0 );
+              } else {
+
+                // Return list of submissions
+                done( null, submissions, count );
+
+              }
+            } );
         }
       } );
 
-    } else {
-      done( new Error( 'Invalid parameters.' ), [], 0 );
-    }
+    };
+
+    // Ensure user is associated with the mcq
+    Mcq.get(
+      {
+        _id: listCriteria.mcq_id,
+        user_id: userCriteria.user_id,
+        projection: {
+          timestamps: false
+        }
+      },
+      function ( err, course ) {
+        if ( err ) {
+          done( err, [], 0 );
+        } else if ( course.teaching ) {
+
+          // Teachers get a list of student submissions
+          find( listCriteria, projection );
+
+        } else {
+
+          // Students only get their submissions
+          listCriteria.user_id = userCriteria.user_id;
+          find( listCriteria, projection );
+
+        }
+      }
+    );
 
   } catch ( err ) {
     done( err, [], 0 );
@@ -81,176 +127,164 @@ function list( data, done ) {
 }
 
 /**
- * @callback getCallback
+ * @callback getSubmissionCallback
  * @param {Error} err - Error object
  * @param {object} submission - Submission object
+ * @param {object} course - Course object if a valid user_id was provided
  */
 
 /**
  * Gets a Submission object.
  *
  * @param {object} data - data
- * @param {*} [data._id] - Submission._id
- * @param {string} [data.courseId] - Course._id
- * @param {number} [data.sectionNum] - section number in course
- * @param {string} [data.minilessonId] - Minilesson._id
- * @param {string} [data.pageObjId] - PageObj._id
- * @param {string} [data.studentId] - User._id
- * @param {getCallback} done - callback
+ * @param {string} data._id - Submission._id
+ * @param {string} [data.user_id] - User._id
+ * @param {object} [data.projection] - projection
+ * @param {boolean} [data.projection.timestamps] -
+ * @param {getSubmissionCallback} done - callback
  */
 function get( data, done ) {
   try {
 
     var criteria = Utils.validateObject( data, {
-      _id: { filter: 'MongoId' },
-      courseId: { type: 'string' },
-      sectionNum: { type: 'number' },
-      minilessonId: { type: 'string' },
-      pageObjId: { type: 'string' },
-      studentId: { type: 'string' }
+      _id: { filter: 'MongoId', required: true },
+      user_id: { type: 'string' }
     } );
 
-    // Ensure at least one parameter is available
-    if ( criteria._id ||
-         'courseId' in criteria ||
-         'sectionNum' in criteria ||
-         'minilessonId' in criteria ||
-         'pageObjId' in criteria ||
-         'studentId' in criteria ) {
+    var projection = Utils.validateObject( data, {
+      projection: {
+        type: {
+          timestamps: { type: 'boolean' }
+        },
+        filter: 'projection',
+        default: {}
+      }
+    } ).projection;
 
-      // Get Submission object from database
-      db.submissions.findOne( criteria, function ( err, submission ) {
+    var findOne = function ( query, projection, done ) {
+      db.submissions.findOne( query, projection, function ( err, mcq ) {
         if ( err ) {
           done( err, null );
-        } else if ( submission ) {
-          done( null, submission );
+        } else if ( mcq ) {
+          done( null, mcq );
         } else {
           done( new Error( 'Submission not found.' ), null );
         }
       } );
+    };
 
-    } else {
-      done( new Error( 'Invalid parameters.' ), null );
-    }
+    // Ensure valid submission
+    findOne( { _id: criteria._id }, projection, function ( err, submission ) {
+      if ( err ) {
+        done( err, null, null );
+      } else if ( criteria.user_id ) {
+
+        // We want to figure out if the user_id is a teacher
+        Mcq.get(
+          {
+            _id: submission.mcq_id,
+            user_id: criteria.user_id,
+            projection: {
+              timestamps: false
+            }
+          },
+          function ( err, mcq, course ) {
+            if ( err ) {
+              done( err, null, null );
+            } else if ( course.teaching ) {
+
+              // Teachers can see all submissions
+              done( null, submission, course );
+
+            } else if ( submission.user_id === criteria.user_id ) {
+
+              // User is a student, so we make sure the user_id matches
+              done( null, submission, course );
+
+            } else {
+              done( new Error( 'Submission not found.' ), null, null );
+            }
+          }
+        );
+
+      } else {
+        done( null, submission, null );
+      }
+    } );
 
   } catch ( err ) {
-    done( err, null );
+    done( err, null, null );
   }
 }
 
 /**
- * @callback addCallback
+ * @callback addSubmissionCallback
  * @param {Error} err - Error object
- * @param {object} submission - newly created Submission object
+ * @param {object} submission - Submission object
  */
 
 /**
- * Adds a Submission.
+ * Adds a submission.
  *
  * @param {object} data - data
- * @param {string} data.courseId - Course._id
- * @param {number} data.sectionNum - section number in course
- * @param {string} data.minilessonId - Minilesson._id
- * @param {string} data.pageObjId - PageObj._id
- * @param {string} data.studentId - User._id
- * @param {number} data.answerIdx - the student's answer as an index of the answer choices
- * @param {addCallback} done - callback
+ * @param {string} data.user_id - User._id
+ * @param {string} data.mcq_id - Mcq._id
+ * @param {string} data.answer - answer
+ * @param {addSubmissionCallback} done - callback
  */
 function add( data, done ) {
   try {
 
     var criteria = Utils.validateObject( data, {
-      courseId: { type: 'string', required: true },
-      sectionNum: { type: 'number', required: true },
-      minilessonId: { type: 'string', required: true },
-      pageObjId: { type: 'string', required: true },
-      studentId: { type: 'string', required: true },
-      answerIdx: { type: 'number', required: true }
+      user_id: { type: 'string', required: true },
+      mcq_id: { type: 'string', required: true }
     } );
 
-    // Ensure there is no previous submission. err is truthy if a submission does not exist.
-    get( criteria, function ( err ) {
-      if ( err ) {
+    var insertData = Utils.validateObject( data, {
+      user_id: { type: 'string', required: true },
+      mcq_id: { type: 'string', required: true },
+      answer: { type: 'string', required: true }
+    } );
 
-        // Ensure valid user
-        User.get( { _id: criteria.studentId }, function ( err ) {
-          if ( err ) {
-            done( err, null );
-          } else {
+    // Ensure user is associated with mcq
+    Mcq.get(
+      {
+        _id: criteria.mcq_id,
+        user_id: criteria.user_id,
+        projection: {
+          timestamps: false
+        }
+      },
+      function ( err, mcq, course ) {
+        if ( err ) {
+          done( err, null );
+        } else if ( mcq.answers.indexOf( insertData.answer ) === -1 ) {
 
-            // Ensure valid pageObj
-            PageObj.get( { _id: criteria.pageObjId, type: 'MCQ' }, function ( err, pageObj ) {
-              if ( err ) {
-                done( err, null );
-              } else {
+        } else if ( course.teaching ) {
 
-                // Ensure valid minilesson
-                Minilesson.get( { _id: criteria.minilessonId }, function ( err ) {
-                  if ( err ) {
-                    done( err, null );
-                  } else {
+          // Teachers cannot answers mcqs associated with the courses they teach
+          done( new Error( 'Only students can answer an mcq.' ), null );
 
-                    // Ensure user is a student in the course section
-                    Course.get(
-                      {
-                        _id: criteria.courseId,
-                        student: {
-                          userId: criteria.studentId,
-                          sectionNum: criteria.sectionNum
-                        }
-                      },
-                      function ( err ) {
-                        if ( err ) {
-                          done( err, null );
-                        } else {
+        } else {
 
-                          // NOTE: WE DO NOT CHECK IF THE MINILESSON IS ASSOCIATED WITH THE COURSE
-                          // NOTE: WE DO NOT CHECK IF THE PAGEOBJ IS ASSOCIATED WITH THE COURSE
+          insertData.score = criteria.answeer === mcq.answer ? 1 : 0;
+          insertData.timestamps = { created: new Date() };
 
-                          // Compute score based on correctness (and possibly weight in the future)
-                          var score = criteria.answerIdx === pageObj.answerIdx;
+          // Insert into database
+          db.submissions.insert( insertData, function ( err, submission ) {
+            if ( err ) {
+              done( err, null );
+            } else {
 
-                          // Insert submission into database
-                          db.submissions.insert(
-                            {
-                              'courseId': criteria.courseId,
-                              'sectionNum': criteria.sectionNum,
-                              'minilessonId': criteria.minilessonId,
-                              'pageObjId': criteria.pageObjId,
-                              'studentId': criteria.studentId,
-                              'answerIdx': criteria.answerIdx,
-                              'score': score,
-                              'timestamps.created': new Date()
-                            },
-                            function ( err, submission ) {
-                              if ( err ) {
-                                done( err, null );
-                              } else {
+              // Get the new submission object the proper way
+              get( { _id: submission._id }, done );
 
-                                // Get the new Submission object the proper way to maintain consistency
-                                get( { _id: submission._id }, done );
+            }
+          } );
 
-                              }
-                            }
-                          );
-
-                        }
-                      }
-                    );
-
-                  }
-                } );
-
-              }
-            } );
-
-          }
-        } );
-
-      } else {
-        done( new Error( 'Submission already exists. Only one submission is permitted.' ), null );
+        }
       }
-    } );
+    );
 
   } catch ( err ) {
     done( err, null );
