@@ -392,6 +392,28 @@ var Flipper = function () {
           done( new Error( 'A mcq ID is required to add a submission.' ) );
         }
       }
+    },
+
+    get: function ( data, done ) {
+      // TODO : make sure this is calling the right ajax request
+      if ( data ) {
+        if ( data.mcq_id && data.mcq_id.trim() ) {
+          ajax( 'GET', '/api/mcqs/' + data.mcq_id.trim() + '/grades', function ( data ) {
+            console.log(data);
+            if ( data ) {
+              if ( data.err ) {
+                done( data.err, null );
+              } else {
+                done( null, data );
+              }
+            } else {
+              done( new Error( 'Unable to add submission. Invalid server response.' ), null );
+            }
+          } );
+        } else {
+          done( new Error( 'A mcq ID is required to add a submission.' ) );
+        }
+      }
     }
 
   };
