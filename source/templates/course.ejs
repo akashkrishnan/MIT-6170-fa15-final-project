@@ -237,9 +237,12 @@
               <div choices>
 
                 <% mcq.answers.forEach( function ( answer ) { %>
-                <div choice>
+                <div choice layout-horizontal>
+
                   <input class="submit-radio-answer" type="radio" name="answer-options" value="<%= answer %>">
-                  <%= answer %>
+
+                  <div flex><%= answer %></div>
+
                 </div>
                 <% } ); %>
 

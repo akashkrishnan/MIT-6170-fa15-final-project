@@ -156,7 +156,7 @@ var Flipper = function () {
 
     removePendingStudent: function ( data, done ) {
       if ( data ) {
-        if ( data.course_id && data.course_id.trim() && data.student_id && data.student_id.trim()) {
+        if ( data.course_id && data.course_id.trim() && data.student_id && data.student_id.trim() ) {
           ajax( 'POST', '/api/courses/' + data.course_id.trim() + '/decline', data, function ( data ) {
             if ( data ) {
               if ( data.err ) {
@@ -169,7 +169,7 @@ var Flipper = function () {
             }
           } );
         } else {
-          done( new Error( 'A course ID & student ID are required to decline a student.') );
+          done( new Error( 'A course ID & student ID are required to decline a student.' ) );
         }
       }
     },
@@ -429,7 +429,7 @@ var Flipper = function () {
             }
           } );
         } else {
-          done( new Error( 'A mcq ID is required to add a submission.' ) );
+          done( new Error( 'An mcq ID is required to add a submission.' ) );
         }
       }
     },
@@ -438,8 +438,8 @@ var Flipper = function () {
       // TODO : make sure this is calling the right ajax request
       if ( data ) {
         if ( data.mcq_id && data.mcq_id.trim() ) {
-          ajax( 'GET', '/api/mcqs/' + data.mcq_id.trim() + '/grades',data, function ( data ) {
-            console.log(data);
+          ajax( 'GET', '/api/mcqs/' + data.mcq_id.trim() + '/grades', data, function ( data ) {
+            console.log( data );
             if ( data ) {
               if ( data.err ) {
                 done( data.err, null );
@@ -451,7 +451,7 @@ var Flipper = function () {
             }
           } );
         } else {
-          done( new Error( 'A mcq ID is required to add a submission.' ) );
+          done( new Error( 'An mcq ID is required to get an mcq.' ) );
         }
       }
     }

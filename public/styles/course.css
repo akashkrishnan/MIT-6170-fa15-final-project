@@ -117,6 +117,7 @@
 [mcq-item] [question] {
   padding: 16px;
   border-bottom: 1px solid rgba(0, 0, 0, 0.1);
+  text-align: justify;
 }
 
 [mcq-item] [choices] {
@@ -129,6 +130,15 @@
 
 [mcq-item] [choices] [choice] {
   padding: 0 16px 16px;
+  text-align: justify;
+}
+
+[mcq-item] [choices] [choice] input[type="radio"] {
+  margin-right: 16px;
+}
+
+[mcq-item] [choices] [choice] div {
+  margin-right: 16px;
 }
 
 [mcq-item] [buttons] {
