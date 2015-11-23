@@ -78,7 +78,7 @@
             title: titleInput.value,
             resource: resourceInput.value || ''
           };
-
+          debugger;
           flipper.page.add( data, function ( err, page ) {
             if ( err ) {
               console.error( err );
@@ -144,7 +144,7 @@
                 answerIndex = i; 
             }
         }
-debugger
+
         var answerObjs = [ a, b, c, d, e ];
         answerObjs.forEach( function ( choice ) {
           if (choice.value.length!==0) {
@@ -153,7 +153,6 @@ debugger
         } );
 
         var answer = answers[answerIndex];
-      debugger
         var data = {
           page_id: page_id,
           question: question.value,

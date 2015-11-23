@@ -145,7 +145,7 @@
             <a href="/courses/<%= course._id %>/minilessons/<%= minilesson._id %>/<%= _page._id %>"
                page-item no-select <%= page._id && _page._id.toString() === page._id.toString() ? 'active' : '' %>
                flex layout-horizontal layout-center-center>
-              Page <%= i + 1 %>
+               <%=_page.title%>
             </a>
 
             <% } ); %>
