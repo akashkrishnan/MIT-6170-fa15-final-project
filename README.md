@@ -96,3 +96,6 @@ Flipper
 7. login with teacher account2
 8. submit an answer to the mcq
 9. create classes/pages/minilessons in this account (user can be both a teacher and student)
+
+### Sample Account
+- username: `Anaconda` and password: `Anaconda1!`
