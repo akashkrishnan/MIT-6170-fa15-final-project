@@ -68,11 +68,15 @@ Flipper
 		GradeBook
 		Expanded analytics for teachers 
 		Finalizing and refining CSS and UI themes
-		CSRF mitigation
+		Security
+			XSS mitigation
+			HTML injection
+			CSRF mitigation
 		Verifying teachers
 		Editing/deleting minilessons, pages or questions 
 		Embedded videos
 		Setting resource after page creation
+		Proper unit test coverage
 
 ## Discussion about how to use MVP
 
