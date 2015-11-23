@@ -71,7 +71,8 @@ Flipper
 		CSRF mitigation
 		Verifying teachers
 		Editing/deleting minilessons, pages or questions 
-		Embedded videos 
+		Embedded videos
+		Setting resource after page creation
 
 ## Discussion about how to use MVP
 
