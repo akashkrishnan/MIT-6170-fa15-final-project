@@ -17,19 +17,19 @@
 
 [form] [text] {
   padding: 16px;
-  border-bottom: 1px solid rgba(0, 0, 0, 0.065);
+  border-bottom: 1px solid rgba(0, 0, 0, 0.1);
   text-align: justify;
 }
 
 [form] [inputs] {
-  border-bottom: 1px solid rgba(0, 0, 0, 0.065);
+  border-bottom: 1px solid rgba(0, 0, 0, 0.1);
 }
 
 [form] [inputs] [input] {
   margin: 16px 16px 0;
 }
 
-[form] [inputs] [input]:last-of-type {
+[form] [inputs] [input]:last-child {
   margin-bottom: 24px;
 }
 
@@ -46,6 +46,10 @@
   border-bottom: 1px solid black;
   outline: none;
   color: #212121;
+}
+
+[form] [inputs] input[type="radio"] {
+  margin-right: 10px;
 }
 
 [form] [buttons] [button] {
