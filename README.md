@@ -3,6 +3,16 @@ Flipper
 
 ## General
 
+### Supported Browsers
+- Google Chrome
+- Mozilla Firefox
+- Microsoft Edge (minor bugs)
+- Apple Safari
+- Opera
+
+### Incompatible Browsers
+- Internet Explorer
+
 ### Public Access
 - http://flipper.aakay.net
 
