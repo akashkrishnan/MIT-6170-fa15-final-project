@@ -145,7 +145,7 @@
             <a href="/courses/<%= course._id %>/minilessons/<%= minilesson._id %>/<%= _page._id %>"
                page-item no-select <%= page._id && _page._id.toString() === page._id.toString() ? 'active' : '' %>
                flex layout-horizontal layout-center-center>
-              Page <%= i + 1 %>
+               <%=_page.title%>
             </a>
 
             <% } ); %>
@@ -214,7 +214,7 @@
             <div content layout-horizontal layout-around-justified layout-wrap>
 
               <% mcqs.forEach( function ( mcq ) { %>
-              <div mcq-item flex layout-vertical>
+              <div mcq-item flex layout-vertical data-mcq-id="<%= mcq._id %>">
 
                 <div question><strong><%= mcq.question %></strong></div>
 
@@ -224,6 +224,10 @@
                   <%=answer %>
                 </div>
                 <% } ); %>
+
+                <% if (course.teaching) { %>
+                <a href="#" class="downloadGrades">Download Grades</a>
+                <% } %>
 
               </div>
               <% } ); %>
@@ -380,7 +384,7 @@
     <script src="/controllers/dropdownController.js"></script>
     <script src="/controllers/dialogController.js"></script>
     <script src="/controllers/courseController.js"></script>
-
+    <script src="/controllers/gradeController.js"></script>
   </body>
 
 </html>

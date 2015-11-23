@@ -45,7 +45,7 @@ module.exports = function ( app ) {
   app.get( '/api/mcqs/:mcq_id/submissions', apiSubmissionList );
   app.post( '/api/mcqs/:mcq_id/submissions', apiSubmissionAdd );
 
-  app.get('/api/mcqs/:mcq_id/grades', apiMCQGrades);
+  app.get( '/api/mcqs/:mcq_id/grades', apiMCQGrades );
 
   app.get( '/api/submissions/:submission_id', apiSubmissionGet );
 
@@ -781,11 +781,9 @@ function apiSubmissionAdd( req, res ) {
  * @param {object} res - res
  */
 function apiMCQGrades( req, res ) {
-
   // Ensure user
   if ( req.user ) {
-
-    Submission.list({ mcqId: req.body.mcqId },
+    Submission.list({ mcqId: req.params.mcq_id },
         function(err, submissions){
           if ( err ) {
             res.json( { err: err } );
@@ -796,6 +794,7 @@ function apiMCQGrades( req, res ) {
              * @param {Array.<Object>} submissions - list of Submission objects
              * @param {function()} done - callback
              */
+            var gradesData = {};
             var processSubmissions = function ( submissions, done ) {
 
               // Loop through courses
@@ -814,7 +813,8 @@ function apiMCQGrades( req, res ) {
                           }
                         },
                         Utils.safeFn( function ( err, user ) {
-                          submission.studentId = user || {};
+                          //submission.studentId = user || {};
+                          gradesData[user.name] = submission.score
                         })
                     )
                   } else {
@@ -831,7 +831,7 @@ function apiMCQGrades( req, res ) {
             processSubmissions( submissions, function () {
               // Return results to client
               res.json( {
-                submissions: submissions,
+                grades: gradesData
               } );
             } );
           }
