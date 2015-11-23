@@ -14,6 +14,7 @@
   var dropdowns = document.querySelectorAll( '[dropdown]' );
   for ( i = 0, n = dropdowns.length; i < n; i++ ) {
     dropdowns[ i ].style.display = 'none';
+    dropdowns[ i ].style.visibility = 'visible';
   }
 
   // Register all triggers that show the specified dialog when clicked

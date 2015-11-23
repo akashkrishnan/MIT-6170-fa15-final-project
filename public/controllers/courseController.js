@@ -134,9 +134,7 @@
         var d = document.querySelector( '#mcq-add-dialog [choiceD-input]' );
         var e = document.querySelector( '#mcq-add-dialog [choiceE-input]' );
 
-        var radio_answer = document.getElementsByClassName( "create-radio-answer" );
-
-        console.log( radio_answer[ 0 ] );
+        var radio_answer = document.querySelectorAll( '.create-radio-answer' );
 
         var answerIndex;
         for ( var i = 0; i < radio_answer.length; i++ ) {

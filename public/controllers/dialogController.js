@@ -5,7 +5,7 @@
 
 'use strict';
 
-( function () {
+(function () {
 
   var i;
   var n;
@@ -14,6 +14,7 @@
   var dialogs = document.querySelectorAll( '[dialog]' );
   for ( i = 0, n = dialogs.length; i < n; i++ ) {
     dialogs[ i ].style.display = 'none';
+    dialogs[ i ].style.visibility = 'visible';
   }
 
   // Register all triggers that show the specified dialog when clicked
@@ -66,4 +67,4 @@
     closeTriggers[ i ].addEventListener( 'click', closeTriggerEventHandler( closeTriggers[ i ] ), false );
   }
 
-} )();
+})();
