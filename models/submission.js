@@ -75,7 +75,7 @@ function list( data, done ) {
         if ( err ) {
           done( err, [], 0 );
         } else {
-          db.submission
+          db.submissions
             .find( query, projection )
             .sort( sort )
             .skip( data.offset || 0 )

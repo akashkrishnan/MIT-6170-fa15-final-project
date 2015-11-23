@@ -743,8 +743,8 @@ function apiSubmissionList( req, res ) {
     req.body.mcq_id = req.params.mcq_id;
     req.body.projection = { timestamps: false };
 
-    // Get list of minilessons
-    Mcq.list( req.body, Utils.safeFn( function ( err, submissions ) {
+    // Get list of submissions
+    Submission.list( req.body, Utils.safeFn( function ( err, submissions ) {
       if ( err ) {
         res.json( { err: err } );
       } else {
