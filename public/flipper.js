@@ -384,6 +384,26 @@ var Flipper = function () {
       }
     },
 
+    grades: function ( data, done ) {
+      if ( data ) {
+        if ( data.mcq_id && data.mcq_id.trim() ) {
+          ajax( 'GET', '/api/mcqs/' + data.mcq_id.trim() + '/grades', data, function ( data ) {
+            if ( data ) {
+              if ( data.err ) {
+                done( data.err, null );
+              } else {
+                done( null, data );
+              }
+            } else {
+              done( new Error( 'Unable to get mcq grades. Invalid server response.' ), null );
+            }
+          } );
+        } else {
+          done( new Error( 'An mcq ID is required to get mcq grades.' ) );
+        }
+      }
+    },
+
     add: function ( data, done ) {
       if ( data ) {
         if ( data.page_id && data.page_id.trim() ) {

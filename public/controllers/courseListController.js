@@ -5,7 +5,7 @@
 
 'use strict';
 
-(function () {
+( function () {
 
   var courseAddDialog = document.querySelector( '#course-add-dialog' );
   if ( courseAddDialog ) {
@@ -104,4 +104,4 @@
     console.error( 'Missing #course-join-dialog.' );
   }
 
-})();
+} )();

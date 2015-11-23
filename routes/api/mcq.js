@@ -181,7 +181,7 @@ function apiMcqGrades( req, res ) {
         res.json( { err: err } );
       } else {
 
-        var gradesData = {};
+        var grades = {};
 
         /**
          * Replaces student ids with user objects in submissions.
@@ -192,7 +192,7 @@ function apiMcqGrades( req, res ) {
         var processSubmissions = function ( submissions, done ) {
 
           // Loop through courses
-          ( function nextSubmission( i, n ) {
+          (function nextSubmission( i, n ) {
             if ( i < n ) {
 
               var submission = submissions[ i ];
@@ -207,7 +207,7 @@ function apiMcqGrades( req, res ) {
                     }
                   },
                   Utils.safeFn( function ( err, user ) {
-                    gradesData[ user.name ] = submission.score;
+                    grades[ user.name ] = submission.score;
                     nextSubmission( i + 1, n );
                   } )
                 );
@@ -219,16 +219,14 @@ function apiMcqGrades( req, res ) {
             } else {
               done();
             }
-          } )( 0, submissions.length );
+          })( 0, submissions.length );
 
         };
 
         processSubmissions( submissions, function () {
 
           // Return results to client
-          res.json( {
-            grades: gradesData
-          } );
+          res.json( grades );
 
         } );
 
