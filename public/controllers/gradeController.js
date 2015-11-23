@@ -23,7 +23,7 @@
                 var fileName = 'export.csv';
                 gradesCSV = 'data:text/csv;charset=utf-8,' + gradesCSV;
 
-                data = encodeURI(gradesCSV);
+                var data = encodeURI(gradesCSV);
 
                 var link = document.createElement('a');
                 link.setAttribute('href', data);

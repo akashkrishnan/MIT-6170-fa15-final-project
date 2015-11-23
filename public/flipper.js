@@ -418,7 +418,7 @@ var Flipper = function () {
       // TODO : make sure this is calling the right ajax request
       if ( data ) {
         if ( data.mcq_id && data.mcq_id.trim() ) {
-          ajax( 'GET', '/api/mcqs/' + data.mcq_id.trim() + '/grades', function ( data ) {
+          ajax( 'GET', '/api/mcqs/' + data.mcq_id.trim() + '/grades',data, function ( data ) {
             console.log(data);
             if ( data ) {
               if ( data.err ) {
@@ -427,7 +427,7 @@ var Flipper = function () {
                 done( null, data );
               }
             } else {
-              done( new Error( 'Unable to add submission. Invalid server response.' ), null );
+              done( new Error( 'No submissions for this MCQ yet.' ), null );
             }
           } );
         } else {
