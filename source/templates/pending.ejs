@@ -70,18 +70,26 @@
           teacherCourses.forEach( function( course ) {
           %>
 
+
             <div subheader no-select layout-horizontal layout-center>
-            <div title> <%= course.courseName %> </div>
+            <div title> <strong> <%= course.name %> </strong> </div>
             <div flex></div>
           	</div>  
             <%
             course.pendingStudents.forEach( function ( student ) {
             %>
-            <div course-item >
-            <span> student name (replace me) </span>
 
-            <div buttons layout-vertical layout-end>
-              <a button small blue>Approve</a>
+
+            <div course-item layout-horizontal layout-center>
+            	<div layout-vertical>
+            		<span> <%= student.name %> </span>
+            	</div>
+            	<div flex></div>
+
+
+            <div buttons layout-horizontal layout-end>
+              <a button small blue approve student-id="<%= student._id %>" course-id="<%= course._id %>">Approve</a> 
+              <a button small red decline student-id="<%= student._id %>" course-id="<%= course._id %>">Decline</a>
             </div>
 
             </div>
@@ -105,8 +113,7 @@
     <script src="/flipper.js"></script>
     <script src="/global.js"></script>
     <script src="/controllers/dropdownController.js"></script>
-    <script src="/controllers/dialogController.js"></script>
-    <script src="/controllers/courseListController.js"></script>
+    <script src="/controllers/pendingController.js"></script>
 
   </body>
 

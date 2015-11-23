@@ -28,6 +28,7 @@ module.exports = function ( app ) {
 
   app.get( '/api/courses/:course_id', apiCourseGet );
   app.post( '/api/courses/:course_id/join', apiCourseJoin );
+  app.post( '/api/courses/:course_id/approve', apiCourseApprove );
   app.get( '/api/courses/:course_id/minilessons', apiMinilessonList );
   app.post( '/api/courses/:course_id/minilessons', apiMinilessonAdd );
 
@@ -377,6 +378,36 @@ function apiCourseJoin( req, res ) {
     res.status( 400 ).json( { err: 'Bad Request: User must be authenticated to process request.' } );
   }
 
+}
+
+
+/**
+ * Called to when a user wants to approve a student to a course.
+ *
+ * @param {object} req - req
+ * @param {object} res - res
+ */
+function apiCourseApprove( req, res ) {
+  console.log("1");
+  console.log(req.body);
+  // Ensure user
+  if ( req.user ) {
+    var data = {};
+    data._id = req.body.course_id;
+    data.student_id = req.body.student_id;
+    data.teacher_id = req.user._id;
+
+    console.log(data);
+    Course.addStudentToCourse( data, Utils.safeFn( function (err, course) {
+      if ( err ) {
+        res.json( { err: err } );
+      } else {
+        res.json( course );        
+      }
+    } ) );
+  } else {
+    res.status( 400 ).json( { err: 'Bad Request: User must be authenticated to process request.' } );
+  }
 }
 
 

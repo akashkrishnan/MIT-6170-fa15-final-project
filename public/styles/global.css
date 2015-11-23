@@ -125,6 +125,7 @@ body > [content] > [container] {
   padding-left: 16px;
   padding-right: 16px;
   font-size: 12px;
+  display: inline-block;
 }
 
 [button][red] {
