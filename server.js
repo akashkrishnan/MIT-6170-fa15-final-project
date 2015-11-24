@@ -16,6 +16,7 @@ var compression = require( 'compression' );
 var cookieParser = require( 'cookie-parser' );
 var bodyParser = require( 'body-parser' );
 var path = require( 'path' );
+var build = require( './build.js' );
 
 // Use domain to catch runtime errors and prevent termination of application
 
@@ -39,7 +40,10 @@ d.run( function () {
   app.use( cookieParser() );
   app.use( bodyParser.json() );
   app.use( express.static( path.join( __dirname, '/public' ) ) );
-  app.use( express.static( path.join( __dirname, '/source/bower_components' ) ) );
+  if ( !Config.build ) {
+    app.use( express.static( path.join( __dirname, '/source' ) ) );
+    app.use( express.static( path.join( __dirname, '/source' ) ) );
+  }
   app.use( session( Config.web.cookie.name ) );
 
   console.log( 'READY: Express' );
@@ -49,9 +53,17 @@ d.run( function () {
 
   console.log( 'READY: Request Handlers' );
 
-  // Start the server
-  server.listen( Config.web.port, function () {
-    console.log( 'Listening on port ' + Config.web.port + '.' );
+  build( function ( err ) {
+
+    if ( err ) {
+      Log.error( err );
+    }
+
+    // Start the server
+    server.listen( Config.web.port, function () {
+      console.log( 'Listening on port ' + Config.web.port + '.' );
+    } );
+
   } );
 
 } );

@@ -15,6 +15,7 @@
   "private": true,
   "config": {
     "verbose": true,
+    "build": true,
     "branch": "master",
     "host": "localhost",
     "port": 80,
@@ -33,15 +34,18 @@
   "dependencies": {
     "body-parser": "^1.14.1",
     "bower": "^1.6.5",
+    "closurecompiler": "^1.5.2",
     "colors": "^1.1.2",
     "compression": "^1.6.0",
     "cookie-parser": "^1.4.0",
+    "crisper": "^2.0.1",
     "ejs": "^2.3.4",
     "escape-html": "^1.0.3",
     "eslint": "^1.9.0",
     "eslint-config-google": "^0.3.0",
     "express": "^4.13.3",
     "mocha": "^2.3.4",
-    "mongojs": "^1.4.1"
+    "mongojs": "^1.4.1",
+    "vulcanize": "^1.14.0"
   }
 }

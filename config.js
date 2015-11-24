@@ -29,6 +29,7 @@ var v = function ( k, d ) {
 
 module.exports = {
   verbose: v( 'verbose', true ),
+  build: v( 'verbose', true ),
   web: {
     name: 'Flipper',
     version: '1.0.0',

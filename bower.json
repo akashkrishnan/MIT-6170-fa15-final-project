@@ -12,6 +12,7 @@
   "private": true,
   "dependencies": {
     "moment": "2.10.6",
+    "polymer": "Polymer/polymer#1.2.3",
     "toastr": "2.1.2"
   }
 }
