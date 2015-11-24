@@ -67,12 +67,12 @@ function vulcanize( done ) {
       done( null, html );
     }
   } );
-  
+
 }
 
 function crisp( html, done ) {
   console.log( 'Crisping HTML and JavaScript.' );
-  var index = crisper.split( html, '/index.js' );
+  var index = crisper( { source: html, jsFileName: '/index.js' } );
   fs.writeFile( 'public/index.html', index.html, 'utf-8', function ( err ) {
     if ( err ) {
       console.log( 'FAILED: Crisping' );
