@@ -11,13 +11,16 @@ var mongojs = require( 'mongojs' );
 
 var db = mongojs( Config.services.db.mongodb.uri, [ 'submissions' ] );
 
+// TODO: INDEXES
+
 module.exports = {
 
   /* ---------------EXTERNAL--------------- */
 
   list: list,
   get: get,
-  add: add
+  add: add,
+  remove: remove
 
 };
 
@@ -75,7 +78,7 @@ function list( data, done ) {
         if ( err ) {
           done( err, [], 0 );
         } else {
-          db.submission
+          db.submissions
             .find( query, projection )
             .sort( sort )
             .skip( data.offset || 0 )
@@ -103,7 +106,7 @@ function list( data, done ) {
           timestamps: false
         }
       },
-      function ( err, course ) {
+      function ( err, mcq, course ) {
         if ( err ) {
           done( err, [], 0 );
         } else if ( course.teaching ) {
@@ -267,7 +270,7 @@ function add( data, done ) {
             if ( err ) {
               done( err, null );
             } else if ( mcq.answers.indexOf( insertData.answer ) === -1 ) {
-
+              done( new Error( 'Provided answer is not a valid answer choice.' ), null );
             } else if ( course.teaching ) {
 
               // Teachers cannot answers mcqs associated with the courses they teach
@@ -296,6 +299,29 @@ function add( data, done ) {
 
       }
     } );
+
+  } catch ( err ) {
+    done( err, null );
+  }
+}
+
+/**
+ * @callback removeSubmissionCallback
+ * @param {Error} err - Error object
+ * @param {object} submission - Submission object before removal
+ */
+
+/**
+ * Removes an mcq from the database.
+ *
+ * @param {object} data - data
+ * @param {string} data._id - Submission._id
+ * @param {removeSubmissionCallback} done - callback
+ */
+function remove( data, done ) {
+  try {
+
+    done( new Error( 'Not implemented.' ), null );
 
   } catch ( err ) {
     done( err, null );

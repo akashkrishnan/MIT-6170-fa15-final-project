@@ -7,6 +7,8 @@ var mongojs = require( 'mongojs' );
 
 var db = mongojs( Config.services.db.mongodb.uri, [ 'mcqs' ] );
 
+// TODO: INDEXES
+
 module.exports = {
 
   list: list,
@@ -63,7 +65,7 @@ function list( data, done ) {
       }
     } ).sort;
 
-    var find = function ( query, projection ) {
+    var find = function ( query, projection, done ) {
 
       // Get from database
       db.mcqs.count( query, function ( err, count ) {
@@ -98,11 +100,50 @@ function list( data, done ) {
           timestamps: false
         }
       },
-      function ( err ) {
+      function ( err, page, course ) {
         if ( err ) {
           done( err, [], 0 );
         } else {
-          find( listCriteria, projection );
+
+          // Get mcqs
+          find( listCriteria, projection, function ( err, mcqs, count ) {
+            if ( err ) {
+              done( err, [], 0 );
+            } else if ( course.teaching ) {
+              done( null, mcqs, count );
+            } else {
+
+              // We need to check if student has answered the questions
+
+              var Submission = require( './submission.js' );
+
+              // Loop through mcqs
+              (function next( i, n ) {
+                if ( i < n ) {
+
+                  var mcq = mcqs[ i ];
+
+                  // Get submission associated with mcq and user_id
+                  // TODO: IMPL AND USE EXIST METHOD
+                  Submission.list(
+                    {
+                      user_id: userCriteria.user_id,
+                      mcq_id: mcq._id.toString()
+                    },
+                    function ( err, submissions, count ) {
+                      mcq.submitted = Boolean( !err && count );
+                      next( i + 1, n );
+                    }
+                  );
+
+                } else {
+                  done( null, mcqs, count );
+                }
+              })( 0, mcqs.length );
+
+            }
+          } );
+
         }
       }
     );
@@ -178,10 +219,7 @@ function get( data, done ) {
             if ( err ) {
               done( err, null, null );
             } else {
-
-              // Teachers can see all mcqs
               done( null, mcq, course );
-
             }
           }
         );
@@ -228,108 +266,76 @@ function add( data, done ) {
       answer: { type: 'string', required: true }
     } );
 
-    // TODO: ADD SOME VALIDATION TO ANSWERS AND CORRECTIDX
+    if ( insertData.answers instanceof Array ) {
 
-    // Ensure user is associated with mcq's page
-    Page.get(
-      {
-        _id: criteria.page_id,
-        user_id: criteria.user_id,
-        projection: {
-          timestamps: false
-        }
-      },
-      function ( err, page, course ) {
-        if ( err ) {
-          done( err, null );
-        } else if ( course.teaching ) {
+      // Make sure answer is a valid answer choice
+      if ( insertData.answers.indexOf( insertData.answer ) === -1 ) {
+        done( new Error( 'Provided answer is not a valid answer choice.' ), null );
+      } else {
 
-          // Only teachers can add pages
-          insertData.timestamps = { created: new Date() };
-
-          // Insert into database
-          db.mcqs.insert( insertData, function ( err, mcq ) {
+        // Ensure user is associated with mcq's page
+        Page.get(
+          {
+            _id: criteria.page_id,
+            user_id: criteria.user_id,
+            projection: {
+              timestamps: false
+            }
+          },
+          function ( err, page, course ) {
             if ( err ) {
               done( err, null );
+            } else if ( course.teaching ) {
+
+              // Only teachers can add pages
+              insertData.timestamps = { created: new Date() };
+
+              // Insert into database
+              db.mcqs.insert( insertData, function ( err, mcq ) {
+                if ( err ) {
+                  done( err, null );
+                } else {
+
+                  // Get the new mcq object the proper way
+                  get( { _id: mcq._id }, done );
+
+                }
+              } );
+
             } else {
-
-              // Get the new mcq object the proper way
-              get( { _id: mcq._id }, done );
-
+              done( new Error( 'Only teachers can add mcqs to pages.' ), null );
             }
-          } );
+          }
+        );
 
-        } else {
-          done( new Error( 'Only teachers can add mcqs to pages.' ), null );
-        }
       }
-    );
+
+    } else {
+      done( new Error( 'Expected array for property: answers.' ), null );
+    }
 
   } catch ( err ) {
     done( err, null );
   }
 }
 
-//Make sure MCQ are semi-well defined.
-function validateMCQ( question, answerChoicesList, correctChoiceIndex, done ) {
-  try {
-    if ( !question ) {
-      done( new Error( 'Missing Question' ) );
-    } else if ( !answerChoicesList ) {
-      done( new Error( 'Missing answer choices list.' ) );
-    } else if ( answerChoicesList.length === 0 ) {
-      done( new Error( 'Answer choices list is empty.' ) );
-    } else if ( correctChoiceIndex === null ) {
-      done( new Error( 'Missing correct choice index' ) );
-    } else if ( !(0 <= correctChoiceIndex) || !(correctChoiceIndex < answerChoicesList.length) ) {
-      done( new Error( 'Correct choice index out of range' ) );
-    } else if ( correctChoiceIndex % 1 !== 0 ) {
-      done( new Error( 'Correct choice index not an integer' ) );
-    } else {
-      done( null );
-    }
-  } catch ( err ) {
-    done( err );
-  }
-}
-
 /**
- * @callback removeCallback
+ * @callback removeMcqCallback
  * @param {Error} err - Error object
- * @param {object} mcq - removed MCQ object
+ * @param {object} mcq - Mcq object before removal
  */
 
 /**
- * Removes a mcq from the database.
+ * Removes an mcq from the database.
  *
- * @param {object} data -
- * @param {string} data._id - mcq._id
- * @param {removeCallback} done - callback
+ * @param {object} data - data
+ * @param {string} data._id - Mcq._id
+ * @param {removeMcqCallback} done - callback
  */
 function remove( data, done ) {
   try {
 
-    var criteria = Utils.validateObject( data, {
-      _id: { type: 'string', required: true }
-    } );
-
-    // Ensure valid mcq
-    get( criteria, function ( err, MCQ ) {
-      if ( err ) {
-        done( err, null );
-      } else {
-
-        // Remove from database
-        db.MCQs.remove( criteria, true, function ( err ) {
-          if ( err ) {
-            done( err, null );
-          } else {
-            done( null, MCQ );
-          }
-        } );
-
-      }
-    } );
+    done( new Error( 'Not implemented.' ), null );
 
   } catch ( err ) {
     done( err, null );

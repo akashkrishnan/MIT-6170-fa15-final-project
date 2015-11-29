@@ -5,7 +5,7 @@
 
 'use strict';
 
-(function () {
+( function () {
 
   var courseAddDialog = document.querySelector( '#course-add-dialog' );
   if ( courseAddDialog ) {
@@ -53,6 +53,8 @@
   } else {
     console.error( 'Missing #course-add-dialog.' );
   }
+
+  /* -------------------------------------------------------------------------------------------------------------- */
 
   var courseJoinDialog = document.querySelector( '#course-join-dialog' );
   if ( courseJoinDialog ) {
@@ -102,4 +104,4 @@
     console.error( 'Missing #course-join-dialog.' );
   }
 
-})();
+} )();

@@ -3,18 +3,17 @@
 var Config = require( '../config.js' );
 var Utils = require( './utils.js' );
 var mongojs = require( 'mongojs' );
-var User = require('./user');
-var PageObj = require('./pageObj');
-var Submission = require('./submission');
-var MiniLesson = require('./minilesson');
+var User = require( './user' );
+var Submission = require( './submission' );
+var MiniLesson = require( './minilesson' );
 
 var db = mongojs( Config.services.db.mongodb.uri, [ 'grades' ] );
 
 module.exports = {
 
-    get: get,
-    compute: compute,
-    list:list
+  get: get,
+  compute: compute,
+  list: list
 
 };
 
@@ -26,77 +25,77 @@ module.exports = {
  * @param {string} data.minilessonId - Grade.lessonId
  * @param {addCallback} done - callback
  */
-function compute(data, done) {
-	var criteria = Utils.validateObject( data, {
-      studentId: {
-        type: 'string',
-        required: true
-      },
-      minilessonId: {
-        type: 'string',
-        required: true
-      }
-    } );
+function compute( data, done ) {
+  var criteria = Utils.validateObject( data, {
+    studentId: {
+      type: 'string',
+      required: true
+    },
+    minilessonId: {
+      type: 'string',
+      required: true
+    }
+  } );
 
-    User.get({_id : criteria.studentId},function(error, user) {
-    	if(error) {
-    		done(error);
-    	}
-    	else {
-        try{
-      		MiniLesson.get({_id : criteria.minilessonId},function(error, minilesson) {
-  		    	if(error) {
-  		    		done(error);
-  		    	} else {
-  		    		//TODO: validate that student is in minilesson 
-  		    		submission.list(criteria, function(error, submissions) {
-  		    			if(error) {
-  		    				done(error);
-  		    			} else {
-  		    				if(submissions.length===0) {
-  		    					done(new Error("Cannot compute grade with num submissions = 0"));
-  		    				}
-  		    				else {
-  		    					var sum = 0; //# of correct for minilesson for student
-  			    				submissions.forEach(function(submission) {
-  			    					sum += submission.correct;
-  			    				})
+  User.get( { _id: criteria.studentId }, function ( error, user ) {
+    if ( error ) {
+      done( error );
+    }
+    else {
+      try {
+        MiniLesson.get( { _id: criteria.minilessonId }, function ( err, minilesson ) {
+          if ( err ) {
+            done( err, null );
+          } else {
+            //TODO: validate that student is in minilesson
+            submission.list( criteria, function ( error, submissions ) {
+              if ( error ) {
+                done( error );
+              } else {
+                if ( submissions.length === 0 ) {
+                  done( new Error( 'Cannot compute grade with num submissions = 0' ), null );
+                }
+                else {
+                  var sum = 0; //# of correct for minilesson for student
+                  submissions.forEach( function ( submission ) {
+                    sum += submission.correct;
+                  } );
 
-  			    				var grade = sum/submissions.length;
+                  var grade = sum / submissions.length;
 
-  			    				db.grade.insert(
-                        {
-                            studentId: criteria.studentId,
-                            minilessonId: criteria.minilessonId,
-                            grade: grade
-                            classId: criteria.minilessonId.classId
-                            //TODO: classID: 
-                        },
-                        function ( err, grade ) {
+                  db.grade.insert(
+                    {
+                      studentId: criteria.studentId,
+                      minilessonId: criteria.minilessonId,
+                      grade: grade,
+                      classId: criteria.minilessonId.classId
+                      //TODO: classID:
+                    },
+                    function ( err, grade ) {
 
-                            if ( err ) {
-                                done( err, null );
-                            } else {
-                                // Get the new grade object the proper way
-                                get( { _id: grade._id }, done );
+                      if ( err ) {
+                        done( err, null );
+                      } else {
+                        // Get the new grade object the proper way
+                        get( { _id: grade._id }, done );
 
-                            }
+                      }
 
-                        }
-                    );
-  		    				}
-  		    			}
-  		    		});
+                    }
+                  );
+                }
+              }
+            } );
 
 
-  		 
-  		    	}
-  		    });
-        
-    	} catch ( err ) {
+          }
+        } );
+
+      } catch ( err ) {
         done( err, null );
       }
-    })
+    }
+  } );
 }
 
 /**
@@ -113,35 +112,35 @@ function compute(data, done) {
  * @param {getCallback} done - callback
  */
 function get( data, done ) {
-    try {
+  try {
 
-        var criteria = Utils.validateObject( data, {
-            _id: { filter: 'MongoId' },
-        } );
+    var criteria = Utils.validateObject( data, {
+      _id: { filter: 'MongoId' }
+    } );
 
-        /**
-         * Called after grade is found in database.
-         *
-         * @param {object} criteria -
-         */
-        var getGrade = function ( criteria ) {
+    /**
+     * Called after grade is found in database.
+     *
+     * @param {object} criteria -
+     */
+    var getGrade = function ( criteria ) {
 
-            db.minilessons.findOne( criteria, function ( err, grade ) {
-                if ( err ) {
-                    done( err, null );
-                } else if ( grade ) {
-                    done( null, grade );
-                } else {
-                    done( new Error( 'Grade not found: ' + JSON.stringify( criteria ) ), null );
-                }
-            } );
+      db.minilessons.findOne( criteria, function ( err, grade ) {
+        if ( err ) {
+          done( err, null );
+        } else if ( grade ) {
+          done( null, grade );
+        } else {
+          done( new Error( 'Grade not found: ' + JSON.stringify( criteria ) ), null );
+        }
+      } );
 
-        };
-        getGrade(criteria);
+    };
+    getGrade( criteria );
 
-    } catch ( err ) {
-        done( err, null );
-    }
+  } catch ( err ) {
+    done( err, null );
+  }
 }
 
 /**
@@ -152,7 +151,7 @@ function get( data, done ) {
  */
 
 /**
- * Gets a list of Grade objects. 
+ * Gets a list of Grade objects.
  *
  * @param {object} data - data
  * @param {listCallback} done - callback

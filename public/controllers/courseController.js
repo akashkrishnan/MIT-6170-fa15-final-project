@@ -5,7 +5,7 @@
 
 'use strict';
 
-(function () {
+( function () {
 
   var minilessonAddDialog = document.querySelector( '#minilesson-add-dialog' );
   if ( minilessonAddDialog ) {
@@ -241,4 +241,4 @@
     console.error( 'Missing [mcq-item] [buttons] [submit].' );
   }
 
-})();
+} )();

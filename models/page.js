@@ -7,6 +7,8 @@ var mongojs = require( 'mongojs' );
 
 var db = mongojs( Config.services.db.mongodb.uri, [ 'pages' ] );
 
+// TODO: INDEXES
+
 module.exports = {
 
   list: list,
@@ -272,42 +274,22 @@ function add( data, done ) {
 }
 
 /**
- * @callback removeCallback
+ * @callback removePageCallback
  * @param {Error} err - Error object
- * @param {object} page - removed Page object
+ * @param {object} page - Page object before removal
  */
 
 /**
- * Removes a mcq from the database.
+ * Removes a page from the database.
  *
  * @param {object} data -
- * @param {string} data._id - page._id
- * @param {removeCallback} done - callback
+ * @param {*} data._id - Page._id
+ * @param {removePageCallback} done - callback
  */
 function remove( data, done ) {
   try {
 
-    var criteria = Utils.validateObject( data, {
-      _id: { type: 'string', required: true }
-    } );
-
-    // Ensure valid mcq
-    get( criteria, function ( err, page ) {
-      if ( err ) {
-        done( err, null );
-      } else {
-
-        // Remove from database
-        db.pages.remove( criteria, true, function ( err ) {
-          if ( err ) {
-            done( err, null );
-          } else {
-            done( null, page );
-          }
-        } );
-
-      }
-    } );
+    done( new Error( 'Not implemented.' ), null );
 
   } catch ( err ) {
     done( err, null );

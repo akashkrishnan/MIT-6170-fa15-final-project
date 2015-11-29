@@ -141,7 +141,7 @@
 
           <div page-list shadow elevation="1" layout-horizontal layout-end-justified>
 
-            <% pages.forEach( function( _page, i ) { %>
+            <% pages.forEach( function( _page ) { %>
 
             <a href="/courses/<%= course._id %>/minilessons/<%= minilesson._id %>/<%= _page._id %>"
                page-item no-select <%= page._id && _page._id.toString() === page._id.toString() ? 'active' : '' %>
@@ -252,6 +252,8 @@
                 <% if ( course.teaching ) { %>
                 <div button small blue download class="downloadGrades">Download Grades</div>
                 <div button small red disabled edit>Edit</div>
+                <% } else if ( mcq.submitted ) { %>
+                <div button small blue disabled>Submitted</div>
                 <% } else { %>
                 <div button small blue submit>Submit</div>
                 <% } %>
