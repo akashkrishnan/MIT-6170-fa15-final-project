@@ -164,7 +164,7 @@ function list( data, done ) {
  * Gets an Mcq object.
  *
  * @param {object} data - data
- * @param {string} data._id - Mcq._id
+ * @param {*} data._id - Mcq._id
  * @param {string} [data.user_id] - User._id
  * @param {object} [data.projection] - projection
  * @param {boolean} [data.projection.timestamps] -
@@ -329,13 +329,52 @@ function add( data, done ) {
  * Removes an mcq from the database.
  *
  * @param {object} data - data
- * @param {string} data._id - Mcq._id
+ * @param {*} data._id - Mcq._id
+ * @param {string} [data.user_id] - User._id of teacher
+ * @param {object} [data.projection] - projection
+ * @param {boolean} [data.projection.timestamps] -
  * @param {removeMcqCallback} done - callback
  */
 function remove( data, done ) {
   try {
 
-    done( new Error( 'Not implemented.' ), null );
+    var criteria = Utils.validateObject( data, {
+      _id: { filter: 'MongoId', required: true },
+      user_id: { type: 'string' }
+    } );
+
+    criteria.projection = Utils.validateObject( data, {
+      projection: {
+        type: {
+          timestamps: { type: 'boolean' }
+        },
+        filter: 'projection',
+        default: {}
+      }
+    } ).projection;
+
+    // Ensure valid mcq
+    get( criteria, function ( err, mcq, course ) {
+      if ( err ) {
+        done( err, null );
+      } else if ( course.teaching ) {
+
+        // Remove from database
+        db.mcqs.remove( { _id: mcq._id }, true, function ( err ) {
+          if ( err ) {
+            done( err, null );
+          } else {
+            done( null, mcq );
+          }
+        } );
+
+      } else {
+
+        // Students may not remove mcqs
+        done( new Error( 'Only a teacher of the course may remove its mcqs.' ), null );
+
+      }
+    } );
 
   } catch ( err ) {
     done( err, null );

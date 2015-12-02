@@ -317,12 +317,53 @@ function add( data, done ) {
  *
  * @param {object} data - data
  * @param {*} data._id - Minilesson._id
+ * @param {string} [data.user_id] - User._id of teacher
+ * @param {object} [data.projection] - projection
+ * @param {boolean} [data.projection.states] -
+ * @param {boolean} [data.projection.timestamps] -
  * @param {removeMinilessonCallback} done - callback
  */
 function remove( data, done ) {
   try {
 
-    done( new Error( 'Not implemented.' ), null );
+    var criteria = Utils.validateObject( data, {
+      _id: { filter: 'MongoId', required: true },
+      user_id: { type: 'string' }
+    } );
+
+    criteria.projection = Utils.validateObject( data, {
+      projection: {
+        type: {
+          states: { type: 'boolean' },
+          timestamps: { type: 'boolean' }
+        },
+        filter: 'projection',
+        default: {}
+      }
+    } ).projection;
+
+    // Ensure valid minilesson
+    get( criteria, function ( err, minilesson, course ) {
+      if ( err ) {
+        done( err, null );
+      } else if ( course.teaching ) {
+
+        // Remove from database
+        db.minilessons.remove( { _id: minilesson._id }, true, function ( err ) {
+          if ( err ) {
+            done( err, null );
+          } else {
+            done( null, minilesson );
+          }
+        } );
+
+      } else {
+
+        // Students may not remove minilessons
+        done( new Error( 'Only a teacher of the course may remove its minilessons.' ), null );
+
+      }
+    } );
 
   } catch ( err ) {
     done( err, null );
