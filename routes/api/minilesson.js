@@ -11,6 +11,7 @@ var Page = require( '../../models/page.js' );
 module.exports = function ( app ) {
 
   app.get( '/api/minilessons/:minilesson_id', apiMinilessonGet );
+  app.delete( '/api/minilessons/:minilesson_id', apiMinilessonRemove );
   app.get( '/api/minilessons/:minilesson_id/pages', apiPageList );
   app.post( '/api/minilessons/:minilesson_id/pages', apiPageAdd );
 
@@ -33,6 +34,42 @@ function apiMinilessonGet( req, res ) {
         _id: req.params.minilesson_id,
         user_id: req.user._id,
         projection: {
+          timestamps: false
+        }
+      },
+      Utils.safeFn( function ( err, minilesson ) {
+        if ( err ) {
+          res.json( { err: err } );
+        } else {
+          res.json( minilesson );
+        }
+      } )
+    );
+
+  } else {
+    res.status( 400 ).json( { err: 'Bad Request: User must be authenticated to process request.' } );
+  }
+
+}
+
+/**
+ * Called to remove the specified Minilesson object associated with the authenticated user.
+ *
+ * @param {object} req - req
+ * @param {object} res - res
+ */
+function apiMinilessonRemove( req, res ) {
+
+  // Ensure user
+  if ( req.user ) {
+
+    // Remove minilesson
+    Minilesson.remove(
+      {
+        _id: req.params.minilesson_id,
+        user_id: req.user._id,
+        projection: {
+          states: false,
           timestamps: false
         }
       },

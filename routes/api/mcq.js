@@ -12,6 +12,7 @@ var Submission = require( '../../models/submission.js' );
 module.exports = function ( app ) {
 
   app.get( '/api/mcqs/:mcq_id', apiMcqGet );
+  app.delete( '/api/mcqs/:mcq_id', apiMcqRemove );
   app.get( '/api/mcqs/:mcq_id/submissions', apiSubmissionList );
   app.post( '/api/mcqs/:mcq_id/submissions', apiSubmissionAdd );
   app.get( '/api/mcqs/:mcq_id/grades', apiMcqGrades );
@@ -31,6 +32,41 @@ function apiMcqGet( req, res ) {
 
     // Get mcq
     Mcq.get(
+      {
+        _id: req.params.mcq_id,
+        user_id: req.user._id,
+        projection: {
+          timestamps: false
+        }
+      },
+      Utils.safeFn( function ( err, mcq ) {
+        if ( err ) {
+          res.json( { err: err } );
+        } else {
+          res.json( mcq );
+        }
+      } )
+    );
+
+  } else {
+    res.status( 400 ).json( { err: 'Bad Request: User must be authenticated to process request.' } );
+  }
+
+}
+
+/**
+ * Called to remove the specified Mcq object associated with the authenticated user.
+ *
+ * @param {object} req - req
+ * @param {object} res - res
+ */
+function apiMcqRemove( req, res ) {
+
+  // Ensure user
+  if ( req.user ) {
+
+    // Remove mcq
+    Mcq.remove(
       {
         _id: req.params.mcq_id,
         user_id: req.user._id,
