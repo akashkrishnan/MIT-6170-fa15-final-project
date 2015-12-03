@@ -9,7 +9,7 @@ var Log = require( '../models/log.js' );
 module.exports = function ( app ) {
 
   require( './navigation.js' )( app );
-  require( './api.js' )( app );
+  require( './api' )( app );
 
   app.get( '*', otherwise );
 
