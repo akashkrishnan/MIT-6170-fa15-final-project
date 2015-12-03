@@ -5,7 +5,7 @@
 
 'use strict';
 
-( function () {
+(function () {
 
   var minilessonAddDialog = document.querySelector( '#minilesson-add-dialog' );
   if ( minilessonAddDialog ) {
@@ -135,12 +135,12 @@
 
         var radio_answer = document.querySelectorAll( '.create-radio-answer' );
 
-        var answerIndex;
-        for ( var i = 0; i < radio_answer.length; i++ ) {
-          if ( radio_answer[ i ].checked ) {
-            answerIndex = i;
+        var answer;
+        radio_answer.forEach( function ( rb, i ) {
+          if ( rb.checked ) {
+            answer = answers[ i ];
           }
-        }
+        } );
 
         var answerObjs = [ a, b, c, d, e ];
         answerObjs.forEach( function ( choice ) {
@@ -149,14 +149,11 @@
           }
         } );
 
-        var answer = answers[ answerIndex ];
-
         var data = {
           page_id: page_id,
           question: question.value,
           answers: answers,
-          answer: answer // a string that holds the text of the correct answer...change to an index?
-          // depends on whether getting by classname returns in order
+          answer: answer
         };
 
         flipper.mcq.add( data, function ( err, mcq ) {
@@ -241,4 +238,4 @@
     console.error( 'Missing [mcq-item] [buttons] [submit].' );
   }
 
-} )();
+})();
