@@ -228,7 +228,7 @@ function apiMcqGrades( req, res ) {
         var processSubmissions = function ( submissions, done ) {
 
           // Loop through courses
-          (function nextSubmission( i, n ) {
+          ( function nextSubmission( i, n ) {
             if ( i < n ) {
 
               var submission = submissions[ i ];
@@ -255,7 +255,7 @@ function apiMcqGrades( req, res ) {
             } else {
               done();
             }
-          })( 0, submissions.length );
+          } )( 0, submissions.length );
 
         };
 

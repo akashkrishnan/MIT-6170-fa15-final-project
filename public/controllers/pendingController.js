@@ -5,13 +5,12 @@
 
 'use strict';
 
-(function () {
+( function () {
 
   var approveBtns = document.querySelectorAll( '[approve]' );
 
   if ( approveBtns ) {
-    approveBtns = [].slice.call( approveBtns );
-    approveBtns.forEach( function ( approveBtn ) {
+    forEach( approveBtns, function ( approveBtn ) {
       approveBtn.addEventListener( 'click', function ( event ) {
         var student_id = event.target.getAttribute( 'student-id' );
         var course_id = event.target.getAttribute( 'course-id' );
@@ -31,9 +30,6 @@
               // Refresh for now
               location.reload();
 
-              // Close the dialog --- this works because the dialog is a dialog-close-trigger
-              courseJoinDialog.click();
-
             }
           } );
         } else {
@@ -50,8 +46,7 @@
   var declineBtns = document.querySelectorAll( '[decline]' );
 
   if ( declineBtns ) {
-    declineBtns = [].slice.call( declineBtns );
-    declineBtns.forEach( function ( declineBtn ) {
+    forEach( declineBtns, function ( declineBtn ) {
       declineBtn.addEventListener( 'click', function ( event ) {
         var student_id = event.target.getAttribute( 'student-id' );
         var course_id = event.target.getAttribute( 'course-id' );
@@ -71,9 +66,6 @@
               // Refresh for now
               location.reload();
 
-              // Close the dialog --- this works because the dialog is a dialog-close-trigger
-              courseJoinDialog.click();
-
             }
           } );
         } else {
@@ -85,4 +77,4 @@
     console.error( 'Missing [decline]' );
   }
 
-})();
+} )();

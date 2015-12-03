@@ -988,7 +988,7 @@ function expandCourseUsers( courses, done ) {
   if ( courses ) {
 
     // Loop through courses
-    (function nextCourse( i, n ) {
+    ( function nextCourse( i, n ) {
       if ( i < n ) {
 
         var course = courses[ i ];
@@ -1004,7 +1004,7 @@ function expandCourseUsers( courses, done ) {
       } else {
         done();
       }
-    })( 0, courses.length );
+    } )( 0, courses.length );
 
   } else {
     done();
@@ -1025,7 +1025,7 @@ function expandUsers( list, done ) {
   if ( list ) {
 
     // Loop through user ids
-    (function next( i, n ) {
+    ( function next( i, n ) {
       if ( i < n ) {
 
         // Get User object
@@ -1045,7 +1045,7 @@ function expandUsers( list, done ) {
       } else {
         done();
       }
-    })( 0, list.length );
+    } )( 0, list.length );
 
   } else {
     done();

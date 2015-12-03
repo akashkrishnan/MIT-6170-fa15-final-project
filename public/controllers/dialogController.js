@@ -5,17 +5,14 @@
 
 'use strict';
 
-(function () {
-
-  var i;
-  var n;
+( function () {
 
   // Register all dialogs and make sure they're hidden
   var dialogs = document.querySelectorAll( '[dialog]' );
-  for ( i = 0, n = dialogs.length; i < n; i++ ) {
-    dialogs[ i ].style.display = 'none';
-    dialogs[ i ].style.visibility = 'visible';
-  }
+  forEach( dialogs, function ( dialog ) {
+    dialog.style.display = 'none';
+    dialog.style.visibility = 'visible';
+  } );
 
   // Register all triggers that show the specified dialog when clicked
 
@@ -37,9 +34,9 @@
     };
   };
 
-  for ( i = 0, n = openTriggers.length; i < n; i++ ) {
-    openTriggers[ i ].addEventListener( 'click', openTriggerEventHandler( openTriggers[ i ] ), false );
-  }
+  forEach( openTriggers, function ( openTrigger ) {
+    openTrigger.addEventListener( 'click', openTriggerEventHandler( openTrigger ), false );
+  } );
 
   // Register all triggers that hide the specified dialog when clicked
 
@@ -63,8 +60,8 @@
     };
   };
 
-  for ( i = 0, n = closeTriggers.length; i < n; i++ ) {
-    closeTriggers[ i ].addEventListener( 'click', closeTriggerEventHandler( closeTriggers[ i ] ), false );
-  }
+  forEach( closeTriggers, function ( closeTrigger ) {
+    closeTrigger.addEventListener( 'click', closeTriggerEventHandler( closeTrigger ), false );
+  } );
 
-})();
+} )();

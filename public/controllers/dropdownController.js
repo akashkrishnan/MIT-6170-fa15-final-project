@@ -5,17 +5,14 @@
 
 'use strict';
 
-(function () {
-
-  var i;
-  var n;
+( function () {
 
   // Register all dropdowns and make sure they're hidden
   var dropdowns = document.querySelectorAll( '[dropdown]' );
-  for ( i = 0, n = dropdowns.length; i < n; i++ ) {
-    dropdowns[ i ].style.display = 'none';
-    dropdowns[ i ].style.visibility = 'visible';
-  }
+  forEach( dropdowns, function ( dropdown ) {
+    dropdown.style.display = 'none';
+    dropdown.style.visibility = 'visible';
+  } );
 
   // Register all triggers that show the specified dialog when clicked
 
@@ -44,8 +41,8 @@
     };
   };
 
-  for ( i = 0, n = toggleTriggers.length; i < n; i++ ) {
-    toggleTriggers[ i ].addEventListener( 'click', toggleTriggerEventHandler( toggleTriggers[ i ] ), false );
-  }
+  forEach( toggleTriggers, function ( toggleTrigger ) {
+    toggleTrigger.addEventListener( 'click', toggleTriggerEventHandler( toggleTrigger ), false );
+  } );
 
-})();
+} )();

@@ -5,7 +5,9 @@
 
 'use strict';
 
-(function () {
+( function () {
+
+  var createBtn;
 
   var minilessonAddDialog = document.querySelector( '#minilesson-add-dialog' );
   if ( minilessonAddDialog ) {
@@ -13,7 +15,7 @@
     var course_id = minilessonAddDialog.getAttribute( 'course-id' );
 
     // Click listener for add-minilesson create button click event
-    var createBtn = document.querySelector( '#minilesson-add-dialog [create]' );
+    createBtn = document.querySelector( '#minilesson-add-dialog [create]' );
     if ( createBtn ) {
       createBtn.addEventListener( 'click', function () {
 
@@ -64,7 +66,7 @@
     var minilesson_id = pageAddDialog.getAttribute( 'minilesson-id' );
 
     // Click listener for add-page create button click event
-    var createBtn = document.querySelector( '#page-add-dialog [create]' );
+    createBtn = document.querySelector( '#page-add-dialog [create]' );
     if ( createBtn ) {
       createBtn.addEventListener( 'click', function () {
 
@@ -120,11 +122,9 @@
     var page_id = mcqAddDialog.getAttribute( 'page-id' );
 
     // Click listener for add-page create button click event
-    var createBtn = document.querySelector( '#mcq-add-dialog [create]' );
+    createBtn = document.querySelector( '#mcq-add-dialog [create]' );
     if ( createBtn ) {
       createBtn.addEventListener( 'click', function () {
-
-        var answers = [];
 
         var question = document.querySelector( '#mcq-add-dialog [question-input]' );
         var a = document.querySelector( '#mcq-add-dialog [choiceA-input]' );
@@ -135,17 +135,18 @@
 
         var radio_answer = document.querySelectorAll( '.create-radio-answer' );
 
-        var answer;
-        radio_answer.forEach( function ( rb, i ) {
-          if ( rb.checked ) {
-            answer = answers[ i ];
-          }
-        } );
-
+        var answers = [];
         var answerObjs = [ a, b, c, d, e ];
         answerObjs.forEach( function ( choice ) {
           if ( choice.value && choice.value.trim() ) {
             answers.push( choice.value );
+          }
+        } );
+
+        var answer = '';
+        forEach( radio_answer, function ( rb, i ) {
+          if ( rb.checked ) {
+            answer = answers[ i ];
           }
         } );
 
@@ -190,9 +191,8 @@
   var submitMcqBtns = document.querySelectorAll( '[mcq-item] [buttons] [submit]' );
 
   if ( submitMcqBtns ) {
-    submitMcqBtns = [].slice.call( submitMcqBtns );
-    submitMcqBtns.forEach( function ( submitMcqBtn ) {
-      submitMcqBtn.addEventListener( 'click', function ( e ) {
+    forEach( submitMcqBtns, function ( submitMcqBtn ) {
+      submitMcqBtn.addEventListener( 'click', function () {
 
         var mcqItem = submitMcqBtn.parentNode.parentNode;
         var mcq_id = mcqItem.getAttribute( 'mcq-id' );
@@ -238,4 +238,4 @@
     console.error( 'Missing [mcq-item] [buttons] [submit].' );
   }
 
-})();
+} )();

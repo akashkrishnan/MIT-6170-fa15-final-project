@@ -118,7 +118,7 @@ function list( data, done ) {
               var Submission = require( './submission.js' );
 
               // Loop through mcqs
-              (function next( i, n ) {
+              ( function next( i, n ) {
                 if ( i < n ) {
 
                   var mcq = mcqs[ i ];
@@ -139,7 +139,7 @@ function list( data, done ) {
                 } else {
                   done( null, mcqs, count );
                 }
-              })( 0, mcqs.length );
+              } )( 0, mcqs.length );
 
             }
           } );
