@@ -7,9 +7,12 @@
 
 ( function () {
 
+  var minilesson_id;
+
   var editBtn = document.querySelector( '#edit-btn' );
   editBtn.addEventListener( 'click', function (e) {
     e.preventDefault();
+    minilesson_id = editBtn.getAttribute('minilesson-id');
   });
 
   var minilessonEditDialog = document.querySelector( '#minilesson-edit-dialog' );
@@ -22,15 +25,14 @@
       setBtn.addEventListener( 'click', function (e) {
         e.preventDefault();
 
-        var minilesson_id = setBtn.getAttribute( 'minilesson-id' );
-        var course_id = setBtn.getAttribute( 'course-id' );
         var titleInput = document.querySelector( '#minilesson-edit-dialog [title-input]' );
         var dueDate = document.querySelector("#minilesson-edit-dialog [due-Date-input]");
         var currentTimeZoneOffsetInMinutes = new Date().getTimezoneOffset();
         var d = new Date( dueDate.value);
         var m = moment( d );
-        var dueDateTZ = m.add(currentTimeZoneOffsetInMinutes, "m");      
+        var dueDateTZ = m.add(currentTimeZoneOffsetInMinutes, "m");
         var data = { 'minilesson_id': minilesson_id, 'course_id': course_id, 'title': titleInput.value, 'due_date': dueDateTZ }
+        debugger;
 
         flipper.minilesson.edit( data, function ( err, minilesson ) {
           if ( err ) {

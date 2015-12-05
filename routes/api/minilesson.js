@@ -136,14 +136,15 @@ function apiMinilessonEdit( req, res ) {
 
   // Ensure user
   if ( req.user ) {
+    console.log(req.body);
     // Get minilesson
     Minilesson.edit(
       {
-        minilesson_id: req.params.minilesson_id,
+        minilesson_id: req.body.minilesson_id,
         course_id: req.body.course_id,
         user_id: req.user._id,
-        title: req.body.titleInput,
-        due_date: req.body.dueDate,
+        title: req.body.title,
+        due_date: req.body.due_date,
         projection: {
           timestamps: false
         }

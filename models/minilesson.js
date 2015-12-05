@@ -14,7 +14,8 @@ module.exports = {
   get: get,
   add: add,
   remove: remove,
-  publish: publish
+  publish: publish,
+  edit: edit
 };
 
 /**
@@ -409,7 +410,6 @@ function edit( data, done ) {
       },
       due_date: {required: true}
     } );
-
     // Ensure user is teaching the course
     Course.getWithUser(
       {
@@ -426,13 +426,14 @@ function edit( data, done ) {
         if ( err ) {
           done( err, null );
         } else if ( course.teaching ) {
+
           // Update in database
           db.minilessons.update(
             {
               _id: criteria.minilesson_id
             },
             {
-              $set: { 'title': criteria.title, 'due_date': criteria.due_date }
+              $set: { 'title': criteria.title, 'timestamps.due_date': criteria.due_date }
             },
             function ( err, minilesson ) {
               if ( err ) {
