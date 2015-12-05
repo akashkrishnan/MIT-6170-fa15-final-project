@@ -21,7 +21,6 @@ module.exports = {
 
   exists: exists,
 
-  // TODO: THESE TWO SHOULD BE MERGED INTO A SINGLE FUNCTION
   get: get,
   getWithUser: getWithUser,
 
