@@ -7,6 +7,7 @@
 var Config = require( '../config.js' );
 var Utils = require( './utils.js' );
 var Mcq = require( './mcq.js' );
+var User = require('./user.js');
 var mongojs = require( 'mongojs' );
 
 var db = mongojs( Config.services.db.mongodb.uri, [ 'submissions' ] );
@@ -19,8 +20,8 @@ module.exports = {
 
   list: list,
   get: get,
-  add: add
-
+  add: add,
+  getMCQGrades: getMCQGrades
 };
 
 /**
@@ -303,5 +304,74 @@ function add( data, done ) {
 
   } catch ( err ) {
     done( err, null );
+  }
+}
+
+function getMCQGrades( data , done ) {
+  try{
+
+    var criteria = Utils.validateObject( data, {
+      user_id: { type: 'string', required: true },
+      mcq_id: { type: 'string', required: true }
+    } );
+
+    list( criteria, function ( err, submissions ) {
+      if (err) {
+        done(err, null);
+      } else {
+        var grades = {};
+
+        /**
+         * Replaces student ids with user objects in submissions.
+         *
+         * @param {Array.<Object>} submissions - list of Submission objects
+         * @param {function()} done - callback
+         */
+        var processSubmissions = function (submissions, done) {
+
+          // Loop through courses
+          (function nextSubmission(i, n) {
+            if (i < n) {
+
+              var submission = submissions[i];
+
+              if (submission.user_id) {
+
+                User.get(
+                    {
+                      _id: submission.user_id,
+                      projection: {
+                        timestamps: false
+                      }
+                    },
+                    Utils.safeFn(function (err, user) {
+                      grades[user.name] = submission.score;
+                      nextSubmission(i + 1, n);
+                    })
+                );
+
+              } else {
+                nextSubmission(i + 1, n);
+              }
+
+            } else {
+              done();
+            }
+          })(0, submissions.length);
+
+        };
+
+        processSubmissions(submissions, function () {
+
+          // Return results
+          done(null, grades);
+
+        });
+
+      }
+    });
+
+  } catch (err) {
+    done( err, null);
   }
 }
