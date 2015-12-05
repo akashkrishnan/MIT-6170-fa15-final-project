@@ -43,10 +43,11 @@ describe( 'Page', function() {
                 Minilesson.add({
                     user_id: user._id,
                     course_id: String(course._id),
+                    due_date: new Date(),
                     title: 'Title'
                 }, function (err, _minilesson) {
                     if (err) {
-                        console.log(err);
+                        throw err;
                     }
                     minilesson = _minilesson;
                     data = {
