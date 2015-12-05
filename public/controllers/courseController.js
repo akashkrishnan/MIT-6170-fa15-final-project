@@ -12,7 +12,9 @@
   if ( publishBtn ) {
     publishBtn.addEventListener( 'click', function () {
       var minilesson_id = publishBtn.getAttribute( 'minilesson-id' );
-      var data = { 'minilesson_id': minilesson_id }
+      var course_id = publishBtn.getAttribute( 'course-id' );
+
+      var data = { 'minilesson_id': minilesson_id, 'course_id': course_id }
       flipper.minilesson.publish( data, function ( err, minilesson ) {
         if ( err ) {
           console.log( err );

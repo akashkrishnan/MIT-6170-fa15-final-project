@@ -286,8 +286,8 @@ var Flipper = function () {
 
     publish: function ( data, done ) {
       if ( data ) {
-        if ( data.minilesson_id && data.minilesson_id.trim() ) {
-          ajax( 'GET', '/api/minilessons/publish/' + data.minilesson_id.trim(), data, function ( data ) {
+        if ( data.minilesson_id && data.minilesson_id.trim() && data.course_id && data.course_id.trim()) {
+          ajax( 'POST', '/api/minilessons/publish/' + data.minilesson_id.trim(), data, function ( data ) {
             if ( data ) {
               if ( data.err ) {
                 done( data.err, null );
