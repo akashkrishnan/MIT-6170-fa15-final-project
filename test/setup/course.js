@@ -1,5 +1,7 @@
 'use strict';
 
+var User = require('../models/user.js');
+
 module.exports = function ( done ) {
 
   // Make sure user is set up
@@ -25,10 +27,30 @@ module.exports = function ( done ) {
 	    password: 'Alyssa999!'
 	  }
 
-	  var teacher;
-	  var student;
-	  var student2;
-	  var testCourse;
+	  User.add( teacherData, function ( err, _user1 ) {
+	      if ( err ) {
+	        console.log(err);
+	        done( err );
+	      } else {
+	        teacher = _user1;
+	        User.add( studentData, function ( err, _user2 ) {
+	          if ( err ) {
+	            done ( err );
+	          } else {
+	            student = _user2;
+	            User.add( studentData2, function ( err, _user3 ) {
+	              if ( err ) {
+	                done ( err );
+	              } else {
+	                student2 = _user3;
+	                done();
+	              }
+	          } );
+	          }
+	        } );
+	      }
+	    } );
+
     done();
 
   } );
