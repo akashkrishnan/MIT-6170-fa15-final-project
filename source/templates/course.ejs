@@ -118,14 +118,25 @@
             <a href="/courses/<%= course._id %>/minilessons/<%= _minilesson._id %>"
                minilesson-item no-select
               <%= minilesson._id && _minilesson._id.toString() === minilesson._id.toString() ? 'active' : '' %>
-               layout-vertical>
-              <div name><strong><%= _minilesson.title %></strong></div>
+               layout-horizontal>
 
-              <% if ( _minilesson.timestamps.due ) { %>
-              <div due-date><%= _minilesson.timestamps.due %></div>
-              <% } else { %>
-              <div due-date>No due date.</div>
-              <% } %>
+              <div flex layout-vertical>
+
+                <div name><strong><%= _minilesson.title %></strong></div>
+
+                <% if ( _minilesson.timestamps.due ) { %>
+                <div due-date><%= _minilesson.timestamps.due_date %></div>
+                <% } else { %>
+                <div due-date>No due date.</div>
+                <% } %>
+
+              </div>
+
+              <div buttons layout-horizontal layout-center>
+                <div button icon="publish"></div>
+                <div button icon="edit"></div>
+                <div button icon="remove"></div>
+              </div>
 
             </a>
 
