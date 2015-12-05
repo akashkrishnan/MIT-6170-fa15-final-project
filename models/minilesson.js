@@ -251,7 +251,8 @@ function add( data, done ) {
         type: 'string',
         filter: 'trim',
         required: true
-      }
+      },
+      due_date: {}
     } );
 
     // Ensure user is teaching the course
@@ -280,7 +281,8 @@ function add( data, done ) {
                 published: true
               },
               timestamps: {
-                created: new Date()
+                created: new Date(),
+                due_date: criteria.due_date
               }
             },
             function ( err, minilesson ) {
