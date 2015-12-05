@@ -64,6 +64,25 @@
   font-size: 12px;
 }
 
+[button][icon] {
+  height: 24px;
+  width: 24px;
+  margin: 4px;
+  padding: 0;
+}
+
+[button][icon="publish"] {
+  background-image: url(/images/publish.svg);
+}
+
+[button][icon="edit"] {
+  background-image: url(/images/edit.svg);
+}
+
+[button][icon="remove"] {
+  background-image: url(/images/remove.svg);
+}
+
 [page-list] {
   min-height: 46px;
   height: 46px;
