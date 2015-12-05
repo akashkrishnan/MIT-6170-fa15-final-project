@@ -32,7 +32,6 @@
         var m = moment( d );
         var dueDateTZ = m.add(currentTimeZoneOffsetInMinutes, "m");
         var data = { 'minilesson_id': minilesson_id, 'course_id': course_id, 'title': titleInput.value, 'due_date': dueDateTZ }
-        debugger;
 
         flipper.minilesson.edit( data, function ( err, minilesson ) {
           if ( err ) {
