@@ -471,7 +471,7 @@ function exists( data, done ) {
     } );
 
     // Ensure there is at least one parameter
-    if ( criteria._id || criteria.name || criteria.teacher_id || criteria.student_id || criteria.pending_student_id ) {
+    if ( criteria._id || criteria.name || criteria.teachers || criteria.students || criteria.pendingStudents ) {
 
       // Get from database
       db.courses.count( criteria, function ( err, count ) {
@@ -524,7 +524,6 @@ function get( data, done ) {
       student_id: { name: 'students', type: 'string' },
       pending_student_id: { name: 'pendingStudents', type: 'string' }
     } );
-
     var projection = Utils.validateObject( data, {
       projection: {
         type: {
@@ -540,12 +539,14 @@ function get( data, done ) {
     } ).projection;
 
     // Ensure there is at least one parameter
-    if ( criteria._id || criteria.name || criteria.teacher_id || criteria.student_id || criteria.pending_student_id ) {
+    if ( criteria._id || criteria.name || criteria.teachers || criteria.students || criteria.pendingStudents ) {
 
       // Get from database
       db.courses.findOne( criteria, projection, function ( err, course ) {
         if ( err ) {
           done( err, null );
+        } else if ( course == null ) {
+          done (new Error( 'Course does not exist'), null);
         } else {
           expandUsers( course.teachers, function () {
             expandUsers( course.students, function () {
@@ -803,7 +804,6 @@ function join( data, done ) {
               } else if ( _exists ) {
                 done( new Error( 'User is already pending admission to the course.' ), null );
               } else {
-
                 // Add student to pending students list. Using $addToSet just in case of duplicates.
                 db.courses.update(
                   {
@@ -939,7 +939,6 @@ function acceptStudent( data, done ) {
           if ( err ) {
             done( err, null );
           } else {
-
             // Add pending student to students list and remove student from pending students list. $addToSet is
             // important because we don't want to have duplicates
             db.courses.update(
