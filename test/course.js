@@ -138,6 +138,13 @@ describe( 'Courses', function () {
       } );
     } );
 
+    it( 'does not allow someone who is not the teacher to accept student', function ( done ) {      
+      Course.acceptStudent( { _id: testCourse._id, teacher_id: student2._id, student_id: student2._id }, function ( err, course ) {
+        assert.equal( course, null );
+        done();
+      } );
+    } );
+
     it( 'accepts a student into a class', function ( done ) {
       Course.acceptStudent( { _id: testCourse._id, teacher_id: teacher._id, student_id: student._id }, function ( err, course ) {
         Course.get( { _id: course._id }, function ( err, updatedCourse ) {
