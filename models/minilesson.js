@@ -377,6 +377,82 @@ function publish( data, done ) {
 }
 
 
+/**
+ * @callback addCallback
+ * @param {Error} err - Error object
+ * @param {object} minilesson - newly edited Minilesson object
+ */
+
+/**
+ * Edits a minilesson.
+ *
+ * @param {object} data - data
+ * @param {string} data.minilesson_id - id of published minilesson
+ * @param {string} data.course_id - id of edited minilesson
+ * @param {string} data.user_id - id of user editing minilesson
+ * @param {string} data.title - id new title for minilesson
+ * @param {string} data.dueDate - id of new due date for minilesson
+ * @param {addCallback} done - callback
+*/
+
+function edit( data, done ) {
+  try {
+
+    var criteria = Utils.validateObject( data, {
+      user_id: { type: 'string', required: true },
+      course_id: { type: 'string', required: true },
+      minilesson_id: { filter: 'MongoId', required: true },
+      title: {
+        type: 'string',
+        filter: 'trim',
+        required: true
+      },
+      due_date: {required: true}
+    } );
+
+    // Ensure user is teaching the course
+    Course.getWithUser(
+      {
+        _id: criteria.course_id,
+        user_id: criteria.user_id,
+        projection: {
+          teachers: false,
+          students: false,
+          states: false,
+          timestamps: false
+        }
+      },
+      function ( err, course ) {
+        if ( err ) {
+          done( err, null );
+        } else if ( course.teaching ) {
+          // Update in database
+          db.minilessons.update(
+            {
+              _id: criteria.minilesson_id
+            },
+            {
+              $set: { 'title': criteria.title, 'due_date': criteria.due_date }
+            },
+            function ( err, minilesson ) {
+              if ( err ) {
+                done( err, null );
+              } else {
+                done( null, minilesson );
+              }
+            }
+          );
+        } else {
+          done( new Error( 'Only a teacher may publish a minilesson.' ), null );
+        }
+      }
+    );
+
+  } catch ( err ) {
+    done( err, null );
+  }
+}
+
 
 /**
  * @callback removeMinilessonCallback

@@ -302,6 +302,26 @@ var Flipper = function () {
           done( new Error( 'A minilesson ID is required to publish a minilesson.' ) );
         }
       }
+    },
+
+    edit: function ( data, done ) {
+      if ( data ) {
+        if ( data.minilesson_id && data.minilesson_id.trim() && data.course_id && data.course_id.trim()) {
+          ajax( 'POST', '/api/minilessons/edit/' + data.minilesson_id.trim(), data, function ( data ) {
+            if ( data ) {
+              if ( data.err ) {
+                done( data.err, null );
+              } else {
+                done( null, data );
+              }
+            } else {
+              done( new Error( 'Unable to edit minilesson. Invalid server response.' ), null );
+            }
+          } );
+        } else {
+          done( new Error( 'A minilesson ID is required to edit a minilesson.' ) );
+        }
+      }
     }
 
   };
