@@ -124,8 +124,8 @@
 
                 <div name><strong><%= _minilesson.title %></strong></div>
 
-                <% if ( _minilesson.timestamps.due ) { %>
-                <div due-date><%= _minilesson.timestamps.due_date %></div>
+                <% if ( _minilesson.timestamps.due_date ) { %>
+                <span time="<%= _minilesson.timestamps.due_date %>" due-date></span>
                 <% } else { %>
                 <div due-date>No due date.</div>
                 <% } %>
@@ -134,9 +134,29 @@
 
               <% if ( course.teaching ) { %>
               <div buttons layout-horizontal layout-center>
-                <div button icon="publish"></div>
-                <div button icon="edit"></div>
-                <div button icon="remove"></div>
+
+                <% if ( !_minilesson.states.published ) { %>
+
+                <div button
+                     id="publish-btn"
+                     course-id="<%= course._id %>"
+                     minilesson-id="<%= _minilesson._id %>"
+                     icon="publish"></div>
+
+                <div button
+                     id="edit-btn"
+                     course-id="<%= course._id %>"
+                     minilesson-id="<%= _minilesson._id %>"
+                     icon="edit"></div>
+
+                <% } %>
+
+                <div button
+                     id="remove-btn"
+                     course-id="<%= course._id %>"
+                     minilesson-id="<%= _minilesson._id %>"
+                     icon="remove"></div>
+
               </div>
               <% } %>
 

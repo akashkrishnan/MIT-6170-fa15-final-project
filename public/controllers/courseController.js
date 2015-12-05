@@ -7,6 +7,36 @@
 
 ( function () {
 
+
+  var publishBtn = document.querySelector( '#publish-btn' );
+  if ( publishBtn ) {
+    publishBtn.addEventListener( 'click', function () {
+      var minilesson_id = publishBtn.getAttribute( 'minilesson-id' );
+      var course_id = publishBtn.getAttribute( 'course-id' );
+      console.log(course_id);
+      var data = { 'minilesson_id': minilesson_id, 'course_id': course_id }
+      flipper.minilesson.publish( data, function ( err, minilesson ) {
+        if ( err ) {
+          console.log( err );
+          toastr.error( err );
+        } else {
+          console.log( minilesson );
+          toastr.info( 'Minilesson has been published.' );
+ 
+          //location.reload();
+        }
+
+      } );
+    } );
+  } else {
+    console.error( 'Missing publish btn.' );
+  }
+
+
+
+  /* -------------------------------------------------------------------------------------------------------------- */
+
+
   var createBtn;
 
   var minilessonAddDialog = document.querySelector( '#minilesson-add-dialog' );

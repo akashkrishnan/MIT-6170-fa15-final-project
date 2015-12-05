@@ -208,7 +208,7 @@ function get( data, done ) {
  * @param {object} data - data
  * @param {string} data.user_id - User._id
  * @param {string} data.minilesson_id - Minilesson._id
- * @param {string} data.title - title of minilesson
+ * @param {string} data.title - title of page
  * @param {string} [data.resource] - resource link
  * @param {addCallback} done - callback
  */
