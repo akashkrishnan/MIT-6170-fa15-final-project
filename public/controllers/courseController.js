@@ -7,32 +7,46 @@
 
 ( function () {
 
-  var editBtn = document.querySelector( '#edit-btn' );
-  if ( editBtn ) {
-    editBtn.addEventListener( 'click', function (e) {
-      e.preventDefault();
 
-      var minilesson_id = editBtn.getAttribute( 'minilesson-id' );
-      var course_id = editBtn.getAttribute( 'course-id' );
-      var titleInput = document.querySelector( '#minilesson-edit-dialog [title-input]' );
-      var dueDate = document.querySelector("#minilesson-edit-dialog [due-Date-input]");
-      var data = { 'minilesson_id': minilesson_id, 'course_id': course_id, 'title': titleInput.value, 'due_date': dueDateTZ }
 
-      flipper.minilesson.edit( data, function ( err, minilesson ) {
-      //   if ( err ) {
-      //     console.log( err );
-      //     toastr.error( err );
-      //   } else {
-      //     console.log( minilesson );
-      //     toastr.info( 'Minilesson has been published.' );
- 
-      //     //location.reload();
-      //   }
+  var minilessonEditDialog = document.querySelector( '#minilesson-edit-dialog' );
+  if ( minilessonEditDialog ) {
 
+    var course_id = minilessonEditDialog.getAttribute( 'course-id' );
+
+    var editBtn = document.querySelector( '#minilesson-edit-dialog [set]' );
+
+    if ( editBtn ) {
+      editBtn.addEventListener( 'click', function (e) {
+        e.preventDefault();
+
+        var minilesson_id = editBtn.getAttribute( 'minilesson-id' );
+        var course_id = editBtn.getAttribute( 'course-id' );
+        var titleInput = document.querySelector( '#minilesson-edit-dialog [title-input]' );
+        var dueDate = document.querySelector("#minilesson-edit-dialog [due-Date-input]");
+        var currentTimeZoneOffsetInMinutes = new Date().getTimezoneOffset();
+        var d = new Date( dueDate.value);
+        var m = moment( d );
+        var dueDateTZ = m.add(currentTimeZoneOffsetInMinutes, "m");      
+        var data = { 'minilesson_id': minilesson_id, 'course_id': course_id, 'title': titleInput.value, 'due_date': dueDateTZ }
+
+        flipper.minilesson.edit( data, function ( err, minilesson ) {
+          if ( err ) {
+            console.log( err );
+            toastr.error( err );
+          } else {
+            console.log( minilesson );
+            toastr.info( 'Minilesson has been edited.' );
+   
+            location.reload();
+          }
+         } );
        } );
-     } );
+    } else {
+      console.error( 'Missing editBtn.' );
+    }
   } else {
-    console.error( 'Missing publish btn.' );
+    console.error( 'Missing #minilesson-edit-dialog.' );
   }
 
   /* -------------------------------------------------------------------------------------------------------------- */
