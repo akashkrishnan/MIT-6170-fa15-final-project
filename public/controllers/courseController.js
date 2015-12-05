@@ -51,9 +51,14 @@
 
         // Get inputs
         var titleInput = document.querySelector( '#minilesson-add-dialog [title-input]' );
-        if ( titleInput ) {
+        var dueDate = document.querySelector("#minilesson-add-dialog [due-Date-input]");
+        var currentTimeZoneOffsetInMinutes = new Date().getTimezoneOffset();
+        var d = new Date( dueDate.value);
+        var m = moment( d );
+        var dueDateTZ = m.add(currentTimeZoneOffsetInMinutes, "m");
+        if ( titleInput) {
 
-          var data = { course_id: course_id, title: titleInput.value };
+          var data = { course_id: course_id, title: titleInput.value, due_date: dueDateTZ};
 
           flipper.minilesson.add( data, function ( err, minilesson ) {
             if ( err ) {
