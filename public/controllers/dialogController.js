@@ -10,8 +10,47 @@
   // Register all dialogs and make sure they're hidden
   var dialogs = document.querySelectorAll( '[dialog]' );
   forEach( dialogs, function ( dialog ) {
+
+    // Update styles
     dialog.style.display = 'none';
     dialog.style.visibility = 'visible';
+
+    // Support auto submitting
+
+    var submitButton;
+
+    // Get all buttons
+    var buttons = dialog.querySelectorAll( '[buttons] [button]' );
+
+    // Ensure we have at least one button
+    if ( buttons && buttons.length ) {
+
+      // Submit button is assumed to be the last button
+      submitButton = buttons[ buttons.length - 1 ];
+
+      // Get all user-input fields
+      var inputFields = dialog.querySelectorAll( 'input:not([type="hidden"])' );
+
+      // Ensure we have at least one input field
+      if ( inputFields && inputFields.length ) {
+
+        // Set up a listener on the last user-input field for auto submission
+        inputFields[ inputFields.length - 1 ].addEventListener( 'keyup', function ( e ) {
+
+          // Check if Enter/Return
+          if ( e.keyCode === 13 ) {
+
+            // Click the submit button
+            submitButton.click();
+
+          }
+
+        } );
+
+      }
+
+    }
+
   } );
 
   // Register all triggers that show the specified dialog when clicked
