@@ -7,21 +7,23 @@
 
 ( function () {
 
-
+  var editBtn = document.querySelector( '#edit-btn' );
+  editBtn.addEventListener( 'click', function (e) {
+    e.preventDefault();
+  });
 
   var minilessonEditDialog = document.querySelector( '#minilesson-edit-dialog' );
   if ( minilessonEditDialog ) {
 
     var course_id = minilessonEditDialog.getAttribute( 'course-id' );
+    var setBtn = document.querySelector( '#minilesson-edit-dialog [set]' );
 
-    var editBtn = document.querySelector( '#minilesson-edit-dialog [set]' );
-
-    if ( editBtn ) {
-      editBtn.addEventListener( 'click', function (e) {
+    if ( setBtn ) {
+      setBtn.addEventListener( 'click', function (e) {
         e.preventDefault();
 
-        var minilesson_id = editBtn.getAttribute( 'minilesson-id' );
-        var course_id = editBtn.getAttribute( 'course-id' );
+        var minilesson_id = setBtn.getAttribute( 'minilesson-id' );
+        var course_id = setBtn.getAttribute( 'course-id' );
         var titleInput = document.querySelector( '#minilesson-edit-dialog [title-input]' );
         var dueDate = document.querySelector("#minilesson-edit-dialog [due-Date-input]");
         var currentTimeZoneOffsetInMinutes = new Date().getTimezoneOffset();
@@ -43,7 +45,7 @@
          } );
        } );
     } else {
-      console.error( 'Missing editBtn.' );
+      console.error( 'Missing setBtn.' );
     }
   } else {
     console.error( 'Missing #minilesson-edit-dialog.' );
