@@ -15,6 +15,19 @@
     dialog.style.display = 'none';
     dialog.style.visibility = 'visible';
 
+    // Support closing when esc button is pressed and dialog is a close trigger
+    dialog.addEventListener( 'keyup', function ( e ) {
+
+      // Check if Enter/Return
+      if ( e.keyCode === 27 ) {
+
+        // Click the submit button
+        dialog.click();
+
+      }
+
+    } );
+
     // Support auto submitting
 
     var submitButton;
