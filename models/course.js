@@ -13,7 +13,6 @@ module.exports = {
 
   /* ---------------EXTERNAL--------------- */
 
-  // TODO: THIS SHOULD ALL BE MERGED INTO A SINGLE FUNCTION
   list: list,
   listForTeacher: listForTeacher,
   listForStudent: listForStudent,
@@ -41,28 +40,31 @@ module.exports = {
 /**
  * @callback listCallback
  * @param {Error} err - Error object
- * @param {Array.<object>} courses - list of Course objects in the current page
- * @param {number} count - total number of Course objects across all pages
+ * @param {Array.<object>} teacherCourses - list of Course objects
+ * @param {Array.<object>} studentCourses - list of Course objects
+ * @param {Array.<object>} pendingCourses - list of Course objects
+ * @param {Array.<object>} openCourses - list of Course objects
  */
 
 /**
- * Gets a list of Course objects.
+ * Gets a list of Course objects associated with the specified user.
  *
  * @param {object} data - data
+ * @param {string} data.teacher_id - User._id
  * @param {object} [data.projection] - projection
  * @param {boolean} [data.projection.teachers] -
  * @param {boolean} [data.projection.students] -
  * @param {boolean} [data.projection.pendingStudents] -
  * @param {boolean} [data.projection.states] -
  * @param {boolean} [data.projection.timestamps] -
- * @param {number} [data.offset=0] - offset of first Course object in the page
- * @param {number} [data.limit=0] - number of Course objects in a page
  * @param {listCallback} done - callback
  */
 function list( data, done ) {
   try {
 
-    var criteria = Utils.validateObject( data, {} );
+    var criteria = Utils.validateObject( data, {
+      user_id: { type: 'string', required: true }
+    } );
 
     var projection = Utils.validateObject( data, {
       projection: {
@@ -78,38 +80,68 @@ function list( data, done ) {
       }
     } ).projection;
 
-    var sort = Utils.validateObject( data, {
-      sort: {
-        type: {},
-        default: { name: 1 }
-      }
-    } ).sort;
+    // Get courses the user teaches
+    listForTeacher(
+      {
+        teacher_id: criteria.user_id,
+        projection: projection
+      },
+      Utils.safeFn( function ( err, teacherCourses ) {
+        if ( err ) {
+          done( err, [], [], [], [] );
+        } else {
 
-    db.courses.count( function ( err, count ) {
-      if ( err ) {
-        done( err, [], 0 );
-      } else {
-        db.courses
-          .find( criteria, projection )
-          .sort( sort )
-          .skip( data.offset || 0 )
-          .limit( data.limit || 0, function ( err, courses ) {
-            if ( err ) {
-              done( err, [], 0 );
-            } else {
-              expandCourseUsers( courses, function () {
+          // Get courses the user takes
+          listForStudent(
+            {
+              student_id: criteria.user_id,
+              projection: projection
+            },
+            Utils.safeFn( function ( err, studentCourses ) {
+              if ( err ) {
+                done( err, [], [], [], [] );
+              } else {
 
-                // Return list of courses
-                done( null, courses, count );
+                // Get courses where the user is pending
+                listForPendingStudent(
+                  {
+                    student_id: criteria.user_id,
+                    projection: projection
+                  },
+                  Utils.safeFn( function ( err, pendingCourses ) {
+                    if ( err ) {
+                      done( err, [], [], [], [] );
+                    } else {
 
-              } );
-            }
-          } );
-      }
-    } );
+                      // Get courses that are open to join
+                      listOpen(
+                        {
+                          user_id: criteria.user_id,
+                          projection: projection
+                        },
+                        Utils.safeFn( function ( err, openCourses ) {
+                          if ( err ) {
+                            done( err, [], [], [], [] );
+                          } else {
+                            done( null, teacherCourses, studentCourses, pendingCourses, openCourses );
+                          }
+                        } )
+                      );
+
+                    }
+                  } )
+                );
+
+              }
+            } )
+          );
+
+        }
+      } )
+    );
 
   } catch ( err ) {
-    done( err, [], 0 );
+    done( err, [], [], [], [] );
   }
 }
 
@@ -987,7 +1019,7 @@ function expandCourseUsers( courses, done ) {
   if ( courses ) {
 
     // Loop through courses
-    (function nextCourse( i, n ) {
+    ( function nextCourse( i, n ) {
       if ( i < n ) {
 
         var course = courses[ i ];
@@ -1003,7 +1035,7 @@ function expandCourseUsers( courses, done ) {
       } else {
         done();
       }
-    })( 0, courses.length );
+    } )( 0, courses.length );
 
   } else {
     done();
@@ -1024,7 +1056,7 @@ function expandUsers( list, done ) {
   if ( list ) {
 
     // Loop through user ids
-    (function next( i, n ) {
+    ( function next( i, n ) {
       if ( i < n ) {
 
         // Get User object
@@ -1044,7 +1076,7 @@ function expandUsers( list, done ) {
       } else {
         done();
       }
-    })( 0, list.length );
+    } )( 0, list.length );
 
   } else {
     done();

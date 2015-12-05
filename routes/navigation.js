@@ -30,97 +30,36 @@ module.exports = function ( app ) {
 /**
  * Called when the user wants to view the index.
  *
- * TODO: FIX THIS CALLBACK CHAIN PLEASE SOMETIME SOON
- *
  * @param {object} req - req
  * @param {object} res - res
  */
 function index( req, res ) {
   if ( req.user ) {
 
-    // TODO: MAKE METHOD IN COURSE MODEL TO GET LISTS OF COURSES FOR USER AS TEACHER, STUDENT, PENDING, AND OPEN
-
-    // Get courses the user teaches
-    Course.listForTeacher(
+    // Get courses associated with the user
+    Course.list(
       {
-        teacher_id: req.user._id,
+        user_id: req.user._id,
         projection: {
           students: false,
           timestamps: false,
           states: false
         }
       },
-      Utils.safeFn( function ( err, teacherCourses ) {
+      Utils.safeFn( function ( err, teacherCourses, studentCourses, pendingCourses, openCourses ) {
         if ( err ) {
           res.json( { err: err } );
         } else {
 
-          // Get courses the user takes
-          Course.listForStudent(
-            {
-              student_id: req.user._id,
-              projection: {
-                students: false,
-                timestamps: false,
-                states: false
-              }
-            },
-            Utils.safeFn( function ( err, studentCourses ) {
-              if ( err ) {
-                res.json( { err: err } );
-              } else {
-
-                // Get courses where the user is pending
-                Course.listForPendingStudent(
-                  {
-                    student_id: req.user._id,
-                    projection: {
-                      students: false,
-                      timestamps: false,
-                      states: false
-                    }
-                  },
-                  Utils.safeFn( function ( err, pendingCourses ) {
-                    if ( err ) {
-                      res.json( { err: err } );
-                    } else {
-
-                      // Get courses that are open to join
-                      Course.listOpen(
-                        {
-                          user_id: req.user._id,
-                          projection: {
-                            students: false,
-                            timestamps: false,
-                            states: false
-                          }
-                        },
-                        Utils.safeFn( function ( err, openCourses ) {
-                          if ( err ) {
-                            res.json( { err: err } );
-                          } else {
-
-                            // Return results to client
-                            res.render( 'courseList', {
-                              web: Config.web,
-                              self: req.user,
-                              allCourses: openCourses,
-                              teacherCourses: teacherCourses,
-                              studentCourses: studentCourses,
-                              pendingCourses: pendingCourses
-                            } );
-
-                          }
-                        } )
-                      );
-
-                    }
-                  } )
-                );
-
-              }
-            } )
-          );
+          // Return results to client
+          res.render( 'courseList', {
+            web: Config.web,
+            self: req.user,
+            allCourses: openCourses,
+            teacherCourses: teacherCourses,
+            studentCourses: studentCourses,
+            pendingCourses: pendingCourses
+          } );
 
         }
       } )

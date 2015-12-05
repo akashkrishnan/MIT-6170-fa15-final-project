@@ -266,7 +266,21 @@ var Flipper = function () {
 
     remove: function ( data, done ) {
       if ( data ) {
-        done( new Error( 'Not implemented.' ) );
+        if ( data.minilesson_id && data.minilesson_id.trim() ) {
+          ajax( 'DELETE', '/api/minilessons/' + data.minilesson_id.trim(), data, function ( data ) {
+            if ( data ) {
+              if ( data.err ) {
+                done( data.err, null );
+              } else {
+                done( null, data );
+              }
+            } else {
+              done( new Error( 'Unable to remove minilesson. Invalid server response.' ), null );
+            }
+          } );
+        } else {
+          done( new Error( 'A minilesson ID is required to remove a minilesson.' ) );
+        }
       }
     }
 
@@ -336,7 +350,21 @@ var Flipper = function () {
 
     remove: function ( data, done ) {
       if ( data ) {
-        done( new Error( 'Not implemented.' ) );
+        if ( data.page_id && data.page_id.trim() ) {
+          ajax( 'DELETE', '/api/pages/' + data.page_id.trim(), data, function ( data ) {
+            if ( data ) {
+              if ( data.err ) {
+                done( data.err, null );
+              } else {
+                done( null, data );
+              }
+            } else {
+              done( new Error( 'Unable to remove page. Invalid server response.' ), null );
+            }
+          } );
+        } else {
+          done( new Error( 'A page ID is required to remove a page.' ) );
+        }
       }
     }
 
@@ -426,7 +454,21 @@ var Flipper = function () {
 
     remove: function ( data, done ) {
       if ( data ) {
-        done( new Error( 'Not implemented.' ) );
+        if ( data.mcq_id && data.mcq_id.trim() ) {
+          ajax( 'DELETE', '/api/mcqs/' + data.mcq_id.trim(), data, function ( data ) {
+            if ( data ) {
+              if ( data.err ) {
+                done( data.err, null );
+              } else {
+                done( null, data );
+              }
+            } else {
+              done( new Error( 'Unable to remove mcq. Invalid server response.' ), null );
+            }
+          } );
+        } else {
+          done( new Error( 'A mcq ID is required to remove a mcq.' ) );
+        }
       }
     }
 
@@ -455,30 +497,26 @@ var Flipper = function () {
     },
 
     get: function ( data, done ) {
-      // TODO : make sure this is calling the right ajax request
       if ( data ) {
-        if ( data.mcq_id && data.mcq_id.trim() ) {
-          ajax( 'GET', '/api/mcqs/' + data.mcq_id.trim() + '/grades', data, function ( data ) {
-            console.log( data );
+        if ( data.submission_id && data.submission_id.trim() ) {
+          ajax( 'GET', '/api/submissions/' + data.submission_id.trim(), data, function ( data ) {
             if ( data ) {
               if ( data.err ) {
                 done( data.err, null );
               } else {
-                done( null, data.grades );
+                done( null, data );
               }
             } else {
-              done( new Error( 'No submissions for this MCQ yet.' ), null );
+              done( new Error( 'Unable to get submission. Invalid server response.' ), null );
             }
           } );
         } else {
-          done( new Error( 'An mcq ID is required to get an mcq.' ) );
+          done( new Error( 'A submission ID is required to get a submission.' ) );
         }
       }
     }
 
   };
-
-  that.grade = {};
 
   Object.freeze( that.user );
   Object.freeze( that.course );
@@ -486,7 +524,6 @@ var Flipper = function () {
   Object.freeze( that.page );
   Object.freeze( that.mcq );
   Object.freeze( that.submission );
-  Object.freeze( that.grade );
   Object.freeze( that );
 
   return that;

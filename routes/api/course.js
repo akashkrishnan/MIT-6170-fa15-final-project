@@ -5,7 +5,6 @@
 'use strict';
 
 var Utils = require( '../../models/utils.js' );
-var User = require( '../../models/user.js' );
 var Course = require( '../../models/course.js' );
 var Minilesson = require( '../../models/minilesson.js' );
 
@@ -38,101 +37,25 @@ function apiCourseList( req, res ) {
   if ( req.user ) {
 
     // Get courses the user teaches
-    Course.listForTeacher(
+    Course.list(
       {
-        teacher_id: req.user._id,
+        user_id: req.user._id,
         projection: {
           students: false,
           timestamps: false,
           states: false
         }
       },
-      Utils.safeFn( function ( err, teacherCourses ) {
+      Utils.safeFn( function ( err, teacherCourses, studentCourses, pendingCourses, openCourses ) {
         if ( err ) {
           res.json( { err: err } );
         } else {
-
-          // Get courses the user takes
-          Course.listForStudent(
-            {
-              student_id: req.user._id,
-              projection: {
-                students: false,
-                timestamps: false,
-                states: false
-              }
-            },
-            Utils.safeFn( function ( err, studentCourses ) {
-              if ( err ) {
-                res.json( { err: err } );
-              } else {
-
-                /**
-                 * Replaces teacher ids with user objects in courses.
-                 *
-                 * @param {Array.<Object>} courses - list of Course objects
-                 * @param {function()} done - callback
-                 */
-                var processCourses = function ( courses, done ) {
-
-                  // Loop through courses
-                  ( function nextCourse( i, n ) {
-                    if ( i < n ) {
-
-                      var course = courses[ i ];
-
-                      if ( course.teachers ) {
-
-                        // Loop through teachers
-                        ( function nextTeacher( j, m ) {
-                          if ( j < m ) {
-
-                            // Get User object
-                            User.get(
-                              {
-                                _id: course.teachers[ j ],
-                                projection: {
-                                  timestamps: false
-                                }
-                              },
-                              Utils.safeFn( function ( err, user ) {
-                                course.teachers[ j ] = user || {};
-                                nextTeacher( j + 1, m );
-                              } )
-                            );
-
-                          } else {
-                            nextCourse( i + 1, n );
-                          }
-                        } )( 0, course.teachers.length );
-
-                      } else {
-                        nextCourse( i + 1, n );
-                      }
-
-                    } else {
-                      done();
-                    }
-                  } )( 0, courses.length );
-
-                };
-
-                processCourses( teacherCourses, function () {
-                  processCourses( studentCourses, function () {
-
-                    // Return results to client
-                    res.json( {
-                      teaching: teacherCourses,
-                      taking: studentCourses
-                    } );
-
-                  } );
-                } );
-
-              }
-            } )
-          );
-
+          res.json( {
+            teaching: teacherCourses,
+            taking: studentCourses,
+            pending: pendingCourses,
+            open: openCourses
+          } );
         }
       } )
     );

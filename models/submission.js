@@ -19,8 +19,7 @@ module.exports = {
 
   list: list,
   get: get,
-  add: add,
-  remove: remove
+  add: add
 
 };
 
@@ -299,29 +298,6 @@ function add( data, done ) {
 
       }
     } );
-
-  } catch ( err ) {
-    done( err, null );
-  }
-}
-
-/**
- * @callback removeSubmissionCallback
- * @param {Error} err - Error object
- * @param {object} submission - Submission object before removal
- */
-
-/**
- * Removes an mcq from the database.
- *
- * @param {object} data - data
- * @param {string} data._id - Submission._id
- * @param {removeSubmissionCallback} done - callback
- */
-function remove( data, done ) {
-  try {
-
-    done( new Error( 'Not implemented.' ), null );
 
   } catch ( err ) {
     done( err, null );

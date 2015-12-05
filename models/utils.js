@@ -8,32 +8,11 @@ var util = require( 'util' );
 var ObjectId = require( 'mongojs' ).ObjectId;
 
 module.exports = {
-  unique: unique,
   noop: noop,
   safeFn: safeFn,
   validateObject: validateObject,
   regexEscape: regexEscape
 };
-
-/**
- * Returns a list of unique values that exist in the provided list.
- *
- * @param {Array} list - list of values
- * @return {Array} - unique list of values
- */
-function unique( list ) {
-
-  var unique = [];
-
-  list.forEach( function ( v ) {
-    if ( unique.indexOf( v ) === -1 ) {
-      unique.push( v );
-    }
-  } );
-
-  return unique;
-
-}
 
 /**
  * A function that does nothing.
@@ -148,11 +127,11 @@ function validateObject( data, structure ) {
 
             // Ensure all property values are false
             var keys = Object.keys( query[ p ] );
-            for ( var i = 0, n = keys.length; i < n; i++ ) {
-              if ( query[ p ][ keys[ i ] ] !== false ) {
+            keys.forEach( function ( key ) {
+              if ( query[ p ][ key ] !== false ) {
                 throw new Error( 'Invalid projection value.' );
               }
-            }
+            } );
 
           } else {
 
@@ -190,46 +169,43 @@ function validateObject( data, structure ) {
     };
 
     // Loop through all base properties in structure
-    for ( var p in structure ) {
-      if ( structure.hasOwnProperty( p ) ) {
+    Object.keys( structure ).forEach( function ( p ) {
 
-        var prop = structure[ p ];
+      var prop = structure[ p ];
 
-        // Ensure property is defined properly
-        if ( prop && typeof prop === 'object' ) {
+      // Ensure property is defined properly
+      if ( prop && typeof prop === 'object' ) {
 
-          // Check if property exists in data
-          if ( p in data ) {
+        // Check if property exists in data
+        if ( p in data ) {
 
-            validate( p, prop );
-
-          } else {
-
-            // Check if this is a required property
-            if ( prop.required ) {
-
-              // Required property doesn't exist, so let's complain about it
-              throw new Error( util.format( 'Missing required property: %s.', p ) );
-
-            }
-
-            // Set default if defined
-            if ( 'default' in prop ) {
-              query[ p ] = prop.default;
-            }
-
-          }
+          validate( p, prop );
 
         } else {
 
-          // Invalid property definition; let's complain about it
-          throw new Error( util.format( 'Invalid definition for property: %s.', p ) );
+          // Check if this is a required property
+          if ( prop.required ) {
+
+            // Required property doesn't exist, so let's complain about it
+            throw new Error( util.format( 'Missing required property: %s.', p ) );
+
+          }
+
+          // Set default if defined
+          if ( 'default' in prop ) {
+            query[ p ] = prop.default;
+          }
 
         }
 
+      } else {
+
+        // Invalid property definition; let's complain about it
+        throw new Error( util.format( 'Invalid definition for property: %s.', p ) );
+
       }
 
-    }
+    } );
 
     return query;
 

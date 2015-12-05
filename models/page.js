@@ -284,12 +284,51 @@ function add( data, done ) {
  *
  * @param {object} data -
  * @param {*} data._id - Page._id
+ * @param {string} [data.user_id] - User._id of teacher
+ * @param {object} [data.projection] - projection
+ * @param {boolean} [data.projection.timestamps] -
  * @param {removePageCallback} done - callback
  */
 function remove( data, done ) {
   try {
 
-    done( new Error( 'Not implemented.' ), null );
+    var criteria = Utils.validateObject( data, {
+      _id: { filter: 'MongoId', required: true },
+      user_id: { type: 'string' }
+    } );
+
+    criteria.projection = Utils.validateObject( data, {
+      projection: {
+        type: {
+          timestamps: { type: 'boolean' }
+        },
+        filter: 'projection',
+        default: {}
+      }
+    } ).projection;
+
+    // Ensure valid page
+    get( criteria, function ( err, page, course ) {
+      if ( err ) {
+        done( err, null );
+      } else if ( course.teaching ) {
+
+        // Remove from database
+        db.pages.remove( { _id: page._id }, true, function ( err ) {
+          if ( err ) {
+            done( err, null );
+          } else {
+            done( null, page );
+          }
+        } );
+
+      } else {
+
+        // Students may not remove pages
+        done( new Error( 'Only a teacher of the course may remove its pages.' ), null );
+
+      }
+    } );
 
   } catch ( err ) {
     done( err, null );

@@ -6,14 +6,21 @@
     "mocha": true
   },
   "globals": {
-    "moment": true
+    "$": true,
+    "moment": true,
+    "toastr": true,
+    "Flipper": true,
+    "flipper": true,
+    "forEach": true
   },
   "rules": {
     "linebreak-style": 0,
     "no-restricted-modules": 0,
     "max-len": [2, 120, 2],
     "no-multiple-empty-lines": [2, {"max": 3, "maxEOF": 1}],
-    "camelcase": [2, {"properties": "never"}],
+    "newcap": [0],
+    "quote-props": [0],
+    "camelcase": [1],
     "space-in-parens": [2, "always"],
     "space-before-function-paren": [2, {"anonymous": "always", "named": "never"}],
     "array-bracket-spacing": [2, "always"],

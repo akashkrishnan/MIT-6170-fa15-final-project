@@ -4,7 +4,7 @@
 
 'use strict';
 
-(function () {
+( function () {
 
   // Add keyup listener for enter/return inside of the form
   document.querySelector( '#password' ).addEventListener( 'keyup', function ( e ) {
@@ -50,4 +50,4 @@
 
   }
 
-})();
+} )();

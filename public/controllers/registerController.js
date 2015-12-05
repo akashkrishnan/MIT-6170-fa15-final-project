@@ -4,7 +4,7 @@
 
 'use strict';
 
-(function () {
+( function () {
 
   var config;
 
@@ -45,7 +45,7 @@
         done();
       } else {
         console.error( 'Unable to retrieve configuration file. Invalid server response.' );
-        alert( 'Unable to retrieve configuration file. Invalid server response.' );
+        toastr.error( 'Unable to retrieve configuration file. Invalid server response.' );
       }
 
     };
@@ -82,29 +82,29 @@
       var hasLower = new RegExp( config.registration.password.regex.hasLower ).test( password );
 
       if ( name.length < nameMinLength ) {
-        alert( 'Full Name must contain at least ' + nameMinLength + ' characters.' );
+        toastr.error( 'Full Name must contain at least ' + nameMinLength + ' characters.' );
       } else if ( name.length > nameMaxLength ) {
-        alert( 'Full Name must contain at most ' + nameMaxLength + ' characters.' );
+        toastr.error( 'Full Name must contain at most ' + nameMaxLength + ' characters.' );
       } else if ( username.length < usernameMinLength ) {
-        alert( 'Username must contain at least ' + usernameMinLength + ' characters.' );
+        toastr.error( 'Username must contain at least ' + usernameMinLength + ' characters.' );
       } else if ( username.length > usernameMaxLength ) {
-        alert( 'Username must contain at most ' + usernameMaxLength + ' characters.' );
+        toastr.error( 'Username must contain at most ' + usernameMaxLength + ' characters.' );
       } else if ( !validUsername ) {
-        alert( 'Username contains invalid characters. Please use alphanumeric characters and underscores.' );
+        toastr.error( 'Username contains invalid characters. Please use alphanumeric characters and underscores.' );
       } else if ( password !== passwordVerify ) {
-        alert( 'Passwords do not match.' );
+        toastr.error( 'Passwords do not match.' );
       } else if ( username === password ) {
-        alert( 'Username and password must be different.' );
+        toastr.error( 'Username and password must be different.' );
       } else if ( password.length < passwordMinLength ) {
-        alert( 'Password must contain at least ' + passwordMinLength + ' characters.' );
+        toastr.error( 'Password must contain at least ' + passwordMinLength + ' characters.' );
       } else if ( password.length > passwordMaxLength ) {
-        alert( 'Password must contain at most ' + passwordMaxLength + ' characters.' );
+        toastr.error( 'Password must contain at most ' + passwordMaxLength + ' characters.' );
       } else if ( !hasNumeral ) {
-        alert( 'Password must contain at least one (1) Arabic numeral (0-9).' );
+        toastr.error( 'Password must contain at least one (1) Arabic numeral (0-9).' );
       } else if ( !hasUpper ) {
-        alert( 'Password must contain at least one (1) uppercase English alphabet character (A-Z).' );
+        toastr.error( 'Password must contain at least one (1) uppercase English alphabet character (A-Z).' );
       } else if ( !hasLower ) {
-        alert( 'Password must contain at least one (1) lowercase English alphabet character (a-z).' );
+        toastr.error( 'Password must contain at least one (1) lowercase English alphabet character (a-z).' );
       } else {
         flipper.user.register( { name: name, username: username, password: password }, function ( err ) {
           if ( err ) {
@@ -123,4 +123,4 @@
 
   }
 
-})();
+} )();

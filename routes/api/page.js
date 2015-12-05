@@ -11,6 +11,7 @@ var Mcq = require( '../../models/mcq.js' );
 module.exports = function ( app ) {
 
   app.get( '/api/pages/:page_id', apiPageGet );
+  app.delete( '/api/pages/:page_id', apiPageRemove );
   app.get( '/api/pages/:page_id/mcqs', apiMcqList );
   app.post( '/api/pages/:page_id/mcqs', apiMcqAdd );
 
@@ -29,6 +30,41 @@ function apiPageGet( req, res ) {
 
     // Get page
     Page.get(
+      {
+        _id: req.params.page_id,
+        user_id: req.user._id,
+        projection: {
+          timestamps: false
+        }
+      },
+      Utils.safeFn( function ( err, page ) {
+        if ( err ) {
+          res.json( { err: err } );
+        } else {
+          res.json( page );
+        }
+      } )
+    );
+
+  } else {
+    res.status( 400 ).json( { err: 'Bad Request: User must be authenticated to process request.' } );
+  }
+
+}
+
+/**
+ * Called to remove the specified Page object associated with the authenticated user.
+ *
+ * @param {object} req - req
+ * @param {object} res - res
+ */
+function apiPageRemove( req, res ) {
+
+  // Ensure user
+  if ( req.user ) {
+
+    // Remove page
+    Page.remove(
       {
         _id: req.params.page_id,
         user_id: req.user._id,

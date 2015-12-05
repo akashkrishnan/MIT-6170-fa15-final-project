@@ -10,11 +10,11 @@
 
     var spans = document.querySelectorAll( 'span[time]' );
 
-    for ( var i = 0; i < spans.length; i++ ) {
-      var d = new Date( spans[ i ].getAttribute( 'time' ) );
+    forEach( spans, function ( span ) {
+      var d = new Date( span.getAttribute( 'time' ) );
       var m = moment( d );
-      spans[ i ].innerHTML = m.fromNow();
-    }
+      span.innerHTML = m.fromNow();
+    } );
 
   };
 
