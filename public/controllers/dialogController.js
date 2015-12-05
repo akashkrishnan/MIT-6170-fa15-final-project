@@ -39,7 +39,6 @@
 
           }
 
-
         } else {
           console.error( 'Dialog referenced by dialog-open-trigger is missing the dialog attribute.' );
         }

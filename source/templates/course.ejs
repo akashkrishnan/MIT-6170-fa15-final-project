@@ -118,7 +118,7 @@
             <a href="/courses/<%= course._id %>/minilessons/<%= _minilesson._id %>"
                minilesson-item no-select
               <%= minilesson._id && _minilesson._id.toString() === minilesson._id.toString() ? 'active' : '' %>
-               layout-vertical>
+               layout-horizontal>
 
               <div flex layout-vertical>
 
@@ -132,15 +132,33 @@
 
               </div>
 
+              <% if ( course.teaching ) { %>
               <div buttons layout-horizontal layout-center>
-                <% if (_minilesson.states.published == false) { %>
-                  <div button id="publish-btn" course-id="<%= course._id %>" minilesson-id="<%= _minilesson._id %>" icon="publish"></div>
-                  <div button id="edit-btn" course-id="<%= course._id %>" minilesson-id="<%= _minilesson._id %>" icon="edit"></div>
+
+                <% if ( !_minilesson.states.published ) { %>
+
+                <div button
+                     id="publish-btn"
+                     course-id="<%= course._id %>"
+                     minilesson-id="<%= _minilesson._id %>"
+                     icon="publish"></div>
+
+                <div button
+                     id="edit-btn"
+                     course-id="<%= course._id %>"
+                     minilesson-id="<%= _minilesson._id %>"
+                     icon="edit"></div>
+
                 <% } %>
 
-                <div button id="remove-btn" course-id="<%= course._id %>" minilesson-id="<%= _minilesson._id %>" icon="remove"></div>
-              </div>
+                <div button
+                     id="remove-btn"
+                     course-id="<%= course._id %>"
+                     minilesson-id="<%= _minilesson._id %>"
+                     icon="remove"></div>
 
+              </div>
+              <% } %>
 
             </a>
 
