@@ -133,9 +133,12 @@
               </div>
 
               <div buttons layout-horizontal layout-center>
-                <div button icon="publish"></div>
-                <div button icon="edit"></div>
-                <div button icon="remove"></div>
+                <% if (_minilesson.states.published == false) { %>
+                  <div button id="publish-btn" course-id="<%= course._id %>" minilesson-id="<%= _minilesson._id %>" icon="publish"></div>
+                  <div button id="edit-btn" course-id="<%= course._id %>" minilesson-id="<%= _minilesson._id %>" icon="edit"></div>
+                <% } %>
+
+                <div button id="remove-btn" course-id="<%= course._id %>" minilesson-id="<%= _minilesson._id %>" icon="remove"></div>
               </div>
 
             </a>

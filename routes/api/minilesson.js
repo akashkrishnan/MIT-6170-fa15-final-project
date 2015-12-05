@@ -14,7 +14,7 @@ module.exports = function ( app ) {
   app.delete( '/api/minilessons/:minilesson_id', apiMinilessonRemove );
   app.get( '/api/minilessons/:minilesson_id/pages', apiPageList );
   app.post( '/api/minilessons/:minilesson_id/pages', apiPageAdd );
-  app.post( '/api/minilessons/:minilesson_id/publish', apiMinilessonPublish);
+  app.post( '/api/minilessons/publish/:minilesson_id', apiMinilessonPublish);
 
 };
 
@@ -100,12 +100,11 @@ function apiMinilessonPublish( req, res ) {
 
   // Ensure user
   if ( req.user ) {
-
     // Get minilesson
     Minilesson.publish(
       {
         minilesson_id: req.params.minilesson_id,
-        course_id: req.params.course_id,
+        course_id: req.body.course_id,
         user_id: req.user._id,
         projection: {
           timestamps: false

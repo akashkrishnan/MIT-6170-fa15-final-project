@@ -279,7 +279,7 @@ function add( data, done ) {
               course_id: criteria.course_id,
               title: criteria.title,
               states: {
-                published: true
+                published: false
               },
               timestamps: {
                 created: new Date(),
@@ -330,7 +330,7 @@ function publish( data, done ) {
     var criteria = Utils.validateObject( data, {
       user_id: { type: 'string', required: true },
       course_id: { type: 'string', required: true },
-      minilesson_id: { type: 'string', required: true }
+      minilesson_id: { filter: 'MongoId', required: true }
     } );
 
     // Ensure user is teaching the course
@@ -349,16 +349,14 @@ function publish( data, done ) {
         if ( err ) {
           done( err, null );
         } else if ( course.teaching ) {
-
           // Update in database
           db.minilessons.update(
             {
               _id: criteria.minilesson_id
             },
             {
-              $set: { published: true }
+              $set: { 'states.published': true }
             },
-            {},
             function ( err, minilesson ) {
               if ( err ) {
                 done( err, null );
