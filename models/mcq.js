@@ -215,11 +215,11 @@ function get( data, done ) {
               timestamps: false
             }
           },
-          function ( err, page, course ) {
+          function ( err, page, course, minilesson ) {
             if ( err ) {
               done( err, null, null );
             } else {
-              done( null, mcq, course );
+              done( null, mcq, course, minilesson );
             }
           }
         );

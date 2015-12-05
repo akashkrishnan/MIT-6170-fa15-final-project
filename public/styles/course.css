@@ -64,6 +64,10 @@
   font-size: 12px;
 }
 
+[minilesson-item]:not(:hover) [buttons] {
+  display: none;
+}
+
 [page-list] {
   min-height: 46px;
   height: 46px;

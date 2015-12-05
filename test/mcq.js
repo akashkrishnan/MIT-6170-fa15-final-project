@@ -3,21 +3,27 @@
 var MCQ = require( '../models/mcq.js' );
 var assert = require( 'assert' );
 
-var question = 'Question?';
-var emptyString = '';
-var emptyList = [];
-var oneChoiceList = [ 'Choice1' ];
-var manyChoiceList = [ 'Choice1', 'Choice2', 'Choice3', 'Choice4' ];
-
-var mcqData = {
-  question: question,
-  answerChoicesList: manyChoiceList,
-  correctChoiceIndex: 0
-};
 
 
 describe( 'MCQ', function () {
   describe( '#add()', function () {
+
+    beforeEach(function(done) {
+      var question = 'Question?';
+      var page_id = "1";
+      var emptyString = '';
+      var emptyList = [];
+      var oneChoiceList = [ 'Choice1' ];
+      var manyChoiceList = [ 'Choice1', 'Choice2', 'Choice3', 'Choice4' ];
+
+      var mcqData = {
+        page_id: "1",
+        question: question,
+        answers: manyChoiceList,
+        answer: "Choice1"
+      };
+
+    });
     context( 'all valid entries', function () {
       it( 'should add an mcq to database', function ( done ) {
         MCQ.add( mcqData, function ( err ) {

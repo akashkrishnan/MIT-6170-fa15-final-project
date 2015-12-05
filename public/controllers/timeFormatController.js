@@ -20,6 +20,6 @@
 
   update();
 
-  setInterval( update, 30000 );
+  setInterval( update, 1000 );
 
 } )();

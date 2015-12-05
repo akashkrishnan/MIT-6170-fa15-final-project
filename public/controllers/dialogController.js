@@ -5,7 +5,7 @@
 
 'use strict';
 
-( function () {
+(function () {
 
   // Register all dialogs and make sure they're hidden
   var dialogs = document.querySelectorAll( '[dialog]' );
@@ -24,7 +24,22 @@
       var dialog = document.querySelector( '#' + id );
       if ( dialog ) {
         if ( dialog.hasAttribute( 'dialog' ) ) {
+
+          // Show the dialog
           dialog.style.display = null;
+
+          // Get all user-input fields
+          var inputFields = dialog.querySelectorAll( 'input:not([type="hidden"])' );
+
+          // Ensure we have at least one input field
+          if ( inputFields && inputFields.length ) {
+
+            // Autofocus the first input field
+            inputFields[ 0 ].focus();
+
+          }
+
+
         } else {
           console.error( 'Dialog referenced by dialog-open-trigger is missing the dialog attribute.' );
         }
@@ -64,4 +79,4 @@
     closeTrigger.addEventListener( 'click', closeTriggerEventHandler( closeTrigger ), false );
   } );
 
-} )();
+})();

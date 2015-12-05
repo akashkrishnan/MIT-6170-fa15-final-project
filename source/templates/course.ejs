@@ -119,13 +119,28 @@
                minilesson-item no-select
               <%= minilesson._id && _minilesson._id.toString() === minilesson._id.toString() ? 'active' : '' %>
                layout-vertical>
-              <div name><strong><%= _minilesson.title %></strong></div>
 
-              <% if ( _minilesson.timestamps.due ) { %>
-              <div due-date><%= _minilesson.timestamps.due %></div>
-              <% } else { %>
-              <div due-date>No due date.</div>
-              <% } %>
+              <div flex layout-vertical>
+
+                <div name><strong><%= _minilesson.title %></strong></div>
+
+                <% if ( _minilesson.timestamps.due_date ) { %>
+                <span time="<%= _minilesson.timestamps.due_date %>" due-date></span>
+                <% } else { %>
+                <div due-date>No due date.</div>
+                <% } %>
+
+              </div>
+
+              <div buttons layout-horizontal layout-center>
+                <% if (_minilesson.states.published == false) { %>
+                  <div button id="publish-btn" course-id="<%= course._id %>" minilesson-id="<%= _minilesson._id %>" icon="publish"></div>
+                  <div button id="edit-btn" course-id="<%= course._id %>" minilesson-id="<%= _minilesson._id %>" icon="edit"></div>
+                <% } %>
+
+                <div button id="remove-btn" course-id="<%= course._id %>" minilesson-id="<%= _minilesson._id %>" icon="remove"></div>
+              </div>
+
 
             </a>
 
@@ -286,6 +301,11 @@
             <input type="text" title-input/>
           </div>
 
+          <div input layout-vertical>
+            <label>Due Date (optional)</label>
+            <input type="datetime-local" due-Date-input>
+          </div>
+
         </div>
 
         <div buttons layout-horizontal layout-end-justified>
@@ -390,6 +410,7 @@
     <% } %>
 
     <script src="/jquery/dist/jquery.min.js"></script>
+    <script src="/moment/min/moment.min.js"></script>
     <script src="/toastr/toastr.min.js"></script>
     <script src="/flipper.js"></script>
     <script src="/global.js"></script>
@@ -397,6 +418,8 @@
     <script src="/controllers/dialogController.js"></script>
     <script src="/controllers/courseController.js"></script>
     <script src="/controllers/gradeController.js"></script>
+    <script src="/controllers/timeFormatController.js"></script>
+
 
   </body>
 

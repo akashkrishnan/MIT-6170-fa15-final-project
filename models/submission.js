@@ -266,7 +266,7 @@ function add( data, done ) {
               timestamps: false
             }
           },
-          function ( err, mcq, course ) {
+          function ( err, mcq, course, minilesson ) {
             if ( err ) {
               done( err, null );
             } else if ( mcq.answers.indexOf( insertData.answer ) === -1 ) {
@@ -276,7 +276,9 @@ function add( data, done ) {
               // Teachers cannot answers mcqs associated with the courses they teach
               done( new Error( 'Only students can answer an mcq.' ), null );
 
-            } else {
+            } else if(+minilesson.timestamps.due_date && (+minilesson.timestamps.due_date < + new Date()) ){
+                done (new Error ("submission is past due date"), null);
+            }else {
 
               insertData.score = insertData.answer === mcq.answer ? 1 : 0;
               insertData.timestamps = { created: new Date() };

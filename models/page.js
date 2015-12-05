@@ -173,10 +173,6 @@ function get( data, done ) {
           {
             _id: page.minilesson_id,
             user_id: criteria.user_id,
-            projection: {
-              states: false,
-              timestamps: false
-            }
           },
           function ( err, minilesson, course ) {
             if ( err ) {
@@ -184,7 +180,7 @@ function get( data, done ) {
             } else {
 
               // Teachers can see all pages
-              done( null, page, course );
+              done( null, page, course, minilesson);
 
             }
           }
