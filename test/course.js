@@ -152,26 +152,22 @@ describe( 'Courses', function () {
   } );
 
 
-  // list 
-  describe( '#listForTeacher()', function () {
-    it( 'finds courses taught by a teacher', function ( done ) {
-      Course.listForTeacher( { teacher_id: '1234' }, function ( err, courses ) {
-        assert.equal( courses[ 0 ].courseName, 'math' );
-        done();
-      }
-      );
-    } );
-  } );
+  // decline student
+  describe( '#declineStudent()', function () {
 
-  describe( '#getCoursesForStudent()', function () {
-    it( 'finds courses a student is in', function ( done ) {
-      Course.listForStudent( { student_id: 'harini' }, function ( err, courses ) {
-        assert.equal( courses[ 0 ].courseName, 'math' );
-        done();
-      }
-      );
+    it( 'declines a student from joining a class', function ( done ) {
+      Course.join( { _id: testCourse._id, student_id: student2._id }, function ( err, course ) {
+        Course.declineStudent( { _id: testCourse._id, teacher_id: teacher._id, student_id: student2._id }, function ( err, course ) {
+          Course.get( { _id: testCourse._id }, function ( err, updatedCourse ) {
+            assert.equal( updatedCourse.pendingStudents.length, 0);
+            assert.equal( updatedCourse.students.length, 1);
+            assert.notEqual( updatedCourse.students[0]._id, student2._id);
+            done();
+          } );
+        } );
+      } );
     } );
-  } );
 
+  } );
 
 } );
