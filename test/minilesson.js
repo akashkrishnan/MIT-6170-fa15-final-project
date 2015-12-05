@@ -4,22 +4,53 @@
 
 'use strict';
 
+var User = require('../models/user.js');
+var Course = require('../models/course.js');
 var Minilesson = require( '../models/minilesson.js' );
 var assert = require( 'assert' );
 
-var minilessonData = {
-  name: 'Introduction to Kinematics',
-  state: 'active'
-};
-
+var user;
+var course;
 var minilesson;
+var data;
+var minilessonTitle = "Kinematics I";
+var minilessonDueDate = new Date();
 
 describe( 'Minnilesson', function () {
+
+  before(function (done) {
+    User.add({
+      name: 'Person Name',
+      username: 'usrname7',
+      password: 'username15MIT!'
+    }, function (err, _user) {
+      if (err) {
+        throw err;
+      }
+      user = _user;
+      Course.add({
+        name: 'courseName10',
+        teacher_id: user._id
+      }, function (err, _course) {
+        if (err) {
+          throw err;
+        }
+        course = _course;
+        data = {
+          user_id: user._id,
+          course_id: String(course._id),
+          due_date: minilessonDueDate,
+          title: minilessonTitle
+        };
+        done();
+      });
+    });
+  });
 
   describe( '#add()', function () {
     context( 'all valid entries', function () {
       it( 'should add a minilesson to database', function ( done ) {
-        Minilesson.add( minilessonData, function ( err, _minilesson ) {
+        Minilesson.add( data, function ( err, _minilesson ) {
           if ( err ) {
             throw err;
           }
@@ -27,10 +58,10 @@ describe( 'Minnilesson', function () {
           done();
         } );
       } );
-      it( 'should return callback with correct data', function ( done ) {
-        assert.equal( minilesson.name, minilessonData.name );
-        assert.equal( minilesson.state, minilessonData.state );
-        done();
+      it( 'should return callback with correct data', function () {
+        assert.equal(minilesson.course_id, data.course_id);
+        assert.equal(minilesson.title, data.title);
+        assert.equal(minilesson.timestamps.due_date, String(data.due_date));
       } );
     } );
   } );
@@ -44,25 +75,29 @@ describe( 'Minnilesson', function () {
         if ( err ) {
           done( err );
         } else {
-          assert.equal( _minilesson._id, minilesson._id );
-          assert.equal( _minilesson.name, minilesson.name );
-          assert.equal( _minilesson.state, minilesson.state );
+          assert.equal( String(_minilesson._id), String(minilesson._id) );
+          assert.equal( String(_minilesson.course_id), String(minilesson.course_id) );
+          assert.equal( String(_minilesson.title), String(minilesson.title) );
+          assert.equal( String(_minilesson.timestamps.due_date), String(minilesson.timestamps.due_date));
+          assert.equal( String(_minilesson.states), String(minilesson.states) );
           done();
         }
       } );
     } );
   } );
 
-  describe( '#addPage', function () {
-    it( 'adds a Page to existing minilesson without error', function ( done ) {
-      Minilesson.addPage( { _id: minilesson._id, page_id: '0' }, done );
-    } );
-  } );
+  describe('#publish', function(){
+    it('should change state of minilesson to publish', function(done) {
+      done();
+    });
+  });
 
+  /*
   describe( '#removePage', function () {
     it( 'removes a Page to existing minilesson without error', function ( done ) {
       Minilesson.remove( { _id: minilesson._id, page_id: '0' }, done );
     } );
   } );
+  */
 
 } );
