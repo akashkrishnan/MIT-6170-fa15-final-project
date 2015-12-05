@@ -252,7 +252,7 @@ function add( data, done ) {
         filter: 'trim',
         required: true
       },
-      due_date: {}
+      due_date: {required: true}
     } );
 
     // Ensure user is teaching the course

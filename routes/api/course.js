@@ -260,13 +260,12 @@ function apiMinilessonAdd( req, res ) {
   // Ensure user
   if ( req.user ) {
 
+
+    req.body.course_id = req.params.course_id;
+    req.body.user_id = req.user._id;
     // Add minilesson
     Minilesson.add(
-      {
-        user_id: req.user._id,
-        course_id: req.params.course_id,
-        title: req.body.title
-      },
+      req.body,
       Utils.safeFn( function ( err, minilesson ) {
         if ( err ) {
           res.json( { err: err } );
