@@ -15,6 +15,7 @@ module.exports = function ( app ) {
   app.get( '/api/minilessons/:minilesson_id/pages', apiPageList );
   app.post( '/api/minilessons/:minilesson_id/pages', apiPageAdd );
   app.post( '/api/minilessons/publish/:minilesson_id', apiMinilessonPublish);
+  app.post( '/api/minilessons/edit/:minilesson_id', apiMinilessonEdit);
 
 };
 
@@ -125,6 +126,43 @@ function apiMinilessonPublish( req, res ) {
 
 }
 
+/**
+ * Called to edit Minilesson object.
+ *
+ * @param {object} req - req
+ * @param {object} res - res
+ */
+function apiMinilessonEdit( req, res ) {
+
+  // Ensure user
+  if ( req.user ) {
+    console.log(req.body);
+    // Get minilesson
+    Minilesson.edit(
+      {
+        minilesson_id: req.body.minilesson_id,
+        course_id: req.body.course_id,
+        user_id: req.user._id,
+        title: req.body.title,
+        due_date: req.body.due_date,
+        projection: {
+          timestamps: false
+        }
+      },
+      Utils.safeFn( function ( err, minilesson ) {
+        if ( err ) {
+          res.json( { err: err } );
+        } else {
+          res.json( minilesson );
+        }
+      } )
+    );
+
+  } else {
+    res.status( 400 ).json( { err: 'Bad Request: User must be authenticated to process request.' } );
+  }
+
+}
 
 /**
  * Called to get a list of Page objects associated with the specified minilesson and the authenticated user.

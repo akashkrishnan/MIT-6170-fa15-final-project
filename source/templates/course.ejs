@@ -147,6 +147,7 @@
                      id="edit-btn"
                      course-id="<%= course._id %>"
                      minilesson-id="<%= _minilesson._id %>"
+                     dialog-open-trigger="minilesson-edit-dialog"
                      icon="edit"></div>
 
                 <% } %>
@@ -329,6 +330,36 @@
         <div buttons layout-horizontal layout-end-justified>
           <a button small dialog-close-trigger="minilesson-add-dialog">Cancel</a>
           <a button small blue create>Create</a>
+        </div>
+
+      </div>
+    </div>
+
+    <div id="minilesson-edit-dialog" dialog backdrop
+         course-id="<%= course._id %>"
+         dialog-close-trigger="minilesson-edit-dialog"
+         layout-horizontal layout-center-center>
+      <div form shadow elevation="5" layout-vertical>
+
+        <div header>Edit Minilesson</div>
+
+        <div inputs layout-vertical>
+
+          <div input layout-vertical>
+            <label>Minilesson Title</label>
+            <input type="text" title-input/>
+          </div>
+
+          <div input layout-vertical>
+            <label>Due Date (optional)</label>
+            <input type="datetime-local" due-Date-input>
+          </div>
+
+        </div>
+
+        <div buttons layout-horizontal layout-end-justified>
+          <a button small dialog-close-trigger="minilesson-edit-dialog">Cancel</a>
+          <a button small blue set>Set</a>
         </div>
 
       </div>
