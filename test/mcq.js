@@ -1,9 +1,10 @@
 'use strict';
 
 var MCQ = require( '../models/mcq.js' );
-var User = require("..models/user.js");
-var MiniLesson = require("..models/minilesson.js");
-var Page = require("..models/page.js");
+var User = require("../models/user.js");
+var Minilesson = require("../models/minilesson.js");
+var Page = require("../models/page.js");
+var Course = require("../models/course.js");
 
 var assert = require( 'assert' );
 
@@ -13,14 +14,22 @@ var userTeacher;
 var userStudent;
 var course;
 var minilessonYesterday;
-var minilessonYesterday;
+var minilessonMonth;
 var pageYesterday;
 var pageMonth;
+var question = "What is the difference between a hot tub and jacuzzi?";
+var emptyString = "";
+var oneChoiceList = ["nothing"];
+var manyChoiceList = ["size", "everything", "nothing"];
+var emptyList =[];
+var answer = "nothing";
 
 var yesterday = new Date();
 yesterday.setDate(yesterday.getDate() - 1);
 var nextMonth = new Date();
 nextMonth.setDate(nextMonth.getDate() + 30);
+
+var mcqData;
 
 describe( 'MCQ', function () {
 
@@ -72,8 +81,8 @@ describe( 'MCQ', function () {
                       Page.add( { // adding pageYesterday
                         user_id: String(userTeacher._id),
                         minilesson_id: String(minilessonYesterday._id),
-                        title: pageTitle;
-                        resource: pageResource;
+                        title: pageTitle,
+                        resource: pageResource
                       }, function(err, _pageYesterday) {
                         if (err) {
                           throw err;
@@ -82,14 +91,22 @@ describe( 'MCQ', function () {
                         Page.add( { //adding pageMonth
                           user_id: String(userTeacher._id),
                           minilesson_id: String(minilessonMonth._id),
-                          title: pageTitle;
-                          resource: pageResource;
-                        }, function (err, _PageMonth) {
+                          title: pageTitle,
+                          resource: pageResource
+                        }, function (err, _pageMonth) {
                           if (err) {
                             throw err;
                           }
                           pageMonth = _pageMonth;
+                          mcqData = {
+                            user_id: String(userTeacher._id),
+                            page_id: String(pageMonth._id),
+                            question: question,
+                            answers: manyChoiceList,
+                            answer: answer
+                          }
                           done();
+
                         });
                       });
                       
