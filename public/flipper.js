@@ -8,7 +8,18 @@ var Flipper = function () {
 
   var that = Object.create( Flipper.prototype );
 
+  var getCookie = function ( name ) {
+    var value = '; ' + document.cookie;
+    var parts = value.split( '; ' + name + '=' );
+    if ( parts.length === 2 ) {
+      return parts.pop().split( ';' ).shift();
+    }
+  };
+
   var ajax = function ( method, url, data, done ) {
+
+    // Set token in data
+    data.token = getCookie( 'token' );
 
     var xhr = new XMLHttpRequest();
 
@@ -286,7 +297,7 @@ var Flipper = function () {
 
     publish: function ( data, done ) {
       if ( data ) {
-        if ( data.minilesson_id && data.minilesson_id.trim() && data.course_id && data.course_id.trim()) {
+        if ( data.minilesson_id && data.minilesson_id.trim() && data.course_id && data.course_id.trim() ) {
           ajax( 'POST', '/api/minilessons/publish/' + data.minilesson_id.trim(), data, function ( data ) {
             if ( data ) {
               if ( data.err ) {
@@ -306,7 +317,7 @@ var Flipper = function () {
 
     edit: function ( data, done ) {
       if ( data ) {
-        if ( data.minilesson_id && data.minilesson_id.trim() && data.course_id && data.course_id.trim()) {
+        if ( data.minilesson_id && data.minilesson_id.trim() && data.course_id && data.course_id.trim() ) {
           ajax( 'POST', '/api/minilessons/edit/' + data.minilesson_id.trim(), data, function ( data ) {
             if ( data ) {
               if ( data.err ) {
