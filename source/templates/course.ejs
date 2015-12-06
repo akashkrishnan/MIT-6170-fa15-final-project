@@ -250,7 +250,7 @@
               There are no multiple choice questions for this page.
             </div>
             <% } %>
-
+            <div button id="remove-page-btn" small page-id="<%=page._id%>">Delete Page</div>
           </div>
 
           <% } else { %>
@@ -299,12 +299,16 @@
 
           </div>
 
+
+
         </div>
 
         <% } %>
 
       </div>
     </div>
+
+
 
     <div id="minilesson-add-dialog" dialog backdrop
          course-id="<%= course._id %>"
@@ -406,6 +410,7 @@
          page-id="<%= page._id %>"
          dialog-close-trigger="mcq-add-dialog"
          layout-horizontal layout-center-center>
+
       <div form shadow elevation="5" layout-vertical>
 
         <div header>Add Multiple Choice Question</div>
@@ -458,6 +463,8 @@
     </div>
 
     <% } %>
+
+
 
     <script src="/jquery/dist/jquery.min.js"></script>
     <script src="/moment/min/moment.min.js"></script>
