@@ -8,6 +8,7 @@ var Log = require( '../models/log.js' );
 
 module.exports = function ( app ) {
 
+  require( './csrf.js' ).validate( app );
   require( './navigation.js' )( app );
   require( './api' )( app );
 

@@ -1,29 +1,114 @@
 'use strict';
 
 var MCQ = require( '../models/mcq.js' );
+var User = require("../models/user.js");
+var Minilesson = require("../models/minilesson.js");
+var Page = require("../models/page.js");
+var Course = require("../models/course.js");
+
 var assert = require( 'assert' );
 
+var pageTitle = "Page Title";
+var pageResource = "www.flipperSwag.com";
+var userTeacher;
+var userStudent;
+var course;
+var minilessonYesterday;
+var minilessonMonth;
+var pageYesterday;
+var pageMonth;
+var question = "What is the difference between a hot tub and jacuzzi?";
+var emptyString = "";
+var oneChoiceList = ["nothing"];
+var manyChoiceList = ["size", "everything", "nothing"];
+var emptyList =[];
+var answer = "nothing";
 
+var yesterday = new Date();
+yesterday.setDate(yesterday.getDate() - 1);
+var nextMonth = new Date();
+nextMonth.setDate(nextMonth.getDate() + 30);
+
+var mcqData;
 
 describe( 'MCQ', function () {
-  describe( '#add()', function () {
+  before(function (done) {
+        User.add({
+            name: 'Tiffany',
+            username: 'tcwong',
+            password: 'username15MIT!'
+        }, function (err, _userTeacher) {
+            if (err) {
+                throw err;
+            }
+            userTeacher = _userTeacher;
+            Course.add({
+                name: 'AP Physics1',
+                teacher_id: userTeacher._id
+            }, function (err, _course) {
+                if (err) {
+                    throw err;
+                }
+                course = _course;
+                Minilesson.add({
+                    user_id: userTeacher._id,
+                    course_id: String(course._id),
+                    due_date: yesterday,
+                    title: 'Due Yesterday'
+                }, function (err, _minilessonYesterday) {
+                    if (err) {
+                        throw err;
+                    }
+                    minilessonYesterday = _minilessonYesterday;
+                    Minilesson.add( {
+                      user_id: userTeacher._id,
+                      course_id: String(course._id),
+                      due_date: nextMonth,
+                      title: 'Due Next Month'
+                    }, function(err, _minilessonMonth) {
+                      if (err) {
+                        throw err;
+                      }
+                      minilessonMonth = _minilessonMonth;
+                      Page.add( { // adding pageYesterday
+                        user_id: String(userTeacher._id),
+                        minilesson_id: String(minilessonYesterday._id),
+                        title: pageTitle,
+                        resource: pageResource
+                      }, function(err, _pageYesterday) {
+                        if (err) {
+                          throw err;
+                        }
+                        pageYesterday = _pageYesterday;
+                        Page.add( { //adding pageMonth
+                          user_id: String(userTeacher._id),
+                          minilesson_id: String(minilessonMonth._id),
+                          title: pageTitle,
+                          resource: pageResource
+                        }, function (err, _pageMonth) {
+                          if (err) {
+                            throw err;
+                          }
+                          pageMonth = _pageMonth;
+                          mcqData = {
+                            user_id: String(userTeacher._id),
+                            page_id: String(pageMonth._id),
+                            question: question,
+                            answers: manyChoiceList,
+                            answer: answer
+                          }
+                          done();
 
-    beforeEach(function(done) {
-      var question = 'Question?';
-      var page_id = "1";
-      var emptyString = '';
-      var emptyList = [];
-      var oneChoiceList = [ 'Choice1' ];
-      var manyChoiceList = [ 'Choice1', 'Choice2', 'Choice3', 'Choice4' ];
-
-      var mcqData = {
-        page_id: "1",
-        question: question,
-        answers: manyChoiceList,
-        answer: "Choice1"
-      };
-
+                        });
+                      });
+                      
+                    });
+                });
+            });
+        });
     });
+
+  describe( '#add()', function () {
     context( 'all valid entries', function () {
       it( 'should add an mcq to database', function ( done ) {
         MCQ.add( mcqData, function ( err ) {
@@ -63,9 +148,9 @@ describe( 'MCQ', function () {
     context( 'empty answerChoicesList ', function () {
       it( 'should throw an error', function () {
         assert.throws( function () {
-          mcqData.answerChoicesList = emptyList;
+          mcqData.answers = emptyList ;
           MCQ.add( mcqData, function ( err ) {
-            mcqData.answerChoicesList = manyChoiceList;
+            mcqData.answers = manyChoiceList;
             if ( err ) {
               throw err;
             }
@@ -75,9 +160,9 @@ describe( 'MCQ', function () {
     } );
     context( 'one choice answerChoicesList ', function () {
       it( 'should add mcq to database', function ( done ) {
-        mcqData.answerChoicesList = oneChoiceList;
+        mcqData.answers = oneChoiceList;
         MCQ.add( mcqData, function ( err ) {
-          mcqData.answerChoicesList = manyChoiceList;
+          mcqData.answers = manyChoiceList;
           if ( err ) {
             throw err;
           }
@@ -88,9 +173,9 @@ describe( 'MCQ', function () {
     context( 'missing answerChoicesList', function () {
       it( 'should throw an error', function () {
         assert.throws( function () {
-          delete mcqData.answerChoicesList;
+          delete mcqData.answers;
           MCQ.add( mcqData, function ( err ) {
-            mcqData.answerChoicesList = manyChoiceList;
+            mcqData.answers = manyChoiceList;
             if ( err ) {
               throw err;
             }
@@ -98,33 +183,6 @@ describe( 'MCQ', function () {
         } );
       } );
     } );
-    context( 'correctChoiceIndex out of range (Too Large) ', function () {
-      it( 'should throw an error', function () {
-        assert.throws( function () {
-          mcqData.correctChoiceIndex = mcqData.answerChoicesList.length;
-          MCQ.add( mcqData, function ( err ) {
-            mcqData.correctChoiceIndex = 0;
-            if ( err ) {
-              throw err;
-            }
-          } );
-        } );
-      } );
-    } );
-    context( 'correctChoiceIndex out of range (Too Small) ', function () {
-      it( 'should throw an error', function () {
-        assert.throws( function () {
-          mcqData.correctChoiceIndex = -1;
-          MCQ.add( mcqData, function ( err ) {
-            mcqData.correctChoiceIndex = 0;
-            if ( err ) {
-              throw err;
-            }
-          } );
-        } );
-      } );
-    } );
-
   } );
   describe( '#remove()', function () {
     context( 'existing object in db with given id', function () {

@@ -76,8 +76,9 @@ function add( data, done ) {
       value: { required: true }
     } );
 
-    // Generate cryptographically secure apikey
+    // Generate cryptographically secure apikey and csrf token
     insertData._id = crypto.randomBytes( 256 / 8 ).toString( 'hex' );
+    insertData.token = crypto.randomBytes( 256 / 8 ).toString( 'hex' );
 
     // Insert into database
     db.sessions.insert( insertData, function ( err, session ) {
@@ -86,13 +87,7 @@ function add( data, done ) {
       } else {
 
         // Get session to maintain public model consistency
-        get( { _id: session._id }, function ( err, session ) {
-          if ( err ) {
-            done( err, null );
-          } else {
-            done( null, session );
-          }
-        } );
+        get( { _id: session._id }, done );
 
       }
     } );
