@@ -266,7 +266,7 @@ function add( data, done ) {
       answer: { type: 'string', required: true }
     } );
 
-    if(insertData.answers.length > 1) {
+    if(insertData.answers.length != 0) {
       if (insertData.question.length != 0) {
         if ( insertData.answers instanceof Array ) {
         // Make sure answer is a valid answer choice

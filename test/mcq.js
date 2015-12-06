@@ -156,9 +156,9 @@ describe( 'MCQ', function () {
     context( 'empty answerChoicesList ', function () {
       it( 'should throw an error', function () {
         assert.throws( function () {
-          mcqData.answerChoicesList = emptyList;
+          mcqData.answers = emptyList ;
           MCQ.add( mcqData, function ( err ) {
-            mcqData.answerChoicesList = manyChoiceList;
+            mcqData.answers = manyChoiceList;
             if ( err ) {
               throw err;
             }
@@ -168,9 +168,9 @@ describe( 'MCQ', function () {
     } );
     context( 'one choice answerChoicesList ', function () {
       it( 'should add mcq to database', function ( done ) {
-        mcqData.answerChoicesList = oneChoiceList;
+        mcqData.answers = oneChoiceList;
         MCQ.add( mcqData, function ( err ) {
-          mcqData.answerChoicesList = manyChoiceList;
+          mcqData.answers = manyChoiceList;
           if ( err ) {
             throw err;
           }
@@ -181,9 +181,9 @@ describe( 'MCQ', function () {
     context( 'missing answerChoicesList', function () {
       it( 'should throw an error', function () {
         assert.throws( function () {
-          delete mcqData.answerChoicesList;
+          delete mcqData.answers;
           MCQ.add( mcqData, function ( err ) {
-            mcqData.answerChoicesList = manyChoiceList;
+            mcqData.answers = manyChoiceList;
             if ( err ) {
               throw err;
             }
@@ -191,33 +191,6 @@ describe( 'MCQ', function () {
         } );
       } );
     } );
-    context( 'correctChoiceIndex out of range (Too Large) ', function () {
-      it( 'should throw an error', function () {
-        assert.throws( function () {
-          mcqData.correctChoiceIndex = mcqData.answerChoicesList.length;
-          MCQ.add( mcqData, function ( err ) {
-            mcqData.correctChoiceIndex = 0;
-            if ( err ) {
-              throw err;
-            }
-          } );
-        } );
-      } );
-    } );
-    context( 'correctChoiceIndex out of range (Too Small) ', function () {
-      it( 'should throw an error', function () {
-        assert.throws( function () {
-          mcqData.correctChoiceIndex = -1;
-          MCQ.add( mcqData, function ( err ) {
-            mcqData.correctChoiceIndex = 0;
-            if ( err ) {
-              throw err;
-            }
-          } );
-        } );
-      } );
-    } );
-
   } );
   describe( '#remove()', function () {
     context( 'existing object in db with given id', function () {
