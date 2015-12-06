@@ -93,14 +93,18 @@
 
   /* -------------------------------------------------------------------------------------------------------------- */
 
-  var editBtn = document.querySelector( '#edit-btn' );
+  var editBtns = document.querySelectorAll( '#edit-btn' );
 
-  if ( editBtn ) {
-    editBtn.addEventListener( 'click', function (e) {
-      e.preventDefault();
-      minilesson_id = editBtn.getAttribute('minilesson-id');
-    }); 
+
+  if ( editBtns ) {
+    forEach( editBtns, function ( editBtn ) {
+      editBtn.addEventListener( 'click', function (e) {
+        e.preventDefault();
+        minilesson_id = editBtn.getAttribute('minilesson-id');
+      } );
+    } );
   }
+
 
   /* -------------------------------------------------------------------------------------------------------------- */
 
