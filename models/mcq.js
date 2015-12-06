@@ -266,56 +266,61 @@ function add( data, done ) {
       answer: { type: 'string', required: true }
     } );
 
-    if (insertData.question.length != 0) {
-      if ( insertData.answers instanceof Array ) {
-      // Make sure answer is a valid answer choice
-        if ( insertData.answers.indexOf( insertData.answer ) === -1 ) {
-          done( new Error( 'Provided answer is not a valid answer choice.' ), null );
+    if(insertData.answers.length > 1) {
+      if (insertData.question.length != 0) {
+        if ( insertData.answers instanceof Array ) {
+        // Make sure answer is a valid answer choice
+          if ( insertData.answers.indexOf( insertData.answer ) === -1 ) {
+            done( new Error( 'Provided answer is not a valid answer choice.' ), null );
+          } else {
+
+            // Ensure user is associated with mcq's page
+            Page.get(
+              {
+                _id: criteria.page_id,
+                user_id: criteria.user_id,
+                projection: {
+                  timestamps: false
+                }
+              },
+              function ( err, page, course ) {
+                if ( err ) {
+                  done( err, null );
+                } else if ( course.teaching ) {
+
+                  // Only teachers can add pages
+                  insertData.timestamps = { created: new Date() };
+
+                  // Insert into database
+                  db.mcqs.insert( insertData, function ( err, mcq ) {
+                    if ( err ) {
+                      done( err, null );
+                    } else {
+
+                      // Get the new mcq object the proper way
+                      get( { _id: mcq._id }, done );
+
+                    }
+                  } );
+
+                } else {
+                  done( new Error( 'Only teachers can add mcqs to pages.' ), null );
+                }
+              }
+            );
+
+          }
+
         } else {
-
-          // Ensure user is associated with mcq's page
-          Page.get(
-            {
-              _id: criteria.page_id,
-              user_id: criteria.user_id,
-              projection: {
-                timestamps: false
-              }
-            },
-            function ( err, page, course ) {
-              if ( err ) {
-                done( err, null );
-              } else if ( course.teaching ) {
-
-                // Only teachers can add pages
-                insertData.timestamps = { created: new Date() };
-
-                // Insert into database
-                db.mcqs.insert( insertData, function ( err, mcq ) {
-                  if ( err ) {
-                    done( err, null );
-                  } else {
-
-                    // Get the new mcq object the proper way
-                    get( { _id: mcq._id }, done );
-
-                  }
-                } );
-
-              } else {
-                done( new Error( 'Only teachers can add mcqs to pages.' ), null );
-              }
-            }
-          );
-
+          done( new Error( 'Expected array for property: answers.' ), null );
         }
-
-      } else {
-        done( new Error( 'Expected array for property: answers.' ), null );
+      }
+      else {
+        done (new Error ("Expected non-zero length question"), null);
       }
     }
     else {
-      done (new Error ("Expected non-zero length question"), null);
+      done (new Error ("Expected more tha 1 answer choices"), null);
     }
 
   } catch ( err ) {
