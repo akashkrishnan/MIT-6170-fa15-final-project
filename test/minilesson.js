@@ -22,7 +22,7 @@ describe( 'Minnilesson', function () {
   before(function (done) {
     User.add({
       name: 'Person Name',
-      username: 'usrname14',
+      username: 'usrname29',
       password: 'username15MIT!'
     }, function (err, _user) {
       if (err) {
@@ -108,11 +108,10 @@ describe( 'Minnilesson', function () {
         due_date: new Date()
       };
 
-      Minilesson.edit(new_data, function(err, _minilesson) {
-        assert.equal( String(_minilesson._id), String(minilesson._id) );
-        assert.equal( String(_minilesson.course_id), String(new_data.course_id) );
-        assert.equal( String(_minilesson.title), String(new_data.title) );
-        assert.equal( String(_minilesson.timestamps.due_date), String(new_data.due_date));
+      Minilesson.edit(new_data, function(err, _minilessonEdit) {
+        assert.equal( _minilessonEdit.ok, 1 );
+        assert.equal( _minilessonEdit.nModified, 1 );
+        assert.equal( _minilessonEdit.n, 1 );
         done();
       })
     })
@@ -120,14 +119,53 @@ describe( 'Minnilesson', function () {
 
   describe('#publish', function(){
     it('should change state of minilesson to publish', function(done) {
-      done();
+      Minilesson.publish({
+        minilesson_id: minilesson._id,
+        user_id: user._id,
+        course_id: String(course._id)},
+          function(err, _minilessonEdit){
+            if(err){
+              done(err);
+            } else {
+              assert.equal( _minilessonEdit.ok, 1 );
+              assert.equal( _minilessonEdit.nModified, 1 );
+              assert.equal( _minilessonEdit.n, 1 );
+              done();
+        }
+      });
+    });
+    it('should return minilesson as published', function(done){
+      Minilesson.get({_id: minilesson._id}, function(err, _minilesson){
+        if(err){
+          done(err);
+        } else {
+          assert.equal(_minilesson.states.published, true);
+          done();
+        }
+      });
     });
   });
 
   describe( '#remove', function () {
-    it('removes a Page to existing minilesson without error', function (done) {
-      Minilesson.remove({_id: minilesson._id}, done);
+    context('all valid entries', function() {
+      it('removes a Page to existing minilesson without error', function (done) {
+        Minilesson.add(data, function(err, _minilesson) {
+          Minilesson.remove({_id: _minilesson._id, user_id: data.user_id}, done);
+        });
+      });
+    });
+    context('missing minilesson _id', function(){
+      it('should throw an error', function(done){
+        Minilesson.add(data, function(err){
+          Minilesson.remove({user_id: data.user_id}, function(err){
+            if(err){
+              done();
+            } else {
+              done(new Error("No Error Thrown"));
+            }
+          });
+        });
+      });
     });
   });
-
 });
