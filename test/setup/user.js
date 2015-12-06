@@ -1,5 +1,7 @@
 'use strict';
 
-module.exports = function ( done ) {
-  done();
+module.exports = function(scope) {
+	return function ( done ) {
+  		done();
 };
+}
