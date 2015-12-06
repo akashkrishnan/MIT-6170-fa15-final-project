@@ -109,13 +109,6 @@ describe( 'MCQ', function () {
     });
 
   describe( '#add()', function () {
-    /* Setup: created User (teacher), Course, MiniLesson (x2, due yesterday and next month) and Page x2
-    TODO: create Student and test student side 
-
-    */
-    
-
-
     context( 'all valid entries', function () {
       it( 'should add an mcq to database', function ( done ) {
         MCQ.add( mcqData, function ( err ) {

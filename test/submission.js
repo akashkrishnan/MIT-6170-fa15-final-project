@@ -13,6 +13,7 @@ var pageTitle = "Page Title";
 var pageResource = "www.flipperSwag.com";
 var userTeacher;
 var userStudent;
+var userOther;
 var course;
 var minilessonYesterday;
 var minilessonMonth;
@@ -167,15 +168,26 @@ describe( "Submissions", function () {
                                       if (err) {
                                         throw err;
                                       }
-                                      submissionData = {
-                                      user_id: String(userStudent._id),
-                                      mcq_id: String(mcqMonth._id),
-                                      answer: answer
-                                    };
-                                    done();
+                                      User.add({
+                                       name: 'akash',
+                                        username: 'akashmedrano',
+                                        password: 'username15MIT!'
+                                      }, function(err, _userOther) {
+                                        if (err) {
+                                          throw err;
+                                        }
+                                        userOther = _userOther;
+                                        submissionData = {
+                                        user_id: String(userStudent._id),
+                                        mcq_id: String(mcqMonth._id),
+                                        answer: answer
+                                        };
+                                        done();
+                                      
+                                      
                                       });
                                   });
-
+                                  });
                                   
                                 });
                                 
@@ -221,111 +233,136 @@ describe( "Submissions", function () {
         }, Error, 'Error Thrown' );
       } );
     } );
-  //   context( 'missing question', function () {
-  //     it( 'should throw error', function () {
-  //       assert.throws( function () {
-  //         delete mcqData.question;
-  //         MCQ.add( mcqData, function ( err ) {
-  //           mcqData.question = question;
-  //           if ( err ) {
-  //             throw err;
-  //           }
-  //         } );
-  //       }, Error, 'Error Thrown' );
-  //     } );
-  //   } );
-  //   context( 'empty answerChoicesList ', function () {
-  //     it( 'should throw an error', function () {
-  //       assert.throws( function () {
-  //         mcqData.answers = emptyList ;
-  //         MCQ.add( mcqData, function ( err ) {
-  //           mcqData.answers = manyChoiceList;
-  //           if ( err ) {
-  //             throw err;
-  //           }
-  //         } );
-  //       } );
-  //     } );
-  //   } );
-  //   context( 'one choice answerChoicesList ', function () {
-  //     it( 'should add mcq to database', function ( done ) {
-  //       mcqData.answers = oneChoiceList;
-  //       MCQ.add( mcqData, function ( err ) {
-  //         mcqData.answers = manyChoiceList;
-  //         if ( err ) {
-  //           throw err;
-  //         }
-  //         done();
-  //       } );
-  //     } );
-  //   } );
-  //   context( 'missing answerChoicesList', function () {
-  //     it( 'should throw an error', function () {
-  //       assert.throws( function () {
-  //         delete mcqData.answers;
-  //         MCQ.add( mcqData, function ( err ) {
-  //           mcqData.answers = manyChoiceList;
-  //           if ( err ) {
-  //             throw err;
-  //           }
-  //         } );
-  //       } );
-  //     } );
-  //   } );
-  // } );
-  // describe( '#remove()', function () {
-  //   context( 'existing object in db with given id', function () {
-  //     it( 'should remove an mcq from database given valid id', function () {
-  //       MCQ.add( mcqData, function ( err, mcq ) {
-  //         if ( err ) {
-  //           throw err;
-  //         }
-  //         MCQ.remove( mcq, function ( err ) {
-  //           if ( err ) {
-  //             throw err;
-  //           }
-  //         } );
-  //       } );
-  //     } );
-  //   } );
-  //   context( 'no id property', function () {
-  //     it( 'should throw error', function () {
-  //       assert.throws( function () {
-  //         MCQ.remove( {}, function ( err ) {
-  //           if ( err ) {
-  //             throw err;
-  //           }
-  //         } );
-  //       } );
-  //     } );
-  //   } );
-  // } );
-  // describe( '#get()', function () {
-  //   context( 'given valid id', function () {
-  //     it( 'should get the mcq from database', function () {
-  //       MCQ.add( mcqData, function ( err, mcq ) {
-  //         if ( err ) {
-  //           throw err;
-  //         }
-  //         MCQ.get( mcq, function ( err, mcqReturned ) {
-  //           if ( err ) {
-  //             throw err;
-  //           }
-  //           assert( mcqReturned._id );
-  //         } );
-  //       } );
-  //     } );
-  //   } );
-  //   context( 'given no id property', function () {
-  //     it( 'should throw an error', function () {
-  //       assert.throws( function () {
-  //         MCQ.get( {}, function ( err ) {
-  //           if ( err ) {
-  //             throw err;
-  //           }
-  //         } );
-  //       }, Error, 'Error Thrown' );
-  //     } );
-  //   } );
+    context( 'duplicate subissions', function () {
+      it( 'should throw error', function (done) {
+
+            Submission.add(submissionData, function(err) {
+              if (err) {
+                done();
+              } else {
+                done(true);
+              }
+          });
+      } );
+    } );
+    context( 'Teaching trying to answer question', function () {
+      it( 'should throw an error', function (done) {
+        submissionData.user_id = String(userTeacher._id);
+        Submission.add(submissionData, function(err) {
+          submissionData.user_id = String(userStudent._id);
+          if (err) {
+            done();
+          } else {
+            done(true);
+          }
+          
+        });
+      } );
+    } );
+    context( 'User not associated with mcq', function () {
+      it( 'should throw an error', function (done) {
+        submissionData.user_id = String(userOther._id);
+        Submission.add(submissionData, function(err) {
+          submissionData.user_id = String(userStudent._id);
+          if (err) {
+            done();
+          } else {
+            done(true);
+          }
+        });
+      } );
+    } );
+    context( 'provided answer not a valid answer choice', function () {
+      it( 'should throw an error', function ( done ) {
+        submissionData.answer = "banana";
+        Submission.add(submissionData, function(err) {
+          submissionData.answer = answer;
+          if (err) {
+            return done();
+          }
+          done(true);
+        });
+      } );
+    } );
+    context( 'missing answer', function () {
+      it( 'should throw an error', function (done) {
+        
+          delete submissionData.answer;
+          Submission.add(submissionData, function ( err ) {
+            submissionData.answer = answer;
+            if ( err ) {
+              return done();
+            }
+            done(true);
+      } );
+    } );
+  } );
+    context( 'missing userID', function () {
+      it( 'should throw an error', function (done) {
+        
+          delete submissionData.user_id;
+          Submission.add(submissionData, function ( err ) {
+            submissionData.user_id = String(userStudent._id);
+            if ( err ) {
+              return done();
+            }
+            done(true);
+      } );
+    } );
+  } );
+  describe( '#get()', function () {
+    context( 'given valid id', function () {
+      it( 'should get the submission from database', function (done) {
+        Submission.add( submissionData, function ( err, submission ) {
+          if ( err ) {
+            return done();
+          }
+          Submission.get( submission, function ( err, submissionReturned ) {
+            if ( err ) {
+              return done()
+            }
+            assert( submissionReturned._id );
+          } );
+        } );
+      } );
+    } );
+    context( 'given no id property', function () {
+      it( 'should throw an error', function (done) {
+          Submission.get( {}, function ( err ) {
+            if ( err ) {
+              return done();
+            }
+            done(true);
+          } );
+        });
+      } );
+    } );
+  describe( '#getMCQGrades()', function () {
+    context( 'given all valid', function () {
+      it( 'should get the submission from database', function (done) {
+        Submission.getMCQGrades( submissionData, function ( err, submission ) {
+          if ( err ) {
+            return done();
+          }
+          Submission.get( submission, function ( err, submissionReturned ) {
+            if ( err ) {
+              return done()
+            }
+            assert( submissionReturned._id );
+          } );
+        } );
+      } );
+    } );
+    context( 'given no id property', function () {
+      it( 'should throw an error', function (done) {
+          Submission.getMCQGrades( {}, function ( err ) {
+            if ( err ) {
+              return done();
+            }
+            done(true);
+          } );
+        });
+      } );
+    } );
   } );
 } );
