@@ -5,6 +5,7 @@ var User = require("../models/user.js");
 var Minilesson = require("../models/minilesson.js");
 var Page = require("../models/page.js");
 var Course = require("../models/course.js");
+var Submission = require("../models/submission.js");
 
 var assert = require( 'assert' );
 
@@ -24,6 +25,17 @@ var manyChoiceList = ["size", "everything", "nothing"];
 var emptyList =[];
 var answer = "nothing";
 
+var mcqData = {
+  user_id: String(userTeacher._id),
+  page_id: String(pageMonth._id),
+  question: question,
+  answers: manyChoiceList,
+  answer: answer
+}
+
+var mcqYesterday;
+var mcqMonth;
+
 var yesterday = new Date();
 yesterday.setDate(yesterday.getDate() - 1);
 var nextMonth = new Date();
@@ -34,8 +46,9 @@ var mcqData;
 describe( 'MCQ', function () {
 
   describe( '#add()', function () {
-    /* Setup: created User (teacher), Course, MiniLesson (x2, due yesterday and next month) and Page x2
-    TODO: create Student and test student side 
+    /* Setup: created User (teacher), Course, 
+    MiniLesson, Page, MCQ (x2, due yesterday and next month)
+    create Student, joined course, accepted student
 
     */
     before(function (done) {
@@ -98,14 +111,56 @@ describe( 'MCQ', function () {
                             throw err;
                           }
                           pageMonth = _pageMonth;
-                          mcqData = {
-                            user_id: String(userTeacher._id),
-                            page_id: String(pageMonth._id),
-                            question: question,
-                            answers: manyChoiceList,
-                            answer: answer
-                          }
-                          done();
+
+                          MCQ.add(mcqData, function (err, _mcqYesterday) {
+                            if (err) {
+                              throw err;
+                            }
+                            mcqYesterday = _mcqYesterday;
+                            MCQ.add(mcqData, function(err, _mcqMonth) {
+                              if (err) {
+                                throw err;
+                              }
+                              mcqMonth = _mcqMonth;
+
+                              User.add( {
+                                name: 'Harini',
+                                username: 'hsuresh',
+                                password: 'username15MIT!'
+                              }, function (err, _userStudent) {
+                                if (err) {
+                                  throw err;
+                                }
+                                userStudent = _userStudent;
+                                // TODO: check functions
+                                Course.join({
+                                  _id: course_id,
+                                  student_id: String(userStudent._id)
+                                }, function(err, _course) {
+                                  if(err) {
+                                    throw err;
+                                  }
+                                  Course.acceptStudent({
+                                    _id: course_id,
+                                    teacher_id: String(userTeacher._id),
+                                    student_id: String(userStudent._id)
+                                  }, function(err, _course ) {
+                                    if (err) {
+                                      throw err;
+                                    }
+                                    submissionData = {
+                                      user_id: String(userStudent._id),
+                                      mcq_id: String(mcqYesterday._id),
+                                      answer: answer;
+                                    };
+                                    done();
+                                  });
+                                  
+                                });
+                                
+                              });
+                            });
+                          });
 
                         });
                       });

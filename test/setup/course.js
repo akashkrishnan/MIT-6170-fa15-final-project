@@ -11,19 +11,19 @@ module.exports = function ( done ) {
 
 	  var teacherData = {
 	    name: 'Harini Suresh',
-	    username: 'hsuresh',
+	    username: 'harinisuresh',
 	    password: 'HaRiNi999!'
 	  }
 
 	  var studentData = {
 	    name: 'Tiffany Wong',
-	    username: 'tiffanywong',
+	    username: 'tiffanycwong',
 	    password: 'Tiffany999!'
 	  }
 
 	  var studentData2 = {
 	    name: 'Alyssa Hacker',
-	    username: 'ahack',
+	    username: 'aahack',
 	    password: 'Alyssa999!'
 	  }
 
