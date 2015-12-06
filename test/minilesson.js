@@ -13,6 +13,7 @@ var user;
 var course;
 var minilesson;
 var data;
+var new_data;
 var minilessonTitle = "Kinematics I";
 var minilessonDueDate = new Date();
 
@@ -21,7 +22,7 @@ describe( 'Minnilesson', function () {
   before(function (done) {
     User.add({
       name: 'Person Name',
-      username: 'usrname7',
+      username: 'usrname14',
       password: 'username15MIT!'
     }, function (err, _user) {
       if (err) {
@@ -86,18 +87,47 @@ describe( 'Minnilesson', function () {
     } );
   } );
 
+  describe('#edit', function(){
+    it('should edit minilesson without error', function(done){
+      new_data = {
+        user_id: user._id,
+        course_id: String(course._id),
+        minilesson_id: minilesson._id,
+        title:"New Title",
+        due_date: new Date()
+      };
+
+      Minilesson.edit(new_data, done);
+    });
+    it('edited minilesson should have correct data', function(done){
+      new_data = {
+        user_id: user._id,
+        course_id: String(course._id),
+        minilesson_id: minilesson._id,
+        title:"New Title 2",
+        due_date: new Date()
+      };
+
+      Minilesson.edit(new_data, function(err, _minilesson) {
+        assert.equal( String(_minilesson._id), String(minilesson._id) );
+        assert.equal( String(_minilesson.course_id), String(new_data.course_id) );
+        assert.equal( String(_minilesson.title), String(new_data.title) );
+        assert.equal( String(_minilesson.timestamps.due_date), String(new_data.due_date));
+        done();
+      })
+    })
+  });
+
   describe('#publish', function(){
     it('should change state of minilesson to publish', function(done) {
       done();
     });
   });
 
-  /*
-  describe( '#removePage', function () {
-    it( 'removes a Page to existing minilesson without error', function ( done ) {
-      Minilesson.remove( { _id: minilesson._id, page_id: '0' }, done );
-    } );
-  } );
-  */
+  describe( '#remove', function () {
+    it('removes a Page to existing minilesson without error', function (done) {
+      Minilesson.remove({_id: minilesson._id}, done);
+    });
+  });
 
-} );
+});

@@ -25,7 +25,7 @@ describe( 'Page', function() {
     before(function (done) {
         User.add({
             name: 'Person Name',
-            username: 'usernam9',
+            username: 'usernam24',
             password: 'username15MIT!'
         }, function (err, _user) {
             if (err) {
@@ -106,7 +106,7 @@ describe( 'Page', function() {
                  assert.throws(function() {
                     delete data.user_id;
                     Page.add(data, function (err) {
-                        data.user_id = user.user_id;
+                        data.user_id = user._id;
                         if (err) {
                             throw err
                         }
@@ -165,6 +165,11 @@ describe( 'Page', function() {
                 });
             });
         });
+        context("page_id and user_id arguments", function(){
+            it('should get a page without error', function(done){
+                Page.get({_id: page._id, user_id: user._id}, done);
+            })
+        })
     });
 
     describe('#list', function () {
@@ -173,13 +178,43 @@ describe( 'Page', function() {
                 Page.list({user_id: user._id,
                     minilesson_id: String(minilesson._id)}, done);
             });
-        })
+        });
+        context('user_id missing', function(){
+            it('should throw an error', function(done){
+                assert.throws(function() {
+                    Page.list({minilesson_id: String(minilesson._id)}, function (err) {
+                        if (err) {
+                            throw err;
+                        }
+                    });
+                }, Error, 'Error Thrown');
+                done();
+            });
+        });
+        context('minilesson_id missing', function(){
+            it('should throw an error', function(done){
+                assert.throws(function(){
+                    Page.list({user_id: user._id}, function(err){
+                        if(err){
+                            throw err;
+                        }
+                    });
+                }, Error, 'Error Thrown');
+                done();
+            })
+        });
     });
 
     describe('#remove', function () {
         context('valid page_id', function(){
             it('should remove page without error', function(done){
-                Page.remove({_id: page._id}, done);
+                Page.add(data, function(err, _page){
+                    if(err){
+                        throw err;
+                    } else {
+                        Page.remove({_id:_page._id, user_id: data.user_id}, done);
+                    }
+                });
             });
         });
     });
