@@ -32,15 +32,7 @@ nextMonth.setDate(nextMonth.getDate() + 30);
 var mcqData;
 
 describe( 'MCQ', function () {
-
-  describe( '#add()', function () {
-    /* Setup: created User (teacher), Course, MiniLesson (x2, due yesterday and next month) and Page x2
-    TODO: create Student and test student side 
-
-    */
-    before(function (done) {
-        
-
+  before(function (done) {
         User.add({
             name: 'Tiffany',
             username: 'tcwong',
@@ -51,7 +43,7 @@ describe( 'MCQ', function () {
             }
             userTeacher = _userTeacher;
             Course.add({
-                name: 'AP Physics',
+                name: 'AP Physics1',
                 teacher_id: userTeacher._id
             }, function (err, _course) {
                 if (err) {
@@ -115,6 +107,13 @@ describe( 'MCQ', function () {
             });
         });
     });
+
+  describe( '#add()', function () {
+    /* Setup: created User (teacher), Course, MiniLesson (x2, due yesterday and next month) and Page x2
+    TODO: create Student and test student side 
+
+    */
+    
 
 
     context( 'all valid entries', function () {

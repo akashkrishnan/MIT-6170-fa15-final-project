@@ -19,7 +19,7 @@ module.exports = {
  * @param {*} msg - error message or error object
  */
 function log( msg ) {
-  console.log( String( msg ) );
+  console.log( generate( msg ) );
 }
 
 /**
@@ -28,7 +28,7 @@ function log( msg ) {
  * @param {*} msg - error message or error object
  */
 function info( msg ) {
-  console.info( String( msg ).blue );
+  console.info( generate( msg ).blue );
 }
 
 /**
@@ -37,7 +37,7 @@ function info( msg ) {
  * @param {*} msg - error message or error object
  */
 function warn( msg ) {
-  console.warn( String( msg ).yellow );
+  console.warn( generate( msg ).yellow );
 }
 
 /**
@@ -47,8 +47,12 @@ function warn( msg ) {
  */
 function error( msg ) {
   if ( msg instanceof Error ) {
-    console.error( String( msg.stack ).red );
+    console.error( generate( msg.stack ).red );
   } else {
-    console.error( String( msg ).red );
+    console.error( generate( msg ).red );
   }
+}
+
+function generate( msg ) {
+  return '[' + new Date() + '] ' + String( msg );
 }
