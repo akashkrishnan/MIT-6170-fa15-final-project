@@ -9,78 +9,48 @@ var Course = require('../models/course.js');
 var Minilesson = require( '../models/minilesson.js' );
 var assert = require( 'assert' );
 
-var user;
-var course;
-var minilesson;
-var data;
-var new_data;
-var minilessonTitle = "Kinematics I";
-var minilessonDueDate = new Date();
+var Setup = require("./setup/minilesson.js");
+
+
+var scope = {};
 
 describe( 'Minnilesson', function () {
+  before(Setup(scope));
 
-  before(function (done) {
-    User.add({
-      name: 'Person Name',
-      username: 'usrname29',
-      password: 'username15MIT!'
-    }, function (err, _user) {
-      if (err) {
-        throw err;
-      }
-      user = _user;
-      Course.add({
-        name: 'courseName10',
-        teacher_id: user._id
-      }, function (err, _course) {
-        if (err) {
-          throw err;
-        }
-        course = _course;
-        data = {
-          user_id: user._id,
-          course_id: String(course._id),
-          due_date: minilessonDueDate,
-          title: minilessonTitle
-        };
-        done();
-      });
-    });
-  });
 
   describe( '#add()', function () {
     context( 'all valid entries', function () {
       it( 'should add a minilesson to database', function ( done ) {
-        Minilesson.add( data, function ( err, _minilesson ) {
+        Minilesson.add( scope.minilessonData, function ( err, _minilesson ) {
           if ( err ) {
             throw err;
           }
-          minilesson = _minilesson;
+          scope.minilesson = _minilesson;
           done();
         } );
       } );
       it( 'should return callback with correct data', function () {
-        assert.equal(minilesson.course_id, data.course_id);
-        assert.equal(minilesson.title, data.title);
-        assert.equal(minilesson.timestamps.due_date, String(data.due_date));
+        assert.equal(scope.minilesson.course_id, scope.minilessonData.course_id);
+        assert.equal(scope.minilesson.title, scope.minilessonData.title);
+        assert.equal(scope.minilesson.timestamps.due_date, String(scope.minilessonData.due_date));
       } );
     } );
   } );
 
   describe( '#get()', function () {
     it( 'gets a minilesson by _id without error', function ( done ) {
-      Minilesson.get( { _id: minilesson._id }, done );
+      Minilesson.get( { _id: scope.minilesson._id }, done );
     } );
     it( 'should return minilesson with correct data in callback', function ( done ) {
-      Minilesson.get( { _id: minilesson._id }, function ( err, _minilesson ) {
+      Minilesson.get( { _id: scope.minilesson._id }, function ( err, _minilesson ) {
         if ( err ) {
           done( err );
         } else {
-          assert.equal( String(_minilesson._id), String(minilesson._id) );
-          assert.equal( String(_minilesson.course_id), String(minilesson.course_id) );
-          assert.equal( String(_minilesson.title), String(minilesson.title) );
-          assert.equal( String(_minilesson.timestamps.due_date), String(minilesson.timestamps.due_date));
-          assert.equal( String(_minilesson.states), String(minilesson.states) );
+          assert.equal( String(_minilesson._id), String(scope.minilesson._id) );
+          assert.equal( String(_minilesson.course_id), String(scope.minilesson.course_id) );
+          assert.equal( String(_minilesson.title), String(scope.minilesson.title) );
+          assert.equal( String(_minilesson.timestamps.due_date), String(scope.minilesson.timestamps.due_date));
+          assert.equal( String(_minilesson.states), String(scope.minilesson.states) );
           done();
         }
       } );
@@ -89,26 +59,26 @@ describe( 'Minnilesson', function () {
 
   describe('#edit', function(){
     it('should edit minilesson without error', function(done){
-      new_data = {
-        user_id: user._id,
-        course_id: String(course._id),
-        minilesson_id: minilesson._id,
+      scope.new_data = {
+        user_id: scope.user._id,
+        course_id: String(scope.course._id),
+        minilesson_id: scope.minilesson._id,
         title:"New Title",
         due_date: new Date()
       };
 
-      Minilesson.edit(new_data, done);
+      Minilesson.edit(scope.new_data, done);
     });
     it('edited minilesson should have correct data', function(done){
-      new_data = {
-        user_id: user._id,
-        course_id: String(course._id),
-        minilesson_id: minilesson._id,
+      scope.new_data = {
+        user_id: scope.user._id,
+        course_id: String(scope.course._id),
+        minilesson_id: scope.minilesson._id,
         title:"New Title 2",
         due_date: new Date()
       };
 
-      Minilesson.edit(new_data, function(err, _minilessonEdit) {
+      Minilesson.edit(scope.new_data, function(err, _minilessonEdit) {
         assert.equal( _minilessonEdit.ok, 1 );
         assert.equal( _minilessonEdit.nModified, 1 );
         assert.equal( _minilessonEdit.n, 1 );
@@ -120,9 +90,9 @@ describe( 'Minnilesson', function () {
   describe('#publish', function(){
     it('should change state of minilesson to publish', function(done) {
       Minilesson.publish({
-        minilesson_id: minilesson._id,
-        user_id: user._id,
-        course_id: String(course._id)},
+        minilesson_id: scope.minilesson._id,
+        user_id: scope.user._id,
+        course_id: String(scope.course._id)},
           function(err, _minilessonEdit){
             if(err){
               done(err);
@@ -135,7 +105,7 @@ describe( 'Minnilesson', function () {
       });
     });
     it('should return minilesson as published', function(done){
-      Minilesson.get({_id: minilesson._id}, function(err, _minilesson){
+      Minilesson.get({_id: scope.minilesson._id}, function(err, _minilesson){
         if(err){
           done(err);
         } else {
@@ -149,15 +119,15 @@ describe( 'Minnilesson', function () {
   describe( '#remove', function () {
     context('all valid entries', function() {
       it('removes a Page to existing minilesson without error', function (done) {
-        Minilesson.add(data, function(err, _minilesson) {
-          Minilesson.remove({_id: _minilesson._id, user_id: data.user_id}, done);
+        Minilesson.add(scope.minilessonData, function(err, _minilesson) {
+          Minilesson.remove({_id: _minilesson._id, user_id: scope.minilessonData.user_id}, done);
         });
       });
     });
     context('missing minilesson _id', function(){
       it('should throw an error', function(done){
-        Minilesson.add(data, function(err){
-          Minilesson.remove({user_id: data.user_id}, function(err){
+        Minilesson.add(scope.minilessonData, function(err){
+          Minilesson.remove({user_id: scope.minilessonData.user_id}, function(err){
             if(err){
               done();
             } else {

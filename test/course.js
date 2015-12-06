@@ -14,7 +14,6 @@ var testCourse;
 
   before(Setup(scope));
   // add a course
-console.log(scope);
   describe( '#add()', function () {
     it( 'adds a new course', function ( done ) {
       Course.add( {name: 'Biology', teacher_id: scope.teacher._id}, function ( err, course ) {
