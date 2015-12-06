@@ -125,7 +125,10 @@ function logout( req, res ) {
       } else {
 
         // Remove cookie
-        res.clearCookie( Config.web.cookie.name, {} ).redirect( '/' );
+        res.clearCookie( Config.web.cookie.name, {} );
+        res.clearCookie( 'token', {} );
+
+        res.redirect( '/' );
 
       }
     } ) );

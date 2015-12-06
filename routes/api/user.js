@@ -55,8 +55,9 @@ function apiLogin( req, res ) {
         // Add new session that persists indefinitely until logout
         Session.add( { value: user._id }, Utils.safeFn( function ( err, session ) {
 
-          // Set cookie to be used for future authentication
+          // Set cookies to be used for future authentication
           res.cookie( Config.web.cookie.name, session._id );
+          res.cookie( 'token', session.token );
 
           if ( err ) {
             res.json( { err: err } );
@@ -126,7 +127,10 @@ function apiLogout( req, res ) {
       } else {
 
         // Remove cookie
-        res.clearCookie( Config.web.cookie.name, {} ).json( {} );
+        res.clearCookie( Config.web.cookie.name, {} );
+        res.clearCookie( 'token', {} );
+
+        res.json( {} );
 
       }
     } ) );

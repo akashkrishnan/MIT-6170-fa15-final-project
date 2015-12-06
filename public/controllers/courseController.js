@@ -7,6 +7,64 @@
 
 ( function () {
 
+  var removePageBtn = document.querySelector('#remove-page-btn');
+
+  if (removePageBtn) {
+    removePageBtn.addEventListener( 'click', function (e) {
+      e.preventDefault();
+      page_id = removePageBtn.getAttribute('page-id');
+      var data = { 'page_id': page_id };
+
+      flipper.page.remove( data, function ( err, minilesson ) {
+          if ( err ) {
+            console.log( err );
+            toastr.error( err );
+          } else {
+            toastr.info( 'Page has been removed.' );
+            var newUrl = window.location.href.split('/').slice(0, -1).join('/');
+            window.location = newUrl;
+          }
+        } );
+    } );
+  }
+
+
+  /* -------------------------------------------------------------------------------------------------------------- */
+
+  var RemoveMcqBtns = document.querySelectorAll( '[mcq-item] [buttons] [remove]' );
+  if ( RemoveMcqBtns ) {
+    forEach( RemoveMcqBtns, function ( RemoveMcqBtn ) {
+      RemoveMcqBtn.addEventListener( 'click', function () {
+
+        var mcqItem = RemoveMcqBtn.parentNode.parentNode;
+        var mcq_id = mcqItem.getAttribute( 'mcq-id' );
+
+        if ( mcq_id ) {
+          var data = { mcq_id: mcq_id };
+
+          flipper.mcq.remove( data, function ( err ) {
+            if ( err ) {
+              console.error( err );
+              toastr.error( err );
+            } else {
+              toastr.info(' Question has been deleted. ');
+              location.reload();
+            }
+          } );
+
+        } else {
+          console.error( 'Missing [mcq-id].' );
+        }
+      } );
+    } );
+  } else {
+    console.error( 'Missing removeMcqBtns.' );
+  }
+
+          
+  /* -------------------------------------------------------------------------------------------------------------- */
+
+
   var minilesson_id;
   var removeBtn = document.querySelector('#remove-btn');
 

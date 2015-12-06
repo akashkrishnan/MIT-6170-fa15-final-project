@@ -5,13 +5,14 @@
 'use strict';
 
 var Utils = require( '../models/utils.js' );
+var Log = require( '../models/log.js' );
 var Session = require( '../models/session.js' );
 var User = require( '../models/user.js' );
 
 module.exports = function ( name ) {
   return function ( req, res, next ) {
 
-    // We required that the cookie-parser middleware is registered before this middleware
+    // We require that the cookie-parser middleware is registered before this middleware
     if ( req.cookies ) {
 
       // Store apikey for convenience
@@ -28,6 +29,9 @@ module.exports = function ( name ) {
             next();
 
           } else {
+
+            // Store the session value for future use
+            req.session = session;
 
             /**
              * Valid session; ensure valid user by seeing if we can update the active state.
@@ -59,6 +63,8 @@ module.exports = function ( name ) {
         next();
       }
 
+    } else {
+      Log.error( 'Missing middleware: cookie-parser.' );
     }
 
   };
