@@ -10,10 +10,13 @@
   var minilesson_id;
 
   var editBtn = document.querySelector( '#edit-btn' );
-  editBtn.addEventListener( 'click', function (e) {
-    e.preventDefault();
-    minilesson_id = editBtn.getAttribute('minilesson-id');
-  });
+  if ( editBtn ) {
+    editBtn.addEventListener( 'click', function (e) {
+      e.preventDefault();
+      minilesson_id = editBtn.getAttribute('minilesson-id');
+    }); 
+  }
+
 
   var minilessonEditDialog = document.querySelector( '#minilesson-edit-dialog' );
   if ( minilessonEditDialog ) {
