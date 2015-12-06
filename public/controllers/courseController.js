@@ -8,8 +8,33 @@
 ( function () {
 
   var minilesson_id;
+  var removeBtn = document.querySelector('#remove-btn');
+
+  if (removeBtn) {
+    removeBtn.addEventListener( 'click', function (e) {
+      e.preventDefault();
+      minilesson_id = editBtn.getAttribute('minilesson-id');
+      data = { 'minilesson_id': minilesson_id };
+
+      flipper.minilesson.remove( data, function ( err, minilesson ) {
+          if ( err ) {
+            console.log( err );
+            toastr.error( err );
+          } else {
+            console.log( minilesson );
+            toastr.info( 'Minilesson has been removed.' );
+   
+            location.reload();
+          }
+        } );
+    } );
+  }
+
+
+  /* -------------------------------------------------------------------------------------------------------------- */
 
   var editBtn = document.querySelector( '#edit-btn' );
+
   if ( editBtn ) {
     editBtn.addEventListener( 'click', function (e) {
       e.preventDefault();
@@ -17,6 +42,7 @@
     }); 
   }
 
+  /* -------------------------------------------------------------------------------------------------------------- */
 
   var minilessonEditDialog = document.querySelector( '#minilesson-edit-dialog' );
   if ( minilessonEditDialog ) {
