@@ -1,29 +1,105 @@
 'use strict';
 
 var MCQ = require( '../models/mcq.js' );
+var User = require("..models/user.js");
+var MiniLesson = require("..models/minilesson.js");
+var Page = require("..models/page.js");
+
 var assert = require( 'assert' );
 
+var pageTitle = "Page Title";
+var pageResource = "www.flipperSwag.com";
+var userTeacher;
+var userStudent;
+var course;
+var minilessonYesterday;
+var minilessonYesterday;
+var pageYesterday;
+var pageMonth;
 
+var yesterday = new Date();
+yesterday.setDate(yesterday.getDate() - 1);
+var nextMonth = new Date();
+nextMonth.setDate(nextMonth.getDate() + 30);
 
 describe( 'MCQ', function () {
+
   describe( '#add()', function () {
+    /* Setup: created User (teacher), Course, MiniLesson (x2, due yesterday and next month) and Page x2
+    TODO: create Student and test student side 
 
-    beforeEach(function(done) {
-      var question = 'Question?';
-      var page_id = "1";
-      var emptyString = '';
-      var emptyList = [];
-      var oneChoiceList = [ 'Choice1' ];
-      var manyChoiceList = [ 'Choice1', 'Choice2', 'Choice3', 'Choice4' ];
+    */
+    before(function (done) {
+        
 
-      var mcqData = {
-        page_id: "1",
-        question: question,
-        answers: manyChoiceList,
-        answer: "Choice1"
-      };
-
+        User.add({
+            name: 'Tiffany',
+            username: 'tcwong',
+            password: 'username15MIT!'
+        }, function (err, _userTeacher) {
+            if (err) {
+                throw err;
+            }
+            userTeacher = _userTeacher;
+            Course.add({
+                name: 'AP Physics',
+                teacher_id: userTeacher._id
+            }, function (err, _course) {
+                if (err) {
+                    throw err;
+                }
+                course = _course;
+                Minilesson.add({
+                    user_id: userTeacher._id,
+                    course_id: String(course._id),
+                    due_date: yesterday,
+                    title: 'Due Yesterday'
+                }, function (err, _minilessonYesterday) {
+                    if (err) {
+                        throw err;
+                    }
+                    minilessonYesterday = _minilessonYesterday;
+                    Minilesson.add( {
+                      user_id: userTeacher._id,
+                      course_id: String(course._id),
+                      due_date: nextMonth,
+                      title: 'Due Next Month'
+                    }, function(err, _minilessonMonth) {
+                      if (err) {
+                        throw err;
+                      }
+                      minilessonMonth = _minilessonMonth;
+                      Page.add( { // adding pageYesterday
+                        user_id: String(userTeacher._id),
+                        minilesson_id: String(minilessonYesterday._id),
+                        title: pageTitle;
+                        resource: pageResource;
+                      }, function(err, _pageYesterday) {
+                        if (err) {
+                          throw err;
+                        }
+                        pageYesterday = _pageYesterday;
+                        Page.add( { //adding pageMonth
+                          user_id: String(userTeacher._id),
+                          minilesson_id: String(minilessonMonth._id),
+                          title: pageTitle;
+                          resource: pageResource;
+                        }, function (err, _PageMonth) {
+                          if (err) {
+                            throw err;
+                          }
+                          pageMonth = _pageMonth;
+                          done();
+                        });
+                      });
+                      
+                    });
+                });
+            });
+        });
     });
+
+
     context( 'all valid entries', function () {
       it( 'should add an mcq to database', function ( done ) {
         MCQ.add( mcqData, function ( err ) {
