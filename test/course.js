@@ -35,7 +35,6 @@ describe( 'Courses', function () {
   before( function (done) {
     User.add( teacherData, function ( err, _user1 ) {
       if ( err ) {
-        console.log(err);
         done( err );
       } else {
         teacher = _user1;
@@ -105,7 +104,6 @@ describe( 'Courses', function () {
     it( 'gets a course by teacher', function ( done ) {
       var criteria = { teacher_id: teacher._id };
       Course.get( criteria, function ( err, course ) {
-        console.log(err);
         assert.equal( course.name, 'Biology' );
         done();
       } );
