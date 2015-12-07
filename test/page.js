@@ -5,11 +5,8 @@
 'use strict';
 
 var Page = require( '../models/page.js' );
-
 var assert = require( 'assert' );
 var Setup = require("./setup/page.js");
-
-var scope = {};
 
 var Config = require( '../config.js' );
 var util = require( 'util' );
@@ -17,7 +14,7 @@ var mongojs = require( 'mongojs' );
 var db = mongojs( Config.services.db.mongodb.uri );
 
 describe( 'Page', function() {
-
+    var scope = {};
     before(Setup(scope));
 
     after(function (done) {
@@ -25,7 +22,6 @@ describe( 'Page', function() {
       });
 
     describe('#add', function () {
-        // console.log(scope);
         context('all valid entries', function () {
             it('should add a page to database', function (done) {
                 Page.add(scope.pageData, function (err, _page) {

@@ -2,13 +2,11 @@
 
 var Course = require( '../models/course.js' );
 var Setup = require("./setup/course.js");
-
 var assert = require( 'assert' );
 
 var Config = require( '../config.js' );
 var util = require( 'util' );
 var mongojs = require( 'mongojs' );
-
 var db = mongojs( Config.services.db.mongodb.uri );
 
 describe( 'Courses', function () {
@@ -16,6 +14,7 @@ describe( 'Courses', function () {
   var testCourse;
 
   before(Setup(scope));
+
   after(function (done) {
     db.dropDatabase(done);
   });

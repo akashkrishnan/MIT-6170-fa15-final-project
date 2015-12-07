@@ -4,22 +4,19 @@ var MCQ = require( '../models/mcq.js' );
 var assert = require( 'assert' );
 var Setup = require("./setup/mcq.js");
 
-var scope = {};
-
 var Config = require( '../config.js' );
 var util = require( 'util' );
 var mongojs = require( 'mongojs' );
-
 var db = mongojs( Config.services.db.mongodb.uri );
+
 describe( 'MCQ', function () {
+  var scope = {};
   before(Setup(scope));
 
   after(function (done) {
     db.dropDatabase(done);
   });
-
-  console.log(scope);
-
+  
   describe( '#add()', function () {
     context( 'all valid entries', function () {
       it( 'should add an mcq to database', function ( done ) {

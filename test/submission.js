@@ -3,17 +3,16 @@
 var Submission = require("../models/submission.js");
 var assert = require( 'assert' );
 var Setup = require("./setup/submission.js");
-var scope = {};
 
 var Config = require( '../config.js' );
 var util = require( 'util' );
 var mongojs = require( 'mongojs' );
 var db = mongojs( Config.services.db.mongodb.uri );
 
-
 describe( "Submissions", function () {
-  
+  var scope = {};
   before(Setup(scope));
+
   after(function (done) {
     db.dropDatabase(done);
   });
