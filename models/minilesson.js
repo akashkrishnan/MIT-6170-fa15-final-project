@@ -63,7 +63,7 @@ function list( data, done ) {
     var sort = Utils.validateObject( data, {
       sort: {
         type: {},
-        default: { 'timestamps.published': 1 }
+        default: { 'timestamps.created': 1 }
       }
     } ).sort;
 
