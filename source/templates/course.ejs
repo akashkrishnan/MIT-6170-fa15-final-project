@@ -303,7 +303,7 @@
 
           </div>
 
-          <% if ( page._id ) { %>
+          <% if ( page._id && course.teaching ) { %>
           <div button id="remove-page-btn" small page-id="<%=page._id%>">Delete Page</div>
           <% } %>
 
