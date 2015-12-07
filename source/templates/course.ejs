@@ -274,7 +274,7 @@
                 <% mcq.answers.forEach( function ( answer ) { %>
                 <div choice layout-horizontal>
 
-                  <% if ( mcq.submitted ) { %> 
+                  <% if ( mcq.submitted || minilesson.due_date_passed ) { %> 
                   <input class="submit-radio-answer" type="radio" name="student-answer-options" value="<%= answer %>" disabled>
                   <% } else { %>
                   <input class="submit-radio-answer" type="radio" name="student-answer-options" value="<%= answer %>">
@@ -288,8 +288,10 @@
               </div>
 
               <div buttons layout-horizontal layout-end-justified>
+                
                 <% if ( course.teaching ) { %>
                 <div button small blue download class="downloadGrades">Download Grades</div>
+                <div button small red remove>Delete</div>
                 <% } else if ( mcq.submitted ) { 
                   if ( mcq.submittedAnswer.length > 18 ) {
                     submittedAnswer = mcq.submittedAnswer.substring(0,18) + "...";
@@ -301,7 +303,7 @@
                 <% } else { %>
                 <div button small blue submit>Submit</div>
                 <% } %>
-                <div button small red remove>Delete</div>
+              
               </div>
 
             </div>
