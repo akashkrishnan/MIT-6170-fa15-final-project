@@ -17,7 +17,8 @@
     "verbose": true,
     "branch": "master",
     "host": "localhost",
-    "port": 3000,
+    "http_port": 3000,
+    "https_port": 4000,
     "mongo": "localhost"
   },
   "scripts": {

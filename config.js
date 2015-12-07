@@ -37,7 +37,8 @@ module.exports = {
     },
     protocol: 'http',
     hostname: v( 'host', 'localhost' ),
-    port: parseInt( v( 'port', 80 ), 10 )
+    http_port: parseInt( v( 'http_port', 80 ), 10 ),
+    https_port: parseInt( v( 'https_port', 443 ), 10 )
   },
   services: {
     db: {

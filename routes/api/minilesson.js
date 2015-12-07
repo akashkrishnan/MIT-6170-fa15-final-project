@@ -136,7 +136,7 @@ function apiMinilessonEdit( req, res ) {
 
   // Ensure user
   if ( req.user ) {
-    console.log(req.body);
+
     // Get minilesson
     Minilesson.edit(
       {
