@@ -25,7 +25,8 @@ function checkToken( req, res, next ) {
       // Verify token against user session token
       if ( req.body.token === req.session.token ) {
 
-        // LGTM AFAIK
+        // LGTM AFAIK; remove token and move on
+        delete req.body.token;
         next();
 
       } else {
