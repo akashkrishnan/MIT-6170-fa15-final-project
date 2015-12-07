@@ -254,8 +254,13 @@ function add( data, done ) {
         filter: 'trim',
         required: true
       },
-      due_date: {required: true}
+      due_date: { required: true }
     } );
+
+    // Ensure due_date is a valid date
+    if ( isNaN( new Date( criteria.due_date ).getTime() ) ) {
+      return done( new Error( 'Invalid date.' ), null );
+    }
 
     // Ensure user is teaching the course
     Course.getWithUser(
@@ -309,7 +314,6 @@ function add( data, done ) {
     done( err, null );
   }
 }
-
 
 
 /**
@@ -394,7 +398,7 @@ function publish( data, done ) {
  * @param {string} data.title - id new title for minilesson
  * @param {string} data.dueDate - id of new due date for minilesson
  * @param {addCallback} done - callback
-*/
+ */
 
 function edit( data, done ) {
   try {
@@ -408,8 +412,14 @@ function edit( data, done ) {
         filter: 'trim',
         required: true
       },
-      due_date: {required: true}
+      due_date: { required: true }
     } );
+
+    // Ensure due_date is a valid date
+    if ( isNaN( new Date( criteria.due_date ).getTime() ) ) {
+      return done( new Error( 'Invalid date.' ), null );
+    }
+
     // Ensure user is teaching the course
     Course.getWithUser(
       {
