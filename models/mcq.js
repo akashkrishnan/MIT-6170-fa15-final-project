@@ -118,7 +118,7 @@ function list( data, done ) {
               var Submission = require( './submission.js' );
 
               // Loop through mcqs
-              ( function next( i, n ) {
+              (function next( i, n ) {
                 if ( i < n ) {
 
                   var mcq = mcqs[ i ];
@@ -133,7 +133,7 @@ function list( data, done ) {
                     function ( err, submissions, count ) {
                       mcq.submitted = Boolean( !err && count );
                       if ( mcq.submitted ) {
-                        mcq.submittedAnswer = submissions[0].answer;
+                        mcq.submittedAnswer = submissions[ 0 ].answer;
                       }
                       next( i + 1, n );
                     }
@@ -142,7 +142,7 @@ function list( data, done ) {
                 } else {
                   done( null, mcqs, count );
                 }
-              } )( 0, mcqs.length );
+              })( 0, mcqs.length );
 
             }
           } );
@@ -269,12 +269,12 @@ function add( data, done ) {
       answer: { type: 'string', required: true }
     } );
 
-    if((new Set(insertData.answers)).size !== insertData.answers.length) {
-      done ( new Error( 'Answer choices must be unique.') );
+    if ( ( new Set( insertData.answers ) ).size !== insertData.answers.length ) {
+      return done( new Error( 'Answer choices must be unique.' ), null );
     }
 
-    if(insertData.answers.length != 0) {
-      if (insertData.question.length != 0) {
+    if ( insertData.answers.length ) {
+      if ( insertData.question.length ) {
         if ( insertData.answers instanceof Array ) {
           // Make sure answer is a valid answer choice
           if ( insertData.answers.indexOf( insertData.answer ) === -1 ) {
@@ -321,13 +321,11 @@ function add( data, done ) {
         } else {
           done( new Error( 'Expected array for property: answers.' ), null );
         }
+      } else {
+        done( new Error( 'Expected non-zero length question.' ), null );
       }
-      else {
-        done( new Error( "Expected non-zero length question" ), null );
-      }
-    }
-    else {
-      done( new Error( "Expected more tha 1 answer choices" ), null );
+    } else {
+      done( new Error( 'Expected more than 1 answer choices.' ), null );
     }
 
   } catch ( err ) {

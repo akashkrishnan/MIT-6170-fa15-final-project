@@ -172,7 +172,7 @@ function get( data, done ) {
         Minilesson.get(
           {
             _id: page.minilesson_id,
-            user_id: criteria.user_id,
+            user_id: criteria.user_id
           },
           function ( err, minilesson, course ) {
             if ( err ) {
@@ -180,7 +180,7 @@ function get( data, done ) {
             } else {
 
               // Teachers can see all pages
-              done( null, page, course, minilesson);
+              done( null, page, course, minilesson );
 
             }
           }
