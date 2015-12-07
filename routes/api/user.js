@@ -56,8 +56,8 @@ function apiLogin( req, res ) {
         Session.add( { value: user._id }, Utils.safeFn( function ( err, session ) {
 
           // Set cookies to be used for future authentication
-          res.cookie( Config.web.cookie.name, session._id );
-          res.cookie( 'token', session.token );
+          res.cookie( Config.web.cookie.name, session._id, { secure: true } );
+          res.cookie( 'token', session.token, { secure: true } );
 
           if ( err ) {
             res.json( { err: err } );
