@@ -307,6 +307,24 @@ function add( data, done ) {
   }
 }
 
+
+/**
+ * @callback getMCQGradesCallback
+ * @param {Error} err - Error object
+ * @param {object} grades object - Name and grades object
+ */
+
+/**
+ * Gets mcq grades as object
+ * of name and grade pairs.
+ * Grade is 0 if incorrect. 1 if correct.
+ *
+ * @param {object} data - data
+ * @param {string} data.user_id - User._id
+ * @param {string} data.mcq_id - Mcq._id
+ * @param {getMCQGradesCallback} done - callback
+ */
+
 function getMCQGrades( data , done ) {
   try{
 
