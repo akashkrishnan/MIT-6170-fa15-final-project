@@ -13,27 +13,19 @@ module.exports = function (scope) {
 		scope.pageResource = "www.flipperSwag.com";
 
     //Setup: Create User, Course, Minilesson
-        User.add({
-            name: 'Person Name',
-            username: 'usernam24',
-            password: 'username15MIT!'
-        }, function (err, _user) {
-            if (err) {
-                throw err;
-            }
-            scope.user = _user;
-            Course.add({
+        
+        Course.add({
                 name: 'courseName10',
-                teacher_id: scope.user._id
+                teacher_id: scope.teacher._id
             }, function (err, _course) {
                 if (err) {
                     throw err;
                 }
                 scope.course = _course;
                 Minilesson.add({
-                    user_id: scope.user._id,
+                    user_id: scope.teacher._id,
                     course_id: String(scope.course._id),
-                    due_date: new Date(),
+                    due_date: scope.nextMonth,
                     title: 'Title'
                 }, function (err, _minilesson) {
                     if (err) {
@@ -41,7 +33,7 @@ module.exports = function (scope) {
                     }
                     scope.minilesson = _minilesson;
                     scope.pageData = {
-                        user_id: String(scope.user._id),
+                        user_id: String(scope.teacher._id),
                         minilesson_id: String(scope.minilesson._id),
                         title: scope.pageTitle,
                         resource: scope.pageResource
@@ -49,8 +41,6 @@ module.exports = function (scope) {
                     done();
                 });
             });
-        });
-
 
 	  } );
 

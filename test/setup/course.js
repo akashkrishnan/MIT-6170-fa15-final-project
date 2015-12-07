@@ -9,7 +9,7 @@ module.exports = function(scope) {
 
   // Make sure user is set up
   (require( './user.js' )( scope ))( function () {
-
+  	
     scope.currentCourse = null;
     scope.testCourse;
 

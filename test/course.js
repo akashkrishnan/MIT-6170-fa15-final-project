@@ -5,13 +5,20 @@ var Setup = require("./setup/course.js");
 
 var assert = require( 'assert' );
 
+var Config = require( '../config.js' );
+var util = require( 'util' );
+var mongojs = require( 'mongojs' );
+
+var db = mongojs( Config.services.db.mongodb.uri );
 
 describe( 'Courses', function () {
   var scope = {};
   var testCourse;
 
   before(Setup(scope));
-  
+  after(function (done) {
+    db.dropDatabase(done);
+  });
   // add a course
   describe( '#add()', function () {
     it( 'adds a new course', function ( done ) {
