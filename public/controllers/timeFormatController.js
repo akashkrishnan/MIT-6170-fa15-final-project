@@ -13,13 +13,13 @@
     forEach( spans, function ( span ) {
       var d = new Date( span.getAttribute( 'time' ) );
       var m = moment( d );
-      span.innerHTML = m.fromNow();
+      span.innerHTML = 'Due ' + m.fromNow() + '.';
     } );
 
   };
 
   update();
 
-  setInterval( update, 1000 );
+  setInterval( update, 10000 );
 
 } )();
