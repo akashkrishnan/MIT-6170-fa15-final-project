@@ -7,6 +7,21 @@
 
 ( function () {
 
+
+  var mcqChoices = document.querySelectorAll('#answer-choices');
+  if (mcqChoices) {
+    forEach(mcqChoices, function (mcqChoice) {
+      
+
+
+    } );
+    flipper.mcq.get()
+
+
+  }
+
+
+
   var removePageBtn = document.querySelector('#remove-page-btn');
 
   if (removePageBtn) {
