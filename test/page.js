@@ -9,7 +9,7 @@ var User = require( '../models/user.js' );
 var Minilesson = require( '../models/minilesson.js' );
 var Course = require( '../models/course.js' );
 var assert = require( 'assert' );
-
+var Setup = require("./setup/page.js");
 
 var user;
 var course;
@@ -21,6 +21,10 @@ var data;
 var page;
 
 describe( 'Page', function() {
+
+    // var scope = {};
+    // before(Setup(scope));
+
     //Setup: Create User, Course, Minilesson
     before(function (done) {
         User.add({
@@ -64,6 +68,7 @@ describe( 'Page', function() {
 
 
     describe('#add', function () {
+        // console.log(scope);
         context('all valid entries', function () {
             it('should add a page to database', function (done) {
                 Page.add(data, function (err, _page) {
