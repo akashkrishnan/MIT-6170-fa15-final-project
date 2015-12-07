@@ -9,8 +9,6 @@ module.exports = function(scope) {
     (require( './course.js' )(scope))( function () {
       scope.nextMonth = new Date();
       scope.nextMonth.setDate(scope.nextMonth.getDate() + 30);
-      scope.minilessonTitle = "Kinematics I";
-      //scope.teacherData.username = "harini2";
 
       Course.add({
           name: 'courseName10',
@@ -24,7 +22,7 @@ module.exports = function(scope) {
             user_id: String(scope.teacher._id),
             course_id: String(scope.course._id),
             due_date: scope.nextMonth,
-            title: scope.minilessonTitle
+            title: "Kinematics I"
           };
           done();
         });

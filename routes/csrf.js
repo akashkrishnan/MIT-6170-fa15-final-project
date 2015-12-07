@@ -8,10 +8,16 @@ module.exports = {
 
 function validate( app ) {
 
+  app.all( '*', all );
   app.post( '*', checkToken );
   app.put( '*', checkToken );
   app.delete( '*', checkToken );
 
+}
+
+function all( req, res, next ) {
+  res.set( 'Strict-Transport-Security', 'max-age=604800' );
+  next();
 }
 
 function checkToken( req, res, next ) {
