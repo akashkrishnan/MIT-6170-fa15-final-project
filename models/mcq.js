@@ -132,6 +132,9 @@ function list( data, done ) {
                     },
                     function ( err, submissions, count ) {
                       mcq.submitted = Boolean( !err && count );
+                      if ( mcq.submitted ) {
+                        mcq.submittedAnswer = submissions[0].answer;
+                      }
                       next( i + 1, n );
                     }
                   );
@@ -265,6 +268,10 @@ function add( data, done ) {
       answers: { required: true },
       answer: { type: 'string', required: true }
     } );
+
+    if((new Set(insertData.answers)).size !== insertData.answers.length) {
+      done ( new Error( 'Answer choices must be unique.') );
+    }
 
     if(insertData.answers.length != 0) {
       if (insertData.question.length != 0) {
