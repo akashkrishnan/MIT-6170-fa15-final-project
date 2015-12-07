@@ -25,11 +25,10 @@ Flipper
 
 ### Linting (ESLint)
 - `npm run lint`
-- (These aren't supposed to pass right now.)
+- (These aren't supposed to pass entirely.)
 
 ### Testing (Mocha)
 - `npm test`
-- (These aren't supposed to pass right now.)
 
 ### Running
 1. Ensure `mongodb` is running: `sudo mongod`
