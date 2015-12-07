@@ -258,8 +258,12 @@ function add( data, done ) {
     } );
 
     // Ensure due_date is a valid date
-    if ( criteria.due_date && isNaN( new Date( criteria.due_date ).getTime() ) ) {
-      return done( new Error( 'Invalid date.' ), null );
+    if ( criteria.due_date ) {
+      if ( isNaN( new Date( criteria.due_date ).getTime() ) ) {
+        return done( new Error( 'Invalid date.' ), null );
+      } else {
+        criteria.due_date = new Date( criteria.due_date );
+      }
     }
 
     // Ensure user is teaching the course
@@ -415,8 +419,13 @@ function edit( data, done ) {
       due_date: {}
     } );
 
-    if ( criteria.due_date && isNaN( new Date( criteria.due_date ).getTime() ) ) {
-      return done( new Error( 'Invalid date.' ), null );
+    // Ensure due_date is a valid date
+    if ( criteria.due_date ) {
+      if ( isNaN( new Date( criteria.due_date ).getTime() ) ) {
+        return done( new Error( 'Invalid date.' ), null );
+      } else {
+        criteria.due_date = new Date( criteria.due_date );
+      }
     }
 
     // Ensure user is teaching the course

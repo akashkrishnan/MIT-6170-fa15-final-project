@@ -298,9 +298,12 @@ function add( data, done ) {
               // Teachers cannot answers mcqs associated with the courses they teach
               done( new Error( 'Only students can answer an mcq.' ), null );
 
-            } else if ( +minilesson.timestamps.due_date && (+minilesson.timestamps.due_date < +new Date()) ) {
-              done( new Error( "submission is past due date" ), null );
+            } else if ( minilesson.timestamps.due_date && (+minilesson.timestamps.due_date < +new Date()) ) {
+              done( new Error( 'It is too late to submit an answer.' ), null );
             } else {
+
+              console.log( minilesson.timestamps.due_date );
+              console.log( new Date() );
 
               insertData.score = insertData.answer === mcq.answer ? 1 : 0;
               insertData.timestamps = { created: new Date() };
@@ -329,8 +332,27 @@ function add( data, done ) {
   }
 }
 
-function getMCQGrades( data, done ) {
-  try {
+
+/**
+ * @callback getMCQGradesCallback
+ * @param {Error} err - Error object
+ * @param {object} grades object - Name and grades object
+ */
+
+/**
+ * Gets mcq grades as object
+ * of name and grade pairs.
+ * Grade is 0 if incorrect. 1 if correct.
+ *
+ * @param {object} data - data
+ * @param {string} data.user_id - User._id
+ * @param {string} data.mcq_id - Mcq._id
+ * @param {getMCQGradesCallback} done - callback
+ */
+
+function getMCQGrades( data , done ) {
+  try{
+
 
     var criteria = Utils.validateObject( data, {
       user_id: { type: 'string', required: true },
