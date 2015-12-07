@@ -274,7 +274,7 @@
                 <% mcq.answers.forEach( function ( answer ) { %>
                 <div choice layout-horizontal>
 
-                  <% if ( mcq.submitted || minilesson.due_date_passed ) { %> 
+                  <% if ( mcq.submitted ) { %> 
 
                   <input class="submit-radio-answer" type="radio" name="student-answer-options" value="<%= answer %>" disabled>
                   <% } else { %>
