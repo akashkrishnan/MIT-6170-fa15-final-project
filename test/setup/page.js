@@ -1,7 +1,6 @@
 'use strict';
 
 var Minilesson = require("../../models/minilesson.js");
-var Course = require('../../models/course.js');
 
 module.exports = function (scope) {
 	return function ( done ) {
@@ -11,8 +10,6 @@ module.exports = function (scope) {
 		scope.pageTitle = "Page Title";
 		scope.pageResource = "www.flipperSwag.com";
 
-    //Setup: Create User, Course, Minilesson
-        
         Minilesson.add({
             user_id: scope.teacher._id,
             course_id: String(scope.course._id),

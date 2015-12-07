@@ -2,7 +2,6 @@
 
 var Page = require("../../models/page.js");
 var Minilesson = require("../../models/minilesson.js");
-//var Course = require('../../models/course.js');
 
 module.exports = function (scope) {
 	return function ( done ) {
@@ -18,7 +17,7 @@ module.exports = function (scope) {
 			scope.yesterday = new Date();
 			scope.yesterday.setDate(scope.yesterday.getDate() - 1);
 
-	        Minilesson.add({
+	        Minilesson.add({ // add "past due" minilesson
                 user_id: scope.teacher._id,
                 course_id: String(scope.course._id),
                 due_date: scope.yesterday,
