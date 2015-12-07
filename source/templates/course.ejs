@@ -316,8 +316,10 @@
               </div>
 
               <div buttons layout-horizontal layout-end-justified>
+
                 <% if ( course.teaching ) { %>
                 <div button small blue download class="downloadGrades">Download Grades</div>
+                <div button small red remove>Delete</div>
                 <% } else if ( mcq.submitted ) {
                   if ( mcq.submittedAnswer.length > 18 ) {
                     submittedAnswer = mcq.submittedAnswer.substring( 0, 18 ) + "...";
@@ -329,7 +331,7 @@
                 <% } else { %>
                 <div button small blue submit>Submit</div>
                 <% } %>
-                <div button small red remove>Delete</div>
+
               </div>
 
             </div>
