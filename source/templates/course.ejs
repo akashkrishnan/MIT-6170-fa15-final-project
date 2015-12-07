@@ -264,6 +264,7 @@
           <div mcq-list layout-horizontal layout-around-justified layout-start layout-wrap>
 
             <% mcqs.forEach( function ( mcq ) { %>
+
             <div mcq-item shadow elevation="1" flex layout-vertical mcq-id="<%= mcq._id %>">
 
               <div question><strong><%= mcq.question %></strong></div>
@@ -273,7 +274,11 @@
                 <% mcq.answers.forEach( function ( answer ) { %>
                 <div choice layout-horizontal>
 
+                  <% if ( mcq.submitted ) { %> 
+                  <input class="submit-radio-answer" type="radio" name="student-answer-options" value="<%= answer %>" disabled>
+                  <% } else { %>
                   <input class="submit-radio-answer" type="radio" name="student-answer-options" value="<%= answer %>">
+                  <% } %>
 
                   <div flex><%= answer %></div>
 
@@ -286,7 +291,7 @@
                 <% if ( course.teaching ) { %>
                 <div button small blue download class="downloadGrades">Download Grades</div>
                 <% } else if ( mcq.submitted ) { %>
-                <div button small blue disabled>Submitted</div>
+                <div button small blue disabled>You submitted: <%= mcq.submittedAnswer %> </div>
                 <% } else { %>
                 <div button small blue submit>Submit</div>
                 <% } %>

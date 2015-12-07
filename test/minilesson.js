@@ -6,20 +6,18 @@
 
 var Minilesson = require( '../models/minilesson.js' );
 var assert = require( 'assert' );
-
 var Setup = require("./setup/minilesson.js");
-var scope = {};
+
 
 var Config = require( '../config.js' );
 var util = require( 'util' );
 var mongojs = require( 'mongojs' );
-
 var db = mongojs( Config.services.db.mongodb.uri );
 
 
 
 describe( 'Minilesson', function () {
-
+  var scope = {};
   before(Setup(scope));
   
   after(function (done) {
@@ -68,7 +66,7 @@ describe( 'Minilesson', function () {
   describe('#edit', function(){
     it('should edit minilesson without error', function(done){
       scope.new_data = {
-        user_id: scope.user._id,
+        user_id: scope.teacher._id,
         course_id: String(scope.course._id),
         minilesson_id: scope.minilesson._id,
         title:"New Title",
@@ -79,7 +77,7 @@ describe( 'Minilesson', function () {
     });
     it('edited minilesson should have correct data', function(done){
       scope.new_data = {
-        user_id: scope.user._id,
+        user_id: scope.teacher._id,
         course_id: String(scope.course._id),
         minilesson_id: scope.minilesson._id,
         title:"New Title 2",
@@ -99,7 +97,7 @@ describe( 'Minilesson', function () {
     it('should change state of minilesson to publish', function(done) {
       Minilesson.publish({
         minilesson_id: scope.minilesson._id,
-        user_id: scope.user._id,
+        user_id: scope.teacher._id,
         course_id: String(scope.course._id)},
           function(err, _minilessonEdit){
             if(err){
@@ -135,7 +133,7 @@ describe( 'Minilesson', function () {
     context('missing minilesson _id', function(){
       it('should throw an error', function(done){
         Minilesson.add(scope.minilessonData, function(err){
-          Minilesson.remove({user_id: scope.minilessonData.user_id}, function(err){
+          Minilesson.remove({user_id: scope.minilessonData.teacher_id}, function(err){
             if(err){
               done();
             } else {

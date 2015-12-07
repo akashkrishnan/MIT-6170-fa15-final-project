@@ -5,14 +5,16 @@
 'use strict';
 
 var Page = require( '../models/page.js' );
-
 var assert = require( 'assert' );
 var Setup = require("./setup/page.js");
 
-var scope = {};
+var Config = require( '../config.js' );
+var util = require( 'util' );
+var mongojs = require( 'mongojs' );
+var db = mongojs( Config.services.db.mongodb.uri );
 
 describe( 'Page', function() {
-
+    var scope = {};
     before(Setup(scope));
 
     after(function (done) {
@@ -20,7 +22,6 @@ describe( 'Page', function() {
       });
 
     describe('#add', function () {
-        // console.log(scope);
         context('all valid entries', function () {
             it('should add a page to database', function (done) {
                 Page.add(scope.pageData, function (err, _page) {
@@ -63,7 +64,7 @@ describe( 'Page', function() {
                  assert.throws(function() {
                     delete scope.pageData.user_id;
                     Page.add(scope.pageData, function (err) {
-                        scope.pageData.user_id = scope.user._id;
+                        scope.pageData.user_id = scope.teacher._id;
                         if (err) {
                             throw err
                         }
@@ -124,7 +125,7 @@ describe( 'Page', function() {
         });
         context("page_id and user_id arguments", function(){
             it('should get a page without error', function(done){
-                Page.get({_id: scope.page._id, user_id: scope.user._id}, done);
+                Page.get({_id: scope.page._id, user_id: scope.teacher._id}, done);
             })
         })
     });
@@ -132,7 +133,7 @@ describe( 'Page', function() {
     describe('#list', function () {
         context('user_id and minilesson_id arguments', function(){
             it('should return list of pages without error', function(done){
-                Page.list({user_id: scope.user._id,
+                Page.list({user_id: scope.teacher._id,
                     minilesson_id: String(scope.minilesson._id)}, done);
             });
         });
@@ -151,7 +152,7 @@ describe( 'Page', function() {
         context('minilesson_id missing', function(){
             it('should throw an error', function(done){
                 assert.throws(function(){
-                    Page.list({user_id: scope.user._id}, function(err){
+                    Page.list({user_id: scope.teacher._id}, function(err){
                         if(err){
                             throw err;
                         }
