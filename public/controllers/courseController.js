@@ -7,26 +7,7 @@
 
 (function () {
 
-<<<<<<< HEAD
-
-  var mcqChoices = document.querySelectorAll('#answer-choices');
-  if (mcqChoices) {
-    forEach(mcqChoices, function (mcqChoice) {
-      
-
-
-    } );
-    flipper.mcq.get()
-
-
-  }
-
-
-
-  var removePageBtn = document.querySelector('#remove-page-btn');
-=======
   var removePageBtn = document.querySelector( '#remove-page-btn' );
->>>>>>> 7c33a7c89646869df68f81e4ff12d2df27a43520
 
   if ( removePageBtn ) {
     removePageBtn.addEventListener( 'click', function ( e ) {
