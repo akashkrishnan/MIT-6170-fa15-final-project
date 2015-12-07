@@ -254,11 +254,11 @@ function add( data, done ) {
         filter: 'trim',
         required: true
       },
-      due_date: { required: true }
+      due_date: {}
     } );
 
     // Ensure due_date is a valid date
-    if ( isNaN( new Date( criteria.due_date ).getTime() ) ) {
+    if ( criteria.due_date && isNaN( new Date( criteria.due_date ).getTime() ) ) {
       return done( new Error( 'Invalid date.' ), null );
     }
 
@@ -412,11 +412,10 @@ function edit( data, done ) {
         filter: 'trim',
         required: true
       },
-      due_date: { required: true }
+      due_date: {}
     } );
 
-    // Ensure due_date is a valid date
-    if ( isNaN( new Date( criteria.due_date ).getTime() ) ) {
+    if ( criteria.due_date && isNaN( new Date( criteria.due_date ).getTime() ) ) {
       return done( new Error( 'Invalid date.' ), null );
     }
 
