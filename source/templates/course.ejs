@@ -274,7 +274,7 @@
                 <% mcq.answers.forEach( function ( answer ) { %>
                 <div choice layout-horizontal>
 
-                  <% if ( mcq.submitted ) { %> 
+                  <% if ( mcq.submitted ) { %>
                   <input class="submit-radio-answer" type="radio" name="student-answer-options" value="<%= answer %>" disabled>
                   <% } else { %>
                   <input class="submit-radio-answer" type="radio" name="student-answer-options" value="<%= answer %>">
@@ -313,9 +313,7 @@
 
       </div>
     </div>
-
-
-
+    
     <div id="minilesson-add-dialog" dialog backdrop
          course-id="<%= course._id %>"
          dialog-close-trigger="minilesson-add-dialog"
