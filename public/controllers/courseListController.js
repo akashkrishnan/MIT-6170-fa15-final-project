@@ -5,7 +5,7 @@
 
 'use strict';
 
-( function () {
+(function () {
 
   var courseAddDialog = document.querySelector( '#course-add-dialog' );
   if ( courseAddDialog ) {
@@ -38,16 +38,22 @@
           } );
 
         } else {
-          console.error( 'Missing #course-add-dialog [name-input].' );
+          if ( DEBUG ) {
+            console.error( 'Missing #course-add-dialog [name-input].' );
+          }
         }
 
       }, false );
     } else {
-      console.error( 'Missing #course-add-dialog [create].' );
+      if ( DEBUG ) {
+        console.error( 'Missing #course-add-dialog [create].' );
+      }
     }
 
   } else {
-    console.error( 'Missing #course-add-dialog.' );
+    if ( DEBUG ) {
+      console.error( 'Missing #course-add-dialog.' );
+    }
   }
 
   /* -------------------------------------------------------------------------------------------------------------- */
@@ -84,16 +90,22 @@
             } );
 
           } else {
-            console.error( 'Missing #course-join-dialog [course-id].' );
+            if ( DEBUG ) {
+              console.error( 'Missing #course-join-dialog [course-id].' );
+            }
           }
 
         }, false );
       } );
     } else {
-      console.error( 'Missing #course-join-dialog [join].' );
+      if ( DEBUG ) {
+        console.error( 'Missing #course-join-dialog [join].' );
+      }
     }
   } else {
-    console.error( 'Missing #course-join-dialog.' );
+    if ( DEBUG ) {
+      console.error( 'Missing #course-join-dialog.' );
+    }
   }
 
-} )();
+})();
