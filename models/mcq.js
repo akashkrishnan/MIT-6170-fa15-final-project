@@ -132,6 +132,9 @@ function list( data, done ) {
                     },
                     function ( err, submissions, count ) {
                       mcq.submitted = Boolean( !err && count );
+                      if ( mcq.submitted ) {
+                        mcq.submittedAnswer = submissions[0].answer;
+                      }
                       next( i + 1, n );
                     }
                   );
@@ -266,10 +269,14 @@ function add( data, done ) {
       answer: { type: 'string', required: true }
     } );
 
+    if((new Set(insertData.answers)).size !== insertData.answers.length) {
+      done ( new Error( 'Answer choices must be unique.') );
+    }
+
     if(insertData.answers.length != 0) {
       if (insertData.question.length != 0) {
         if ( insertData.answers instanceof Array ) {
-        // Make sure answer is a valid answer choice
+          // Make sure answer is a valid answer choice
           if ( insertData.answers.indexOf( insertData.answer ) === -1 ) {
             done( new Error( 'Provided answer is not a valid answer choice.' ), null );
           } else {
@@ -316,11 +323,11 @@ function add( data, done ) {
         }
       }
       else {
-        done (new Error ("Expected non-zero length question"), null);
+        done( new Error( "Expected non-zero length question" ), null );
       }
     }
     else {
-      done (new Error ("Expected more tha 1 answer choices"), null);
+      done( new Error( "Expected more tha 1 answer choices" ), null );
     }
 
   } catch ( err ) {

@@ -111,52 +111,8 @@ function apiSubmissionList( req, res ) {
         res.json( { err: err } );
       } else {
 
-        /**
-         * Replaces student ids with user objects in submissions.
-         *
-         * @param {Array.<Object>} submissions - list of Submission objects
-         * @param {function()} done - callback
-         */
-        var processSubmissions = function ( submissions, done ) {
-
-          // Loop through courses
-          ( function nextSubmission( i, n ) {
-            if ( i < n ) {
-
-              var submission = submissions[ i ];
-
-              if ( submission.user_id ) {
-
-                User.get(
-                  {
-                    _id: submission.user_id,
-                    projection: {
-                      timestamps: false
-                    }
-                  },
-                  Utils.safeFn( function ( err, user ) {
-                    submission.user = user || {};
-                    nextSubmission( i + 1, n );
-                  } )
-                );
-
-              } else {
-                nextSubmission( i + 1, n );
-              }
-
-            } else {
-              done();
-            }
-          } )( 0, submissions.length );
-
-        };
-
-        processSubmissions( submissions, function () {
-
-          // Return results to client
-          res.json( submissions );
-
-        } );
+        // Return results to client
+        res.json( submissions );
 
       }
     } ) );
@@ -212,13 +168,13 @@ function apiMcqGrades( req, res ) {
     req.body.user_id = req.user._id;
     req.body.mcq_id = req.params.mcq_id;
 
-    Submission.getMCQGrades( req.body, function( err, grades) {
-      if (err) {
-        res.json( {err: err});
+    Submission.getMCQGrades( req.body, function ( err, grades ) {
+      if ( err ) {
+        res.json( { err: err } );
       } else {
-        res.json(grades);
+        res.json( grades );
       }
-    });
+    } );
 
   } else {
     res.status( 400 ).json( { err: 'Bad Request: User must be authenticated to process request.' } );

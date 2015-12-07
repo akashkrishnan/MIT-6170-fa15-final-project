@@ -7,7 +7,7 @@
 var Config = require( '../config.js' );
 var Utils = require( './utils.js' );
 var Mcq = require( './mcq.js' );
-var User = require('./user.js');
+var User = require( './user.js' );
 var mongojs = require( 'mongojs' );
 
 var db = mongojs( Config.services.db.mongodb.uri, [ 'submissions' ] );
@@ -86,10 +86,12 @@ function list( data, done ) {
               if ( err ) {
                 done( err, [], 0 );
               } else {
+                expandSubmissionUsers( submissions, function () {
 
-                // Return list of submissions
-                done( null, submissions, count );
+                  // Return list of submissions
+                  done( null, submissions, count );
 
+                } );
               }
             } );
         }
@@ -165,11 +167,31 @@ function get( data, done ) {
     } ).projection;
 
     var findOne = function ( query, projection, done ) {
-      db.submissions.findOne( query, projection, function ( err, mcq ) {
+      db.submissions.findOne( query, projection, function ( err, submission ) {
         if ( err ) {
           done( err, null );
-        } else if ( mcq ) {
-          done( null, mcq );
+        } else if ( submission ) {
+
+          // Replace user id with user object
+          if ( submission.user_id ) {
+
+            User.get(
+              {
+                _id: submission.user_id,
+                projection: {
+                  timestamps: false
+                }
+              },
+              Utils.safeFn( function ( err, user ) {
+                submission.user = user || {};
+                done( null, submission );
+              } )
+            );
+
+          } else {
+            done( null, submission );
+          }
+
         } else {
           done( new Error( 'Submission not found.' ), null );
         }
@@ -276,9 +298,9 @@ function add( data, done ) {
               // Teachers cannot answers mcqs associated with the courses they teach
               done( new Error( 'Only students can answer an mcq.' ), null );
 
-            } else if(+minilesson.timestamps.due_date && (+minilesson.timestamps.due_date < + new Date()) ){
-                done (new Error ("submission is past due date"), null);
-            }else {
+            } else if ( +minilesson.timestamps.due_date && (+minilesson.timestamps.due_date < +new Date()) ) {
+              done( new Error( "submission is past due date" ), null );
+            } else {
 
               insertData.score = insertData.answer === mcq.answer ? 1 : 0;
               insertData.timestamps = { created: new Date() };
@@ -328,14 +350,15 @@ function add( data, done ) {
 function getMCQGrades( data , done ) {
   try{
 
+
     var criteria = Utils.validateObject( data, {
       user_id: { type: 'string', required: true },
       mcq_id: { type: 'string', required: true }
     } );
 
     list( criteria, function ( err, submissions ) {
-      if (err) {
-        done(err, null);
+      if ( err ) {
+        done( err, null );
       } else {
         var grades = {};
 
@@ -345,51 +368,99 @@ function getMCQGrades( data , done ) {
          * @param {Array.<Object>} submissions - list of Submission objects
          * @param {function()} done - callback
          */
-        var processSubmissions = function (submissions, done) {
+        var processSubmissions = function ( submissions, done ) {
 
           // Loop through courses
-          (function nextSubmission(i, n) {
-            if (i < n) {
+          (function nextSubmission( i, n ) {
+            if ( i < n ) {
 
-              var submission = submissions[i];
+              var submission = submissions[ i ];
 
-              if (submission.user_id) {
+              if ( submission.user_id ) {
 
                 User.get(
-                    {
-                      _id: submission.user_id,
-                      projection: {
-                        timestamps: false
-                      }
-                    },
-                    Utils.safeFn(function (err, user) {
-                      grades[user.name] = submission.score;
-                      nextSubmission(i + 1, n);
-                    })
+                  {
+                    _id: submission.user_id,
+                    projection: {
+                      timestamps: false
+                    }
+                  },
+                  Utils.safeFn( function ( err, user ) {
+                    grades[ user.name ] = submission.score;
+                    nextSubmission( i + 1, n );
+                  } )
                 );
 
               } else {
-                nextSubmission(i + 1, n);
+                nextSubmission( i + 1, n );
               }
 
             } else {
               done();
             }
-          })(0, submissions.length);
+          })( 0, submissions.length );
 
         };
 
-        processSubmissions(submissions, function () {
+        processSubmissions( submissions, function () {
 
           // Return results
-          done(null, grades);
+          done( null, grades );
 
-        });
+        } );
 
       }
-    });
+    } );
 
-  } catch (err) {
-    done( err, null);
+  } catch ( err ) {
+    done( err, null );
+  }
+}
+
+/**
+ * @callback expandSubmissionUsersCallback
+ */
+
+/**
+ * Replaces user ids with user objects in submissions.
+ *
+ * @param {Array.<Object>} submissions - list of Submission objects
+ * @param {expandSubmissionUsersCallback} done - callback
+ */
+function expandSubmissionUsers( submissions, done ) {
+  if ( submissions ) {
+
+    // Loop through submissions
+    (function nextSubmission( i, n ) {
+      if ( i < n ) {
+
+        var submission = submissions[ i ];
+
+        if ( submission.user_id ) {
+
+          User.get(
+            {
+              _id: submission.user_id,
+              projection: {
+                timestamps: false
+              }
+            },
+            Utils.safeFn( function ( err, user ) {
+              submission.user = user || {};
+              nextSubmission( i + 1, n );
+            } )
+          );
+
+        } else {
+          nextSubmission( i + 1, n );
+        }
+
+      } else {
+        done();
+      }
+    })( 0, submissions.length );
+
+  } else {
+    done();
   }
 }

@@ -5,26 +5,26 @@
 
 'use strict';
 
-( function () {
+(function () {
 
-  var removePageBtn = document.querySelector('#remove-page-btn');
+  var removePageBtn = document.querySelector( '#remove-page-btn' );
 
-  if (removePageBtn) {
-    removePageBtn.addEventListener( 'click', function (e) {
+  if ( removePageBtn ) {
+    removePageBtn.addEventListener( 'click', function ( e ) {
       e.preventDefault();
-      page_id = removePageBtn.getAttribute('page-id');
+      page_id = removePageBtn.getAttribute( 'page-id' );
       var data = { 'page_id': page_id };
 
       flipper.page.remove( data, function ( err ) {
-          if ( err ) {
-            console.error( err );
-            toastr.error( err );
-          } else {
-            toastr.info( 'Page has been removed.' );
-            var newUrl = window.location.href.split('/').slice(0, -1).join('/');
-            window.location = newUrl;
-          }
-        } );
+        if ( err ) {
+          console.error( err );
+          toastr.error( err );
+        } else {
+          toastr.info( 'Page has been removed.' );
+          var newUrl = window.location.href.split( '/' ).slice( 0, -1 ).join( '/' );
+          window.location = newUrl;
+        }
+      } );
     } );
   }
 
@@ -47,7 +47,7 @@
               console.error( err );
               toastr.error( err );
             } else {
-              toastr.info(' Question has been deleted. ');
+              toastr.info( ' Question has been deleted. ' );
               location.reload();
             }
           } );
@@ -66,26 +66,27 @@
 
 
   var minilesson_id;
-  var removeBtns = document.querySelectorAll('#remove-btn');
+  var removeBtns = document.querySelectorAll( '#remove-btn' );
 
 
-  if (removeBtns) {
-    forEach( removeBtns, function (removeBtn) {
-      removeBtn.addEventListener( 'click', function (e) {
+  if ( removeBtns ) {
+    forEach( removeBtns, function ( removeBtn ) {
+      removeBtn.addEventListener( 'click', function ( e ) {
         e.preventDefault();
-        minilesson_id = removeBtn.getAttribute('minilesson-id');
+        minilesson_id = removeBtn.getAttribute( 'minilesson-id' );
         var data = { 'minilesson_id': minilesson_id };
 
         flipper.minilesson.remove( data, function ( err ) {
-            if ( err ) {
-              console.error( err );
-              toastr.error( err );
-            } else {
-              toastr.info( 'Minilesson has been removed.' );
-              var newUrl = window.location.protocol+'//'+window.location.host+window.location.pathname.split('/').slice(0, 3).join('/');
-              window.location = newUrl;
-            }
-          } );
+          if ( err ) {
+            console.error( err );
+            toastr.error( err );
+          } else {
+            toastr.info( 'Minilesson has been removed.' );
+            var newUrl = window.location.protocol + '//' + window.location.host +
+                         window.location.pathname.split( '/' ).slice( 0, 3 ).join( '/' );
+            window.location = newUrl;
+          }
+        } );
       } );
     } );
   }
@@ -98,9 +99,9 @@
 
   if ( editBtns ) {
     forEach( editBtns, function ( editBtn ) {
-      editBtn.addEventListener( 'click', function (e) {
+      editBtn.addEventListener( 'click', function ( e ) {
         e.preventDefault();
-        minilesson_id = editBtn.getAttribute('minilesson-id');
+        minilesson_id = editBtn.getAttribute( 'minilesson-id' );
       } );
     } );
   }
@@ -115,16 +116,26 @@
     var setBtn = document.querySelector( '#minilesson-edit-dialog [set]' );
 
     if ( setBtn ) {
-      setBtn.addEventListener( 'click', function (e) {
+      setBtn.addEventListener( 'click', function ( e ) {
         e.preventDefault();
 
         var titleInput = document.querySelector( '#minilesson-edit-dialog [title-input]' );
-        var dueDate = document.querySelector("#minilesson-edit-dialog [due-Date-input]");
+
+        var data = {
+          minilesson_id: minilesson_id,
+          course_id: course_id,
+          title: titleInput.value
+        };
+
+        var dueDate = document.querySelector( '#minilesson-edit-dialog [due-Date-input]' );
         var currentTimeZoneOffsetInMinutes = new Date().getTimezoneOffset();
-        var d = new Date( dueDate.value);
-        var m = moment( d );
-        var dueDateTZ = m.add(currentTimeZoneOffsetInMinutes, "m");
-        var data = { 'minilesson_id': minilesson_id, 'course_id': course_id, 'title': titleInput.value, 'due_date': dueDateTZ }
+
+        if ( dueDate.value ) {
+          var d = new Date( dueDate.value );
+          var m = moment( d );
+          var dueDateTZ = m.add( currentTimeZoneOffsetInMinutes, 'm' );
+          data.due_date = dueDateTZ;
+        }
 
         flipper.minilesson.edit( data, function ( err ) {
           if ( err ) {
@@ -134,8 +145,8 @@
             toastr.info( 'Minilesson has been edited.' );
             location.reload();
           }
-         } );
-       } );
+        } );
+      } );
     } else {
       console.error( 'Missing setBtn.' );
     }
@@ -169,7 +180,6 @@
   }
 
 
-
   /* -------------------------------------------------------------------------------------------------------------- */
 
 
@@ -185,16 +195,24 @@
     if ( createBtn ) {
       createBtn.addEventListener( 'click', function () {
 
-        // Get inputs
         var titleInput = document.querySelector( '#minilesson-add-dialog [title-input]' );
-        var dueDate = document.querySelector("#minilesson-add-dialog [due-Date-input]");
-        var currentTimeZoneOffsetInMinutes = new Date().getTimezoneOffset();
-        var d = new Date( dueDate.value);
-        var m = moment( d );
-        var dueDateTZ = m.add(currentTimeZoneOffsetInMinutes, "m");
-        if ( titleInput) {
 
-          var data = { course_id: course_id, title: titleInput.value, due_date: dueDateTZ};
+        var data = {
+          course_id: course_id,
+          title: titleInput.value
+        };
+
+        var dueDate = document.querySelector( '#minilesson-add-dialog [due-Date-input]' );
+        var currentTimeZoneOffsetInMinutes = new Date().getTimezoneOffset();
+
+        if ( dueDate.value ) {
+          var d = new Date( dueDate.value );
+          var m = moment( d );
+          var dueDateTZ = m.add( currentTimeZoneOffsetInMinutes, 'm' );
+          data.due_date = dueDateTZ;
+        }
+
+        if ( titleInput ) {
 
           flipper.minilesson.add( data, function ( err ) {
             if ( err ) {
@@ -370,4 +388,4 @@
     console.error( 'Missing [mcq-item] [buttons] [submit].' );
   }
 
-} )();
+})();
