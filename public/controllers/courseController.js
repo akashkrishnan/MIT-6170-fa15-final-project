@@ -5,26 +5,26 @@
 
 'use strict';
 
-( function () {
+(function () {
 
-  var removePageBtn = document.querySelector('#remove-page-btn');
+  var removePageBtn = document.querySelector( '#remove-page-btn' );
 
-  if (removePageBtn) {
-    removePageBtn.addEventListener( 'click', function (e) {
+  if ( removePageBtn ) {
+    removePageBtn.addEventListener( 'click', function ( e ) {
       e.preventDefault();
-      page_id = removePageBtn.getAttribute('page-id');
+      page_id = removePageBtn.getAttribute( 'page-id' );
       var data = { 'page_id': page_id };
 
-      flipper.page.remove( data, function ( err, minilesson ) {
-          if ( err ) {
-            console.log( err );
-            toastr.error( err );
-          } else {
-            toastr.info( 'Page has been removed.' );
-            var newUrl = window.location.href.split('/').slice(0, -1).join('/');
-            window.location = newUrl;
-          }
-        } );
+      flipper.page.remove( data, function ( err ) {
+        if ( err ) {
+          console.error( err );
+          toastr.error( err );
+        } else {
+          toastr.info( 'Page has been removed.' );
+          var newUrl = window.location.href.split( '/' ).slice( 0, -1 ).join( '/' );
+          window.location = newUrl;
+        }
+      } );
     } );
   }
 
@@ -47,7 +47,7 @@
               console.error( err );
               toastr.error( err );
             } else {
-              toastr.info(' Question has been deleted. ');
+              toastr.info( ' Question has been deleted. ' );
               location.reload();
             }
           } );
@@ -61,31 +61,32 @@
     console.error( 'Missing removeMcqBtns.' );
   }
 
-          
+
   /* -------------------------------------------------------------------------------------------------------------- */
 
 
   var minilesson_id;
-  var removeBtns = document.querySelectorAll('#remove-btn');
+  var removeBtns = document.querySelectorAll( '#remove-btn' );
 
 
-  if (removeBtns) {
-    forEach( removeBtns, function (removeBtn) {
-      removeBtn.addEventListener( 'click', function (e) {
+  if ( removeBtns ) {
+    forEach( removeBtns, function ( removeBtn ) {
+      removeBtn.addEventListener( 'click', function ( e ) {
         e.preventDefault();
-        minilesson_id = removeBtn.getAttribute('minilesson-id');
+        minilesson_id = removeBtn.getAttribute( 'minilesson-id' );
         var data = { 'minilesson_id': minilesson_id };
 
-        flipper.minilesson.remove( data, function ( err, minilesson ) {
-            if ( err ) {
-              console.log( err );
-              toastr.error( err );
-            } else {
-              toastr.info( 'Minilesson has been removed.' );
-              var newUrl = window.location.protocol+'//'+window.location.host+window.location.pathname.split('/').slice(0, 3).join('/');
-              window.location = newUrl;
-            }
-          } );
+        flipper.minilesson.remove( data, function ( err ) {
+          if ( err ) {
+            console.error( err );
+            toastr.error( err );
+          } else {
+            toastr.info( 'Minilesson has been removed.' );
+            var newUrl = window.location.protocol + '//' + window.location.host +
+                         window.location.pathname.split( '/' ).slice( 0, 3 ).join( '/' );
+            window.location = newUrl;
+          }
+        } );
       } );
     } );
   }
@@ -98,9 +99,9 @@
 
   if ( editBtns ) {
     forEach( editBtns, function ( editBtn ) {
-      editBtn.addEventListener( 'click', function (e) {
+      editBtn.addEventListener( 'click', function ( e ) {
         e.preventDefault();
-        minilesson_id = editBtn.getAttribute('minilesson-id');
+        minilesson_id = editBtn.getAttribute( 'minilesson-id' );
       } );
     } );
   }
@@ -115,29 +116,37 @@
     var setBtn = document.querySelector( '#minilesson-edit-dialog [set]' );
 
     if ( setBtn ) {
-      setBtn.addEventListener( 'click', function (e) {
+      setBtn.addEventListener( 'click', function ( e ) {
         e.preventDefault();
 
         var titleInput = document.querySelector( '#minilesson-edit-dialog [title-input]' );
-        var dueDate = document.querySelector("#minilesson-edit-dialog [due-Date-input]");
-        var currentTimeZoneOffsetInMinutes = new Date().getTimezoneOffset();
-        var d = new Date( dueDate.value);
-        var m = moment( d );
-        var dueDateTZ = m.add(currentTimeZoneOffsetInMinutes, "m");
-        var data = { 'minilesson_id': minilesson_id, 'course_id': course_id, 'title': titleInput.value, 'due_date': dueDateTZ }
 
-        flipper.minilesson.edit( data, function ( err, minilesson ) {
+        var data = {
+          minilesson_id: minilesson_id,
+          course_id: course_id,
+          title: titleInput.value
+        };
+
+        var dueDate = document.querySelector( '#minilesson-edit-dialog [due-Date-input]' );
+        var currentTimeZoneOffsetInMinutes = new Date().getTimezoneOffset();
+
+        if ( dueDate.value ) {
+          var d = new Date( dueDate.value );
+          var m = moment( d );
+          var dueDateTZ = m.add( currentTimeZoneOffsetInMinutes, 'm' );
+          data.due_date = dueDateTZ;
+        }
+
+        flipper.minilesson.edit( data, function ( err ) {
           if ( err ) {
-            console.log( err );
+            console.error( err );
             toastr.error( err );
           } else {
-            console.log( minilesson );
             toastr.info( 'Minilesson has been edited.' );
-   
             location.reload();
           }
-         } );
-       } );
+        } );
+      } );
     } else {
       console.error( 'Missing setBtn.' );
     }
@@ -153,15 +162,14 @@
     publishBtn.addEventListener( 'click', function () {
       var minilesson_id = publishBtn.getAttribute( 'minilesson-id' );
       var course_id = publishBtn.getAttribute( 'course-id' );
-      var data = { 'minilesson_id': minilesson_id, 'course_id': course_id }
-      flipper.minilesson.publish( data, function ( err, minilesson ) {
+      var data = { 'minilesson_id': minilesson_id, 'course_id': course_id };
+      flipper.minilesson.publish( data, function ( err ) {
         if ( err ) {
-          console.log( err );
+          console.error( err );
           toastr.error( err );
         } else {
-          console.log( minilesson );
           toastr.info( 'Minilesson has been published.' );
- 
+
           //location.reload();
         }
 
@@ -170,7 +178,6 @@
   } else {
     console.error( 'Missing publish btn.' );
   }
-
 
 
   /* -------------------------------------------------------------------------------------------------------------- */
@@ -188,34 +195,32 @@
     if ( createBtn ) {
       createBtn.addEventListener( 'click', function () {
 
-        // Get inputs
         var titleInput = document.querySelector( '#minilesson-add-dialog [title-input]' );
-        var dueDate = document.querySelector("#minilesson-add-dialog [due-Date-input]");
+
+        var data = {
+          course_id: course_id,
+          title: titleInput.value
+        };
+
+        var dueDate = document.querySelector( '#minilesson-add-dialog [due-Date-input]' );
         var currentTimeZoneOffsetInMinutes = new Date().getTimezoneOffset();
-        var d = new Date( dueDate.value);
-        var m = moment( d );
-        var dueDateTZ = m.add(currentTimeZoneOffsetInMinutes, "m");
-        if ( titleInput) {
 
-          var data = { course_id: course_id, title: titleInput.value, due_date: dueDateTZ};
+        if ( dueDate.value ) {
+          var d = new Date( dueDate.value );
+          var m = moment( d );
+          var dueDateTZ = m.add( currentTimeZoneOffsetInMinutes, 'm' );
+          data.due_date = dueDateTZ;
+        }
 
-          flipper.minilesson.add( data, function ( err, minilesson ) {
+        if ( titleInput ) {
+
+          flipper.minilesson.add( data, function ( err ) {
             if ( err ) {
               console.error( err );
               toastr.error( err );
             } else {
-
-              // TODO: DO SOMETHING WITH THE MINILESSON OBJECT?
-              console.log( minilesson );
               toastr.info( 'Minilesson has been added.' );
-
-              // TODO: WE SHOULDN'T NEED TO REFRESH
-              // Refresh for now
               location.reload();
-
-              // Close the dialog --- this works because the dialog is a dialog-close-trigger
-              minilessonAddDialog.click();
-
             }
           } );
 
@@ -255,23 +260,13 @@
             resource: resourceInput.value || ''
           };
 
-          flipper.page.add( data, function ( err, page ) {
+          flipper.page.add( data, function ( err ) {
             if ( err ) {
               console.error( err );
               toastr.error( err );
             } else {
-
-              // TODO: DO SOMETHING WITH THE PAGE OBJECT?
-              console.log( page );
               toastr.info( 'Page has been added.' );
-
-              // TODO: WE SHOULDN'T NEED TO REFRESH
-              // Refresh for now
               location.reload();
-
-              // Close the dialog --- this works because the dialog is a dialog-close-trigger
-              pageAddDialog.click();
-
             }
           } );
 
@@ -331,23 +326,13 @@
           answer: answer
         };
 
-        flipper.mcq.add( data, function ( err, mcq ) {
+        flipper.mcq.add( data, function ( err ) {
           if ( err ) {
             console.error( err );
             toastr.error( err );
           } else {
-
-            // TODO: DO SOMETHING WITH THE PAGE OBJECT?
-            console.log( mcq );
             toastr.info( 'Mcq has been added.' );
-
-            // TODO: WE SHOULDN'T NEED TO REFRESH
-            // Refresh for now
             location.reload();
-
-            // Close the dialog --- this works because the dialog is a dialog-close-trigger
-            mcqAddDialog.click();
-
           }
         } );
 
@@ -380,22 +365,13 @@
               answer: answer.value
             };
 
-            console.log( data );
-
             flipper.submission.add( data, function ( err, submission ) {
               if ( err ) {
                 console.error( err );
                 toastr.error( err );
               } else {
-
-                // TODO: DO SOMETHING WITH THE SUBMISSION OBJECT?
-                console.log( submission );
                 toastr.info( 'Answer has been submitted.' );
-
-                // TODO: WE SHOULDN'T NEED TO REFRESH
-                // Refresh for now
                 location.reload();
-
               }
             } );
 
@@ -412,4 +388,4 @@
     console.error( 'Missing [mcq-item] [buttons] [submit].' );
   }
 
-} )();
+})();

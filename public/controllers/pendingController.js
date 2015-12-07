@@ -22,12 +22,8 @@
               toastr.error( err );
             } else {
 
-              // TODO: DO SOMETHING WITH THE COURSE OBJECT?
-              console.log( course );
               toastr.info( 'Student Approved.' );
 
-              // TODO: WE SHOULDN'T NEED TO REFRESH
-              // Refresh for now
               location.reload();
 
             }
@@ -52,20 +48,13 @@
         var course_id = event.target.getAttribute( 'course-id' );
         if ( student_id && course_id ) {
           var data = { student_id: student_id, course_id: course_id };
-          flipper.course.removePendingStudent( data, function ( err, course ) {
+          flipper.course.removePendingStudent( data, function ( err ) {
             if ( err ) {
               console.error( err );
               toastr.error( err );
             } else {
-
-              // TODO: DO SOMETHING WITH THE COURSE OBJECT?
-              console.log( course );
               toastr.info( 'Student Removed.' );
-
-              // TODO: WE SHOULDN'T NEED TO REFRESH
-              // Refresh for now
               location.reload();
-
             }
           } );
         } else {

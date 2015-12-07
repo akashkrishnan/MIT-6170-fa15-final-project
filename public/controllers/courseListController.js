@@ -27,12 +27,8 @@
               toastr.error( err );
             } else {
 
-              // TODO: DO SOMETHING WITH THE COURSE OBJECT?
-              console.log( course );
               toastr.info( 'Course has been added.' );
 
-              // TODO: WE SHOULDN'T NEED TO REFRESH
-              // Refresh for now
               location.reload();
 
               // Close the dialog --- this works because the dialog is a dialog-close-trigger
@@ -77,12 +73,8 @@
                 toastr.error( err );
               } else {
 
-                // TODO: DO SOMETHING WITH THE COURSE OBJECT?
-                console.log( course );
                 toastr.info( 'You have joined a course.' );
 
-                // TODO: WE SHOULDN'T NEED TO REFRESH
-                // Refresh for now
                 location.reload();
 
                 // Close the dialog --- this works because the dialog is a dialog-close-trigger
