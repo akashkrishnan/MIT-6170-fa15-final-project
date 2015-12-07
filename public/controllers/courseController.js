@@ -15,9 +15,9 @@
       page_id = removePageBtn.getAttribute('page-id');
       var data = { 'page_id': page_id };
 
-      flipper.page.remove( data, function ( err, minilesson ) {
+      flipper.page.remove( data, function ( err ) {
           if ( err ) {
-            console.log( err );
+            console.error( err );
             toastr.error( err );
           } else {
             toastr.info( 'Page has been removed.' );
@@ -61,7 +61,7 @@
     console.error( 'Missing removeMcqBtns.' );
   }
 
-          
+
   /* -------------------------------------------------------------------------------------------------------------- */
 
 
@@ -76,9 +76,9 @@
         minilesson_id = removeBtn.getAttribute('minilesson-id');
         var data = { 'minilesson_id': minilesson_id };
 
-        flipper.minilesson.remove( data, function ( err, minilesson ) {
+        flipper.minilesson.remove( data, function ( err ) {
             if ( err ) {
-              console.log( err );
+              console.error( err );
               toastr.error( err );
             } else {
               toastr.info( 'Minilesson has been removed.' );
@@ -126,14 +126,12 @@
         var dueDateTZ = m.add(currentTimeZoneOffsetInMinutes, "m");
         var data = { 'minilesson_id': minilesson_id, 'course_id': course_id, 'title': titleInput.value, 'due_date': dueDateTZ }
 
-        flipper.minilesson.edit( data, function ( err, minilesson ) {
+        flipper.minilesson.edit( data, function ( err ) {
           if ( err ) {
-            console.log( err );
+            console.error( err );
             toastr.error( err );
           } else {
-            console.log( minilesson );
             toastr.info( 'Minilesson has been edited.' );
-   
             location.reload();
           }
          } );
@@ -153,15 +151,14 @@
     publishBtn.addEventListener( 'click', function () {
       var minilesson_id = publishBtn.getAttribute( 'minilesson-id' );
       var course_id = publishBtn.getAttribute( 'course-id' );
-      var data = { 'minilesson_id': minilesson_id, 'course_id': course_id }
-      flipper.minilesson.publish( data, function ( err, minilesson ) {
+      var data = { 'minilesson_id': minilesson_id, 'course_id': course_id };
+      flipper.minilesson.publish( data, function ( err ) {
         if ( err ) {
-          console.log( err );
+          console.error( err );
           toastr.error( err );
         } else {
-          console.log( minilesson );
           toastr.info( 'Minilesson has been published.' );
- 
+
           //location.reload();
         }
 
@@ -199,23 +196,13 @@
 
           var data = { course_id: course_id, title: titleInput.value, due_date: dueDateTZ};
 
-          flipper.minilesson.add( data, function ( err, minilesson ) {
+          flipper.minilesson.add( data, function ( err ) {
             if ( err ) {
               console.error( err );
               toastr.error( err );
             } else {
-
-              // TODO: DO SOMETHING WITH THE MINILESSON OBJECT?
-              console.log( minilesson );
               toastr.info( 'Minilesson has been added.' );
-
-              // TODO: WE SHOULDN'T NEED TO REFRESH
-              // Refresh for now
               location.reload();
-
-              // Close the dialog --- this works because the dialog is a dialog-close-trigger
-              minilessonAddDialog.click();
-
             }
           } );
 
@@ -255,23 +242,13 @@
             resource: resourceInput.value || ''
           };
 
-          flipper.page.add( data, function ( err, page ) {
+          flipper.page.add( data, function ( err ) {
             if ( err ) {
               console.error( err );
               toastr.error( err );
             } else {
-
-              // TODO: DO SOMETHING WITH THE PAGE OBJECT?
-              console.log( page );
               toastr.info( 'Page has been added.' );
-
-              // TODO: WE SHOULDN'T NEED TO REFRESH
-              // Refresh for now
               location.reload();
-
-              // Close the dialog --- this works because the dialog is a dialog-close-trigger
-              pageAddDialog.click();
-
             }
           } );
 
@@ -331,23 +308,13 @@
           answer: answer
         };
 
-        flipper.mcq.add( data, function ( err, mcq ) {
+        flipper.mcq.add( data, function ( err ) {
           if ( err ) {
             console.error( err );
             toastr.error( err );
           } else {
-
-            // TODO: DO SOMETHING WITH THE PAGE OBJECT?
-            console.log( mcq );
             toastr.info( 'Mcq has been added.' );
-
-            // TODO: WE SHOULDN'T NEED TO REFRESH
-            // Refresh for now
             location.reload();
-
-            // Close the dialog --- this works because the dialog is a dialog-close-trigger
-            mcqAddDialog.click();
-
           }
         } );
 
@@ -380,22 +347,13 @@
               answer: answer.value
             };
 
-            console.log( data );
-
             flipper.submission.add( data, function ( err, submission ) {
               if ( err ) {
                 console.error( err );
                 toastr.error( err );
               } else {
-
-                // TODO: DO SOMETHING WITH THE SUBMISSION OBJECT?
-                console.log( submission );
                 toastr.info( 'Answer has been submitted.' );
-
-                // TODO: WE SHOULDN'T NEED TO REFRESH
-                // Refresh for now
                 location.reload();
-
               }
             } );
 
