@@ -274,7 +274,7 @@
                 <% mcq.answers.forEach( function ( answer ) { %>
                 <div choice layout-horizontal>
 
-                  <% if ( minilesson.due_date_passed ) { %>
+                  <% if ( minilesson.due_date_passed || course.teaching ) { %>
                   <% if ( mcq.answer === answer ) { %>
                   <input class="submit-radio-answer"
                          type="radio"
