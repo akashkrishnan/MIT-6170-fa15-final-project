@@ -224,6 +224,7 @@
             <% } %>
 
           </div>
+
           <% } %>
 
           <div shadow elevation="1" layout-vertical>
@@ -297,8 +298,9 @@
 
           </div>
 
+          <% if ( page._id ) { %>
           <div button id="remove-page-btn" small page-id="<%=page._id%>">Delete Page</div>
-
+          <% } %>
 
         </div>
 
