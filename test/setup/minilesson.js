@@ -7,8 +7,6 @@ module.exports = function(scope) {
   return function ( done ) {
     // Make sure course is set up
     (require( './course.js' )(scope))( function () {
-      console.log(scope);
-
       scope.nextMonth = new Date();
       scope.nextMonth.setDate(scope.nextMonth.getDate() + 30);
       scope.minilessonTitle = "Kinematics I";

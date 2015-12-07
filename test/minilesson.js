@@ -4,19 +4,27 @@
 
 'use strict';
 
-var User = require('../models/user.js');
-var Course = require('../models/course.js');
 var Minilesson = require( '../models/minilesson.js' );
 var assert = require( 'assert' );
 
 var Setup = require("./setup/minilesson.js");
-
-
 var scope = {};
 
-describe( 'Minnilesson', function () {
-  before(Setup(scope));
+var Config = require( '../config.js' );
+var util = require( 'util' );
+var mongojs = require( 'mongojs' );
 
+var db = mongojs( Config.services.db.mongodb.uri );
+
+
+
+describe( 'Minilesson', function () {
+
+  before(Setup(scope));
+  
+  after(function (done) {
+    db.dropDatabase(done);
+  });
 
   describe( '#add()', function () {
     context( 'all valid entries', function () {

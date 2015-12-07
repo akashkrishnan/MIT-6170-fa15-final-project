@@ -1,18 +1,17 @@
 'use strict';
 
 var Course = require( '../models/course.js' );
-var User = require('../models/user.js');
 var Setup = require("./setup/course.js");
 
 var assert = require( 'assert' );
 
 
 describe( 'Courses', function () {
-var scope = {};
-var testCourse;
-
+  var scope = {};
+  var testCourse;
 
   before(Setup(scope));
+  
   // add a course
   describe( '#add()', function () {
     it( 'adds a new course', function ( done ) {

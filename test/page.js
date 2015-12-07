@@ -5,113 +5,65 @@
 'use strict';
 
 var Page = require( '../models/page.js' );
-var User = require( '../models/user.js' );
-var Minilesson = require( '../models/minilesson.js' );
-var Course = require( '../models/course.js' );
+
 var assert = require( 'assert' );
 var Setup = require("./setup/page.js");
 
-var user;
-var course;
-var minilesson;
-var pageTitle = "Page Title";
-var pageResource = "www.flipperSwag.com";
-
-var data;
-var page;
+var scope = {};
 
 describe( 'Page', function() {
 
-    // var scope = {};
-    // before(Setup(scope));
+    before(Setup(scope));
 
-    //Setup: Create User, Course, Minilesson
-    before(function (done) {
-        User.add({
-            name: 'Person Name',
-            username: 'usernam24',
-            password: 'username15MIT!'
-        }, function (err, _user) {
-            if (err) {
-                throw err;
-            }
-            user = _user;
-            Course.add({
-                name: 'courseName10',
-                teacher_id: user._id
-            }, function (err, _course) {
-                if (err) {
-                    throw err;
-                }
-                course = _course;
-                Minilesson.add({
-                    user_id: user._id,
-                    course_id: String(course._id),
-                    due_date: new Date(),
-                    title: 'Title'
-                }, function (err, _minilesson) {
-                    if (err) {
-                        throw err;
-                    }
-                    minilesson = _minilesson;
-                    data = {
-                        user_id: String(user._id),
-                        minilesson_id: String(minilesson._id),
-                        title: pageTitle,
-                        resource: pageResource
-                    };
-                    done();
-                });
-            });
-        });
-    });
-
+    after(function (done) {
+        db.dropDatabase(done);
+      });
 
     describe('#add', function () {
         // console.log(scope);
         context('all valid entries', function () {
             it('should add a page to database', function (done) {
-                Page.add(data, function (err, _page) {
+                Page.add(scope.pageData, function (err, _page) {
                     if (err) {
                         throw err;
                     }
-                    page = _page;
+                    scope.page = _page;
                     done();
                 })
             });
             it('should return page with correct data', function () {
-                assert.equal( page.minilesson_id, data.minilesson_id);
-                assert.equal( page.title, data.title);
-                assert.equal( page.resource, data.resource);
+                assert.equal( scope.page.minilesson_id, scope.pageData.minilesson_id);
+                assert.equal( scope.page.title, scope.pageData.title);
+                assert.equal( scope.page.resource, scope.pageData.resource);
             });
         });
 
         context('all valid entries (no resource)', function () {
             it('should add a page to database', function (done) {
 
-                delete data.resource;
-                Page.add( data, function(err, _page) {
-                    data.resource = pageResource;
+                delete scope.pageData.resource;
+                Page.add( scope.pageData, function(err, _page) {
+                    scope.pageData.resource = scope.pageResource;
                     if(err) {
                         throw err;
                     }
-                    page = _page;
+                    scope.page = _page;
                     done();
                 });
             });
             it('should return page with correct data', function () {
-                assert.equal( page.minilesson_id, data.minilesson_id);
-                assert.equal( page.title, data.title);
-                assert.equal( page.resource, undefined);
+                assert.equal( scope.page.minilesson_id, scope.pageData.minilesson_id);
+                assert.equal( scope.page.title, scope.pageData.title);
+                assert.equal( scope.page.resource, undefined);
             });
         });
 
         context('no user_id', function () {
             it('should throw an error', function (done) {
                  assert.throws(function() {
-                    delete data.user_id;
-                    Page.add(data, function (err) {
-                        data.user_id = user._id;
+                    delete scope.pageData.user_id;
+                    Page.add(scope.pageData, function (err) {
+                        scope.pageData.user_id = scope.user._id;
                         if (err) {
                             throw err
                         }
@@ -124,9 +76,9 @@ describe( 'Page', function() {
         context('no minilesson_id', function () {
             it('should throw an error', function (done) {
                 assert.throws(function() {
-                    delete data.minilesson_id;
-                    Page.add(data, function (err) {
-                        data.minilesson_id = String(minilesson._id);
+                    delete scope.pageData.minilesson_id;
+                    Page.add(scope.pageData, function (err) {
+                        scope.pageData.minilesson_id = String(scope.minilesson._id);
                         if (err) {
                             throw err
                         }
@@ -139,9 +91,9 @@ describe( 'Page', function() {
         context('no title', function () {
             it('should throw an error', function (done) {
                 assert.throws(function() {
-                    delete data.title;
-                    Page.add(data, function (err) {
-                        data.title = pageTitle;
+                    delete scope.pageData.title;
+                    Page.add(scope.pageData, function (err) {
+                        scope.pageData.title = scope.pageTitle;
                         if (err) {
                             throw err
                         }
@@ -155,16 +107,16 @@ describe( 'Page', function() {
     describe('#get', function () {
         context('single page _id argument', function() {
             it('should get a page without error', function(done){
-                Page.get({_id: page._id}, done);
+                Page.get({_id: scope.page._id}, done);
             });
             it('should get a page with correct data', function(done){
-                Page.get({_id: page._id}, function(err, _page){
+                Page.get({_id: scope.page._id}, function(err, _page){
                     if(err){
                         done(err);
                     } else {
-                        assert.equal(page.minilesson_id, _page.minilesson_id);
-                        assert.equal(page.title, _page.title);
-                        assert.equal(page.resource, _page.resource);
+                        assert.equal(scope.page.minilesson_id, _page.minilesson_id);
+                        assert.equal(scope.page.title, _page.title);
+                        assert.equal(scope.page.resource, _page.resource);
                         done();
                     }
                 });
@@ -172,7 +124,7 @@ describe( 'Page', function() {
         });
         context("page_id and user_id arguments", function(){
             it('should get a page without error', function(done){
-                Page.get({_id: page._id, user_id: user._id}, done);
+                Page.get({_id: scope.page._id, user_id: scope.user._id}, done);
             })
         })
     });
@@ -180,14 +132,14 @@ describe( 'Page', function() {
     describe('#list', function () {
         context('user_id and minilesson_id arguments', function(){
             it('should return list of pages without error', function(done){
-                Page.list({user_id: user._id,
-                    minilesson_id: String(minilesson._id)}, done);
+                Page.list({user_id: scope.user._id,
+                    minilesson_id: String(scope.minilesson._id)}, done);
             });
         });
         context('user_id missing', function(){
             it('should throw an error', function(done){
                 assert.throws(function() {
-                    Page.list({minilesson_id: String(minilesson._id)}, function (err) {
+                    Page.list({minilesson_id: String(scope.minilesson._id)}, function (err) {
                         if (err) {
                             throw err;
                         }
@@ -199,7 +151,7 @@ describe( 'Page', function() {
         context('minilesson_id missing', function(){
             it('should throw an error', function(done){
                 assert.throws(function(){
-                    Page.list({user_id: user._id}, function(err){
+                    Page.list({user_id: scope.user._id}, function(err){
                         if(err){
                             throw err;
                         }
@@ -213,11 +165,11 @@ describe( 'Page', function() {
     describe('#remove', function () {
         context('valid page_id', function(){
             it('should remove page without error', function(done){
-                Page.add(data, function(err, _page){
+                Page.add(scope.pageData, function(err, _page){
                     if(err){
                         throw err;
                     } else {
-                        Page.remove({_id:_page._id, user_id: data.user_id}, done);
+                        Page.remove({_id:_page._id, user_id: scope.pageData.user_id}, done);
                     }
                 });
             });
