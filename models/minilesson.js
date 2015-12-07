@@ -170,7 +170,13 @@ function get( data, done ) {
         if ( err ) {
           done( err );
         } else if ( minilesson ) {
+
+          if ( minilesson.timestamps && minilesson.timestamps.due_date ) {
+            minilesson.due_date_passed = Boolean( +minilesson.timestamps.due_date < +new Date() );
+          }
+
           done( null, minilesson );
+
         } else {
           done( new Error( 'Minilesson not found.' ), null );
         }

@@ -131,11 +131,15 @@ function list( data, done ) {
                       mcq_id: mcq._id.toString()
                     },
                     function ( err, submissions, count ) {
+
                       mcq.submitted = Boolean( !err && count );
+
                       if ( mcq.submitted ) {
                         mcq.submittedAnswer = submissions[ 0 ].answer;
                       }
+
                       next( i + 1, n );
+
                     }
                   );
 
