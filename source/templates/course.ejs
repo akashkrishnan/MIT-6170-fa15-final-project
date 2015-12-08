@@ -208,7 +208,7 @@
               <% if ( course.teaching ) { %>
               <div toolbar-button hoverable
                    dialog-open-trigger="resource-set-dialog"
-                   layout-horizontal layout-center>
+                   layout-horizontal layout-center onclick="alert('Cannot set resource at this time.')">
                 Set
               </div>
               <% } %>
@@ -274,8 +274,36 @@
                 <% mcq.answers.forEach( function ( answer ) { %>
                 <div choice layout-horizontal>
 
-                  <% if ( mcq.submitted ) { %> 
-                  <input class="submit-radio-answer" type="radio" name="student-answer-options" value="<%= answer %>" disabled>
+                  <% if ( minilesson.due_date_passed || course.teaching ) { %>
+                  <% if ( mcq.answer === answer ) { %>
+                  <input class="submit-radio-answer"
+                         type="radio"
+                         name="student-answer-options"
+                         value="<%= answer %>"
+                         checked
+                         disabled>
+                  <% } else { %>
+                  <input class="submit-radio-answer"
+                         type="radio"
+                         name="student-answer-options"
+                         value="<%= answer %>"
+                         disabled>
+                  <% } %>
+                  <% } else if ( mcq.submitted ) { %>
+                  <% if ( mcq.submittedAnswer === answer ) { %>
+                  <input class="submit-radio-answer"
+                         type="radio"
+                         name="student-answer-options"
+                         value="<%= answer %>"
+                         checked
+                         disabled>
+                  <% } else { %>
+                  <input class="submit-radio-answer"
+                         type="radio"
+                         name="student-answer-options"
+                         value="<%= answer %>"
+                         disabled>
+                  <% } %>
                   <% } else { %>
                   <input class="submit-radio-answer" type="radio" name="student-answer-options" value="<%= answer %>">
                   <% } %>
@@ -288,14 +316,22 @@
               </div>
 
               <div buttons layout-horizontal layout-end-justified>
+
                 <% if ( course.teaching ) { %>
                 <div button small blue download class="downloadGrades">Download Grades</div>
-                <% } else if ( mcq.submitted ) { %>
-                <div button small blue disabled>You submitted: <%= mcq.submittedAnswer %> </div>
+                <div button small red remove>Delete</div>
+                <% } else if ( mcq.submitted ) {
+                  if ( mcq.submittedAnswer.length > 18 ) {
+                    submittedAnswer = mcq.submittedAnswer.substring( 0, 18 ) + "...";
+                  } else {
+                    submittedAnswer = mcq.submittedAnswer;
+                  }
+                %>
+                <div button small blue disabled>You submitted: <%= submittedAnswer %> </div>
                 <% } else { %>
                 <div button small blue submit>Submit</div>
                 <% } %>
-                <div button small red remove>Delete</div>
+
               </div>
 
             </div>
@@ -304,7 +340,7 @@
           </div>
 
           <% if ( page._id && course.teaching ) { %>
-          <div button id="remove-page-btn" small page-id="<%=page._id%>">Delete Page</div>
+          <div button id="remove-page-btn" small page-id="<%= page._id %>">Delete Page</div>
           <% } %>
 
         </div>
@@ -313,8 +349,6 @@
 
       </div>
     </div>
-
-
 
     <div id="minilesson-add-dialog" dialog backdrop
          course-id="<%= course._id %>"
@@ -469,8 +503,6 @@
     </div>
 
     <% } %>
-
-
 
     <script src="/jquery/dist/jquery.min.js"></script>
     <script src="/moment/min/moment.min.js"></script>

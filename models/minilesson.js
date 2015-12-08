@@ -63,7 +63,7 @@ function list( data, done ) {
     var sort = Utils.validateObject( data, {
       sort: {
         type: {},
-        default: { 'timestamps.publish': 1 }
+        default: { 'timestamps.created': 1 }
       }
     } ).sort;
 
@@ -170,7 +170,13 @@ function get( data, done ) {
         if ( err ) {
           done( err );
         } else if ( minilesson ) {
+
+          if ( minilesson.timestamps && minilesson.timestamps.due_date ) {
+            minilesson.due_date_passed = Boolean( +minilesson.timestamps.due_date < +new Date() );
+          }
+
           done( null, minilesson );
+
         } else {
           done( new Error( 'Minilesson not found.' ), null );
         }
@@ -258,8 +264,12 @@ function add( data, done ) {
     } );
 
     // Ensure due_date is a valid date
-    if ( criteria.due_date && isNaN( new Date( criteria.due_date ).getTime() ) ) {
-      return done( new Error( 'Invalid date.' ), null );
+    if ( criteria.due_date ) {
+      if ( isNaN( new Date( criteria.due_date ).getTime() ) ) {
+        return done( new Error( 'Invalid date.' ), null );
+      } else {
+        criteria.due_date = new Date( criteria.due_date );
+      }
     }
 
     // Ensure user is teaching the course
@@ -415,8 +425,13 @@ function edit( data, done ) {
       due_date: {}
     } );
 
-    if ( criteria.due_date && isNaN( new Date( criteria.due_date ).getTime() ) ) {
-      return done( new Error( 'Invalid date.' ), null );
+    // Ensure due_date is a valid date
+    if ( criteria.due_date ) {
+      if ( isNaN( new Date( criteria.due_date ).getTime() ) ) {
+        return done( new Error( 'Invalid date.' ), null );
+      } else {
+        criteria.due_date = new Date( criteria.due_date );
+      }
     }
 
     // Ensure user is teaching the course

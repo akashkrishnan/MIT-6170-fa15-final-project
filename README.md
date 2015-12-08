@@ -25,11 +25,10 @@ Flipper
 
 ### Linting (ESLint)
 - `npm run lint`
-- (These aren't supposed to pass right now.)
+- (These aren't supposed to pass entirely.)
 
 ### Testing (Mocha)
 - `npm test`
-- (These aren't supposed to pass right now.)
 
 ### Running
 1. Ensure `mongodb` is running: `sudo mongod`
@@ -42,51 +41,16 @@ Flipper
 - If you get the `EADDRINUSE` error stating that the port the server is trying to listen on is in use, then change the `port` number in the `config` section of `package.json`.
 - If you get the `EACCESS` error, then make sure you are using `sudo` or are authenticated as root via `sudo su -`.
 
-## Discussion about MVP features (and what we left out)
+### Discussion about how to use the app
 
-	Identification of minimum viable product for first release 
-		Our MVP will contain: 
-			Registration of users that can act as both Teachers and/or Students of different classes
-			Functionality for Teachers
-				Create cources and accept Students
-				Add minilessons to classes, pages to minilessons and resources and MCQs to pages 
-			Functionality for Students
-				View lessons for their classes
-				Submit answers to MCQs
-			Grades as CSV
-		Subset of concepts included in MCQ:
-			Teacher
-			Student
-			Minilesson
-			Page
-			Resource
-			MCQ
-			Question
-			Answer Choice
-			Submission
-	Issues postponed (e.g. security mitigations, user interface elements)
-		GradeBook
-		Expanded analytics for teachers 
-		Finalizing and refining CSS and UI themes
-		Security
-			XSS mitigation
-			HTML injection
-			CSRF mitigation
-		Verifying teachers
-		Editing/deleting minilessons, pages or questions 
-		Embedded videos
-		Setting resource after page creation
-		Proper unit test coverage
-
-## Discussion about how to use MVP
-
-### Using MVP as a teacher
+### Using as a teacher
 1. register and login account1
 2. create a class, minilesson and page (include a resource)
 3. add MCQs to the page 
+4. publish the minilesson
 4. logout
 
-### Using MVP as a student
+### Using as a student
 1. register and login account2
 2. join a class
 3. logout

@@ -11,6 +11,8 @@ toastr.options = {
   extendedTimeOut: 2000
 };
 
+var DEBUG = false;
+
 var flipper = Flipper();
 
 var forEach = function ( array, callback, scope ) {

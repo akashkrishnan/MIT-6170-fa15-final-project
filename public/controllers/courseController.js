@@ -53,12 +53,16 @@
           } );
 
         } else {
-          console.error( 'Missing [mcq-id].' );
+          if ( DEBUG ) {
+            console.error( 'Missing [mcq-id].' );
+          }
         }
       } );
     } );
   } else {
-    console.error( 'Missing removeMcqBtns.' );
+    if ( DEBUG ) {
+      console.error( 'Missing removeMcqBtns.' );
+    }
   }
 
 
@@ -148,10 +152,14 @@
         } );
       } );
     } else {
-      console.error( 'Missing setBtn.' );
+      if ( DEBUG ) {
+        console.error( 'Missing setBtn.' );
+      }
     }
   } else {
-    console.error( 'Missing #minilesson-edit-dialog.' );
+    if ( DEBUG ) {
+      console.error( 'Missing #minilesson-edit-dialog.' );
+    }
   }
 
   /* -------------------------------------------------------------------------------------------------------------- */
@@ -176,7 +184,9 @@
       } );
     } );
   } else {
-    console.error( 'Missing publish btn.' );
+    if ( DEBUG ) {
+      console.error( 'Missing publish btn.' );
+    }
   }
 
 
@@ -225,16 +235,22 @@
           } );
 
         } else {
-          console.error( 'Missing #minilesson-add-dialog [title-input].' );
+          if ( DEBUG ) {
+            console.error( 'Missing #minilesson-add-dialog [title-input].' );
+          }
         }
 
       }, false );
     } else {
-      console.error( 'Missing #minilesson-add-dialog [create].' );
+      if ( DEBUG ) {
+        console.error( 'Missing #minilesson-add-dialog [create].' );
+      }
     }
 
   } else {
-    console.error( 'Missing #minilesson-add-dialog.' );
+    if ( DEBUG ) {
+      console.error( 'Missing #minilesson-add-dialog.' );
+    }
   }
 
   /* -------------------------------------------------------------------------------------------------------------- */
@@ -271,16 +287,22 @@
           } );
 
         } else {
-          console.error( 'Missing #page-add-dialog [title-input].' );
+          if ( DEBUG ) {
+            console.error( 'Missing #page-add-dialog [title-input].' );
+          }
         }
 
       }, false );
     } else {
-      console.error( 'Missing #page-add-dialog [create].' );
+      if ( DEBUG ) {
+        console.error( 'Missing #page-add-dialog [create].' );
+      }
     }
 
   } else {
-    console.error( 'Missing #page-add-dialog.' );
+    if ( DEBUG ) {
+      console.error( 'Missing #page-add-dialog.' );
+    }
   }
 
   /* -------------------------------------------------------------------------------------------------------------- */
@@ -338,11 +360,15 @@
 
       }, false );
     } else {
-      console.error( 'Missing #mcq-add-dialog [create].' );
+      if ( DEBUG ) {
+        console.error( 'Missing #mcq-add-dialog [create].' );
+      }
     }
 
   } else {
-    console.error( 'Missing #mcq-add-dialog.' );
+    if ( DEBUG ) {
+      console.error( 'Missing #mcq-add-dialog.' );
+    }
   }
 
   /* -------------------------------------------------------------------------------------------------------------- */
@@ -379,13 +405,17 @@
             toastr.error( 'Please select an answer.' );
           }
         } else {
-          console.error( 'Missing [mcq-id] or answer.' );
+          if ( DEBUG ) {
+            console.error( 'Missing [mcq-id] or answer.' );
+          }
         }
 
       }, false );
     } );
   } else {
-    console.error( 'Missing [mcq-item] [buttons] [submit].' );
+    if ( DEBUG ) {
+      console.error( 'Missing [mcq-item] [buttons] [submit].' );
+    }
   }
 
 })();
